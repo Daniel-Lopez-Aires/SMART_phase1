@@ -61,6 +61,25 @@ tic
 %#################################################
 
 
+%%%%%%%%%%%%%%%%%  DEFINE DATA OUTPUT PARAMETERS  %%%%%%%%%%%%%%%%%%%%
+%Taken from Scott
+
+%Define figure extension
+FigExt = '.png'; 		%'.png','.eps','.pdf'
+
+%Define project and series names
+ProjectName = 'SMART-P1-9L';			%Define global project name
+%SeriesName = 'VaryTauP';		%Define parameter scan series name
+
+%Create global output folders for saved data and figures
+ASCIIDir = 'RawData/'; mkdir(ASCIIDir);
+%FigDir = 'Figures/'; mkdir(FigDir);			%NOT CURRENTLY USED
+
+%Create simulation name based upon relevant run parameters
+SimName = 'DefaultSimName';
+disp([ 'SimName: ' SimName ]);
+disp([ ' ' ]);
+
 
 
 %% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -140,11 +159,11 @@ height_PF=0.035;                                        %  [m] Height of a turn
 R_PF1=0.9+ww_R/2; 
 Z_PF1=0.5+mod_Z_pos+ww_Z/2; 
 R_PF2=0.9+ww_R/2;
-Z_PF2=0.8+mod_Z_pos+ww_Z/2;;
-R_Div1=0.25+ww_R/2;;
-Z_Div1=1.05+mod_Z_pos+ww_Z/2;;
-R_Div2=0.55+ww_R/2;;
-Z_Div2=1.05+mod_Z_pos+ww_Z/2;;
+Z_PF2=0.8+mod_Z_pos+ww_Z/2;
+R_Div1=0.15+ww_R/2; %0.25 originally (me) Updated to Scott
+Z_Div1=1.05+mod_Z_pos+ww_Z/2;
+R_Div2=0.45+ww_R/2; %0.55 originally (me) Updated to Scott
+Z_Div2=1.05+mod_Z_pos+ww_Z/2;
 
 % Make Solenoid
 nSol=210 %800;                                      % number of turns of the solenoid (Agredano suggested)
@@ -233,10 +252,10 @@ dup = (abs(diff(xaccum))+abs(diff(yaccum))) > 0;
 xaccum = xaccum(dup);
 yaccum = yaccum(dup);
 
-figure;
-plot(xaccum,yaccum,'r.')
-xlabel('R (m)')
-ylabel('Z (m)')
+% figure;
+% plot(xaccum,yaccum,'r.')
+% xlabel('R (m)')
+% ylabel('Z (m)')
 
     %accum=[xaccum; yaccum];    %Check
 
@@ -298,9 +317,8 @@ vessel = fiesta_vessel( 'STVessel',passive);
     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
     axis([0,1.1,-1.1,1.1]) 
     %print -depsc2 NOMBREPLOT.eps
-
-    figure;
-    plot3(vessel)
+    Filename = '_CrossSection';
+    saveas(gcf, strcat(ProjectName,Filename,FigExt));
 
     
 %%%%Borders
@@ -322,15 +340,6 @@ vessel = fiesta_vessel( 'STVessel',passive);
 %%%%%%%%%%%%%%%%%%%%COILSET%%%%%%%%%%%%%%
 
 coilset = fiesta_coilset('STcoilset',[Sol_circuit,PF1,PF2,Div1,Div2],false,xaccum',yaccum');
-
-% figure;
-% plot3(coilset)
-% hold on
-% plot3(vessel)
-% xlabel('x(m)')
-% ylabel('y(m)')
-% zlabel('z(m)')
-% title('Seville ST (V2C3) vessel and coilset')
 
 % @@@@@@@END CREATION OF THE TOKAMAK@@@@@@@@@@@@@@@
 
@@ -402,6 +411,10 @@ control = fiesta_control( 'diagnose',true, 'quiet',false, 'convergence', 1e-5, '
 %@@@@@@@@@@@@TARGET EQUILIBRIA@@@@@@@@@@@@@@
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 config  = fiesta_configuration( 'STV2C2', Grid, coilset);
+
+%Provided that Ip>0,
+    %I_PF1,2 have to be<0, so it repel the plasma, and it do not touches the outer (R max) wall
+    %Empirically, if Div decrease
 %
 
  I_Sol_max =1e3  %.953; .91 for short break                  %[A] Max solenoid current, to achieve the desire Ip in RZIp.
@@ -416,8 +429,9 @@ coil_currents_steady_state = [];                                                
 coil_currents_steady_state(iSol) = ISol_equil; 
 coil_currents_steady_state(iPF1) =-0.37e3;
 coil_currents_steady_state(iPF2) =-0.4e3;
-coil_currents_steady_state(iDiv1) =0;
-coil_currents_steady_state(iDiv2) =.9e3; %.9e3
+%coil_currents_steady_state(iDiv1) =0;
+coil_currents_steady_state(iDiv1) =coil_currents_steady_state(iSol)                 %Div1 in series with Sol
+coil_currents_steady_state(iDiv2) =.9e3; %.9e3 for Div1 0
 coil_currents = coil_currents_steady_state
 
 
@@ -476,27 +490,24 @@ icoil = fiesta_icoil( coilset, coil_currents );
     %print -depsc2 NOMBREPLOT.eps
     
  %Plot from the demo in examples of FIESTA folder
-        
         section_figure=section(equil); %THIS IS A PLOT
+        
         figure;
         plot(equil)
         parametersshow(equil)           %this plots the parameters in the equil
         hold on
         plot(vessel)
         plot(coilset)
+        title('Target equilibria')
             %Watch out, R0 in the plot is r0_mag, not r0_geom!!
-    
+        Filename = '_TargetEquilibrium';
+        saveas(gcf, strcat(ProjectName,Filename,FigExt));
 %Equilibrium parameters
 
 parameters(equil); %its better in this way, because it shows units and coil currents. If you define a variable, it wont do that
-  param_equil=parameters(equil)                             %Will be used in the null sensors
+param_equil=parameters(equil)                             %Will be used in the null sensors
 
 coil_currents_steady_state
-
-%%% Write qeqdsk file%%%%%%%%%%%%%
-% filename = 'ST_Phase2_reduced_efit';
-% geqdsk_write_BUXTON(config, equil, filename)
-% clc %to remove all the warnings that this file makes
 
 %%%%%%  Vessel time constant  %%%%%%%%%%%
 %This has to deal with the change of eddy currents in the vessel (See the
@@ -650,16 +661,18 @@ I_PF_input(5,iSol) =I_5%-I_Sol_start*0.5; %0.6
 I_PF_input(6,iSol) =-I_Sol_max*0.85;                                                        %to maintain Ip=100k
 I_PF_input([5,6],iPF1) = coil_currents_steady_state(iPF1);
 I_PF_input([5,6],iPF2) = coil_currents_steady_state(iPF2);
-I_PF_input([5,6],iDiv1) = coil_currents_steady_state(iDiv1);
+%I_PF_input([5,6],iDiv1) = coil_currents_steady_state(iDiv1);
 I_PF_input([5,6],iDiv2) = coil_currents_steady_state(iDiv2);
 
 %To finish the discharge
 %This is the simples way, all turned down rapidly
 I_PF_input(7,iPF1) =0;
 I_PF_input(7,iPF2) = 0;
-I_PF_input(7,iDiv1) =0;
+%I_PF_input(7,iDiv1) =0;
 I_PF_input(7,iDiv2) =0;
 I_PF_input(7,iSol) =0 ;
+
+I_PF_input([1:end],iDiv1) =I_PF_input([1:end],iSol);            %Div1 in series with Sol
 
 %Plot
     figure;
@@ -671,8 +684,10 @@ I_PF_input(7,iSol) =0 ;
     %%%optinos for tfg
     set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
     set(gca, 'FontSize', 13, 'LineWidth', 0.75);                    %<- Set properties TFG
+    Filename = '_InputCurrents';
+    saveas(gcf, strcat(ProjectName,Filename,FigExt));
 
-%Plot in A*turn
+    %Plot in A*turn
 % figure;
 % plot( time*1e3, I_PF_input.*turns/(1e6) );
 % xlabel('time (ms)')
@@ -764,7 +779,7 @@ I_Passive_VV=sum(I_Passive,2);
             ylabel('I (kA)')
             title('Dynamic response SST phase 1')
             set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
-            set(gca,'YLim',[-5 35]);
+            %set(gca,'YLim',[-5 35]);
             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         %%%vOLTAGE
             subplot(3,1,2)
@@ -784,7 +799,9 @@ I_Passive_VV=sum(I_Passive,2);
             set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
             %set(gca,'YLim',[-800 800]);
             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-
+            
+            Filename = '_RZIpOutputs';
+            saveas(gcf, strcat(ProjectName,Filename,FigExt));
           %print -depsc2 NOMBREPLOT.eps
 
 %%% END RZIP@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -855,7 +872,7 @@ I_Passive_VV=sum(I_Passive,2);
         hold on
         plot(vessel)
         plot(coilset)
-        title('Target equilibria eddys included no efit')
+        title('Target equilibria eddys included')
 
 
 %%% Make virtual sensors where we want breakdown  %%%%%%%
@@ -936,45 +953,6 @@ z_sensors=get(sensor_btheta,'z'); %size 1*200
 %%%%%RESPONDE DO NOT WORK PROPERLY!!!!!!!!!!!!!!!!!!!!!!ç
 
 
-
-
-
-
-%% ASAP FILES ##################
-%Now we save the waveform, the plasma current and the passive current
-
-%1) I_PF
-%I_PF_input=I_PF_output (readapted to time_adaptive), provided that
-% on RZIp, the show plot option must is true. If not, I_PF_output=NaN,
-% since it is not calculated, V_PF is calculated.
-%We save it in A*turn
-% a=I_PF_output(:,iSol).*turns(iSol);
-% b=I_PF_output(:,iPF1).*turns(iPF1);
-% c=I_PF_output(:,iPF2).*turns(iPF2);
-% d=I_PF_output(:,iDiv1).*turns(iDiv1);
-% e=I_PF_output(:,iDiv2).*turns(iDiv2);
-% 
-% fileID=fopen('PF_Phase_1_outerSol_210Turns_SpitzerHNewVessel.txt','w')
-% fprintf(fileID,'%0.5f %0.5f %0.5f %0.5f %0.5f\r\n',[a'; b'; c'; d'; e']);
-% fclose(fileID) %Its mandatory to close the file, toa void problems
-% 
-% %2)Ip, plasma current, in A
-% 
-% fileID=fopen('Ip_Phase_1_outerSol_210Turns_SpitzerHNewVessel.txt','w')
-% fprintf(fileID,'%1.12f\r\n',Ip_output);
-% fclose(fileID)
-% 
-% %3)time, the time intervals, in s
-% 
-% fileID=fopen('t_Phase_1_outerSol_210Turns_SpitzerHNewVessel.txt','w')
-% fprintf(fileID,'%1.12f\r\n',time_adaptive);
-% fclose(fileID)
-% 
-% %4) I_passive, the eddy curretns, in A
-% 
-% fileID=fopen('I_Passive_1_outerSol_210Turns_SpitzerHNewVessel.txt','w')
-%fprintf(fileID,'%1.12f\r\n',I_Passive_VV);
-% fclose(fileID)
 %%
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -1763,7 +1741,59 @@ time_Ode=toc;
     title(sprintf('Paschen curve, Gas=%s',Gas_type)); %d for numbers
 
     
+%% SAVING THINGS%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%1)Current data
+    %Now we save the waveform, the plasma current and the passive current
+
+    %Create subdirectory for coil current related data
+    icoilDir = strcat(ASCIIDir,'icoil_Data/'); mkdir(icoilDir);
+
+    %I_PF_input=I_PF_output (readapted to time_adaptive), provided that
+    %on RZIp, the show plot option must is true. If not, I_PF_output=NaN,
+    %since it is not calculated, V_PF is calculated.
+    %We save it in A*turn
+
+    Filename = strcat(icoilDir,'Coil-waveform.txt');
+
+    %1.1) I_PF
+    a=I_PF_output(:,iSol).*turns(iSol);
+    b=I_PF_output(:,iPF1).*turns(iPF1);
+    c=I_PF_output(:,iPF2).*turns(iPF2);
+    d=I_PF_output(:,iDiv1).*turns(iDiv1);
+    e=I_PF_output(:,iDiv2).*turns(iDiv2);
+
+    fileID=fopen(Filename,'w');
+    fprintf(fileID,'%6s %6s %6s %6s %6s %6s\r\n', 'Time (s)','I_Sol (A turns)','I_PF1 (A turns)','I_PF2 (A turns)','I_Div1 (A turns)','I_Div2 (A turns)');
+    fprintf(fileID,'%1.12f %0.5f %0.5f %0.5f %0.5f %0.5f\r\n',[time_adaptive';a'; b'; c'; d'; e']);
+    fclose(fileID) %Its mandatory to close the file, to avoid problems
+
+    %1.2)Ip, plasma current, in A
+    Filename = strcat(icoilDir,'Iplasma.txt');
+    fileID=fopen(Filename,'w');
+    fprintf(fileID,'%6s %6s\r\n', 'Time (s)','I_plasma (A)');
+    fprintf(fileID,'%1.12f %1.12f\r\n',[time_adaptive';Ip_output']);
+    fclose(fileID)
+
+    %1.3) I_passive, the eddy curretns, in A
+
+    Filename = strcat(icoilDir,'Ipassive.txt');
+    fileID=fopen(Filename,'w');
+    fprintf(fileID,'%6s %6s\r\n', 'Time (s)','I_passive (A)');
+    fprintf(fileID,'%1.12f %1.12f\r\n',[time_adaptive';I_Passive_VV']);
+    fclose(fileID)
+    
+%2) Eq related
+    %Create subdirectory
+%     EqDir = strcat(ASCIIDir,'Equil_Data/'); mkdir(EqDir);
+%     
+%     Filename = strcat(EqDir,'Geqsdk.txt');
+%     geqdsk_write_BUXTON(config, equil, Filename)
+%      clc %to remove all the warnings that this file makes  
+%%THIS DO NOT WORK!!!!!
+
+
+%%
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@Functions for the breakdown integration@@@@
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
