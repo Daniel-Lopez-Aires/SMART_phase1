@@ -11,10 +11,7 @@ close all
 
 % %print -depsc2 NOMBREPLOT.eps %this is for saving plots in .eps, without
 % saving margins
-
 tic
-
-
 
 %#################################################
 %######################TFM#########################
@@ -48,13 +45,11 @@ tic
                 Gr_fraction=0.15%0.15;                              %This is to scale the Gr_limit==> <=1
     
     %3) a_eff                                                        %[m] This defines the size of the field null region.
-
-            
+   
              %a_eff=0.05;                                   % little null region WHAT JJ USED, ST25D BASED
              a_eff=0.15;                                        % large null region
 
 %%%%%%%%END PARAMETERS TO BE VARIED ON BREAKDWON!!!!!!!!!!!!!
-
 
 %#################################################
 %#####################TFM############
@@ -62,7 +57,7 @@ tic
 
 
 %%%%%%%%%%%%%%%%%  DEFINE DATA OUTPUT PARAMETERS  %%%%%%%%%%%%%%%%%%%%
-%Taken from Scott
+%Taken from the God Scott
 
 %Define figure extension
 FigExt = '.png'; 		%'.png','.eps','.pdf'
@@ -79,8 +74,6 @@ ASCIIDir = 'RawData/'; mkdir(ASCIIDir);
 SimName = 'DefaultSimName';
 disp([ 'SimName: ' SimName ]);
 disp([ ' ' ]);
-
-
 
 %% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -269,16 +262,7 @@ for i=length(xaccum):-1:1
     vessel_filament(i) = fiesta_filament(xaccum(i),yaccum(i),ww_R,ww_Z,1,0,0); 
         %The fiesta_filament inputs are R,Z,2*r,2*z,1,0,0 R mayor radius, Z heigh, 
         %r minor radius, z minor z (2r width in R axis, 2z in Z axis of the filament)
-    
-    %        Plot
-    %           plot3(vessel_filament(i))
-    %           hold on
 end
-
-%Plot vessel
-    % figure;
-    % plot(vessel_filament);
-    % axis equal;
 
 %Creation of the vessel passives
 
@@ -323,25 +307,68 @@ vessel = fiesta_vessel( 'STVessel',passive);
     
 %%%%Borders
 
-% figure;
-% plot(vessel)
-% hold on
-% plot(get(vessel,'r'),get(vessel,'z'),'r.')
-% plot(xaccum-ww/2,yaccum-ww/2,'b.')
-% 
-% dr_vessel=get(vessel,'r');
-% dz_vessel=get(vessel,'dz');
-% 
-% figure;
-% plot(get(vessel,'r')-get(vessel,'dr'),get(vessel,'z')-get(vessel,'dz'))
-% hold on
-% plot(vessel)
-
 %%%%%%%%%%%%%%%%%%%%COILSET%%%%%%%%%%%%%%
 
 coilset = fiesta_coilset('STcoilset',[Sol_circuit,PF1,PF2,Div1,Div2],false,xaccum',yaccum');
 
 % @@@@@@@END CREATION OF THE TOKAMAK@@@@@@@@@@@@@@@
+
+
+%%%%%%CURRENT PROFILE FOR THE COILSET
+
+%For simplicity, and following Scott code, will declare the input profile
+%at the beginnin, since this will be clearer!
+
+%Notes:
+    %-Provided that Ip>0, I_PF1,2 have to be<0, so it repel the plasma, and it do not 
+        %touches the outer (R max) wall
+    
+%%%PF coil currents (At Equilibrium, time(5,6))                                                   [A]
+I_PF1_Equil=-500;					%EFIT WILL GIVE IT!
+I_PF2_Equil=-500;					%EFIT WILL GIVE IT!
+%I_Div1_Equil=NaN;					Div1 in series with Sol!
+I_Div2_Equil=+900;					%+900;      %+900;
+
+%%%Sol current
+ I_Sol_max =.95e3  %.953; .91 for short break                  %[A] Max solenoid current, to achieve the desire Ip in RZIp.
+ISol_equil=-I_Sol_max;%.05e3;                            % [A] the current of the Sol in the target eq calc
+%If>0, Sol will attract the plasma, no lower PF and DIv are
+%needed.
+
+
+%%%Time intervals
+nTime = 7;      	% Coil Waveform Timesteps	[-]
+discharge_time=20;                                                          %[ms], time duration of the flat-top 
+T_ramp_Sol=25;       %Seta as 25ms to match JJ               %[ms], min time to increase or decrease the Sol
+
+t_add=2*T_ramp_Sol; %2 with short breakdown               %time for the aditional point>T_ramp_Sol
+
+time = [-4*T_ramp_Sol -2*T_ramp_Sol 0 T_ramp_Sol t_add ...
+      t_add+discharge_time+10 t_add+discharge_time+T_ramp_Sol+10]*1e-3;                   %[s]
+ %%%%%% 
+ 
+ %Points 3 and 4 are (0,I_Sol_start), (t,ISol_to). Lets find the equation
+ %for that line, and create the point 5 so it has the same slope
+ 
+ [coef]=polyfit([0 T_ramp_Sol],[I_Sol_max 0],1)
+ 
+ %If t5=something, we get I_5 should be:
+ I_5=coef(1)*t_add+coef(2); %=I_Sol_max, como debe ser. Por eso, uso I_max.!!
+ 
+ %%%
+ 
+%Construct Sol, PF/Div coil current waveforms vertices
+											  %!Breakdown!					%!Efit Icoil!
+        %Time   	     [1,    2,              3,           4,        5,                  6,               7];
+ISol_Waveform =  [0,  I_Sol_max, I_Sol_max, 0, -I_Sol_max, -I_Sol_max*0.75,   0];
+IPF1_Waveform =  [0,  NaN,        NaN,        NaN,           I_PF1_Equil,   I_PF1_Equil,   0];
+IPF2_Waveform =  [0,  NaN,        NaN,        NaN,           I_PF2_Equil,   I_PF2_Equil,   0];
+%IDiv1_Waveform = [0,  NaN,        NaN,        NaN,           I_Div1_Equil,  I_Div1_Equil, 0];
+IDiv1_Waveform = ISol_Waveform; %Div1 in series with Sol
+IDiv2_Waveform = [0,  NaN,        NaN,        NaN,           I_Div2_Equil,  I_Div2_Equil,  0];
+%%%%%
+CoilWaveforms = [ISol_Waveform; IPF1_Waveform; IPF2_Waveform; IDiv1_Waveform; IDiv2_Waveform]
+
 
 %%  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -412,30 +439,16 @@ control = fiesta_control( 'diagnose',true, 'quiet',false, 'convergence', 1e-5, '
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 config  = fiesta_configuration( 'STV2C2', Grid, coilset);
 
-%Provided that Ip>0,
-    %I_PF1,2 have to be<0, so it repel the plasma, and it do not touches the outer (R max) wall
-    %Empirically, if Div decrease
-%
+icoil_equil = fiesta_icoil(coilset);
 
- I_Sol_max =1e3  %.953; .91 for short break                  %[A] Max solenoid current, to achieve the desire Ip in RZIp.
-    
- 
-ISol_equil=-I_Sol_max;%.05e3;                            % [A] the current of the Sol in the target eq calc
-%If>0, Sol will attract the plasma, no lower PF and DIv are
-%needed.
+%Assign equilibrium coil currents to icoil object [kA]
+icoil_equil.Sol=ISol_equil;         %Solenoid Equilibrium Current at time(5,6)
+icoil_equil.PF1=CoilWaveforms(2,6);	%PF1 Equilibrium Current at time(5,6)
+icoil_equil.PF2=CoilWaveforms(3,6);	%PF2 Equilibrium Current at time(5,6)
+%icoil_init.Div1=CoilWaveforms(4,6);	%Div1 Equilibrium Current at time(5,6)
+icoil_equil.Div1=icoil_equil.Sol;         %Div1 in series with Sol
+icoil_equil.Div2=CoilWaveforms(5,6);	%Div2 Equilibrium Current at time(5,6)
 
-%Currents of the coils in the eq situation [A]. 
-coil_currents_steady_state = [];                                                                        %[A]
-coil_currents_steady_state(iSol) = ISol_equil; 
-coil_currents_steady_state(iPF1) =-0.37e3;
-coil_currents_steady_state(iPF2) =-0.4e3;
-%coil_currents_steady_state(iDiv1) =0;
-coil_currents_steady_state(iDiv1) =coil_currents_steady_state(iSol)                 %Div1 in series with Sol
-coil_currents_steady_state(iDiv2) =.9e3; %.9e3 for Div1 0
-coil_currents = coil_currents_steady_state
-
-
-icoil = fiesta_icoil( coilset, coil_currents );
 %To do the equilibria calc, we can use EFIT algorithm or not:
 
     %1) NO EFIT..........
@@ -454,18 +467,15 @@ icoil = fiesta_icoil( coilset, coil_currents );
     % mandatory.
     %I use the values of the standar shape, to get a similar equil
 
-    equil=fiesta_equilibrium('ST', config, Irod, jprofile, control,efit_config, icoil, signals, weights) %%EFIT!!!
+    equil=fiesta_equilibrium('ST', config, Irod, jprofile, control,efit_config, icoil_equil, signals, weights) %%EFIT!!!
     %It does the case in line 96!! The equil calc is in lin 124
 
     %Now we have to extract the new currents from the equil, provided that EFIT
     %changed some of them to satisfy the conditions requested:
-    icoil=get(equil,'icoil');
-    current_post_EFIT=get(icoil,'currents');
-    coil_currents_steady_state(iPF1) =current_post_EFIT(iPF1);
-    coil_currents_steady_state(iPF2) =current_post_EFIT(iPF2);
-    coil_currents_steady_state(iDiv1) =current_post_EFIT(iDiv1);
-    coil_currents_steady_state(iDiv2) =current_post_EFIT(iDiv2);
-%No need of redefine the Sol current of course
+    icoil_equil=get(equil,'icoil');                         %redefine icoil to save the new current values
+    current_post_EFIT=get(icoil_equil,'currents');
+    CoilWaveforms(iPF1,5:6) =current_post_EFIT(iPF1);
+	CoilWaveforms(iPF2,5:6) =current_post_EFIT(iPF2);
 
 %%%%%%END EFIT................
 
@@ -500,14 +510,12 @@ icoil = fiesta_icoil( coilset, coil_currents );
         plot(coilset)
         title('Target equilibria')
             %Watch out, R0 in the plot is r0_mag, not r0_geom!!
-        Filename = '_TargetEquilibrium';
-        saveas(gcf, strcat(ProjectName,Filename,FigExt));
+        %Filename = '_TargetEquilibrium';
+        %saveas(gcf, strcat(ProjectName,Filename,FigExt));
 %Equilibrium parameters
 
 parameters(equil); %its better in this way, because it shows units and coil currents. If you define a variable, it wont do that
 param_equil=parameters(equil)                             %Will be used in the null sensors
-
-coil_currents_steady_state
 
 %%%%%%  Vessel time constant  %%%%%%%%%%%
 %This has to deal with the change of eddy currents in the vessel (See the
@@ -593,86 +601,32 @@ rzip_config = fiesta_rzip_configuration( 'RZIP', config, vessel, {sensor_btheta}
 [A, B, C, D, curlyM, curlyR, gamma, plasma_parameters, index, label_index, state] = response(rzip_config, equil, 'rp',plasma_resistance);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%  Optimised null  %%%%%%%%%%%%
-%Copy from ST25D stimation 
+%%%%%%  Optimised null  currents%%%%%%%%%%%%
+%Extract scaling factors for null-field coil currents - Copied from ST25D Simulation
 C_temp = C(end-get(sensor_btheta,'n')+1:end,1:nPF);
 C1 = C_temp(:,1);
 D1 = C_temp(:,2:end);
+%Compute PF null coil currents (excluding Solenoid) 
+I_PF_null = -pinv(D1) * (C1*ISol_Waveform(2));	%(PF1,PF2,Div1,Div2)
+
+%Update CoilWaveforms array with null-field values
+for i = 1:nPF;
+	for j = 1:nTime;
+		%Determine if coil 'i' at timestep 'j' requires null-field
+		if isnan(CoilWaveforms(i,j));
+			CoilWaveforms(i,j) = I_PF_null(i-1);	%i-1 skips Solenoid coil
+        end
+	end
+end
+
 
 %%%%%%%%%Construction to do the RZIp calculation%%%%%%%%%%
-%The input profile of I_PF currents are needed:
+%The input profile of I_PF currents have to be extended
 
-%% %%INPUT CURRENT PROFILE%%%
-%This is for the structure of the pulse that it is usually given in
-%tokamaks. The example of ST25D stimation has been follow to create it
-%IST MANDATORY THAT THE MAX AND THE MIN VALUE OF I SOL ARE EQUAL, 
-%SINCE YOU BUILD A POWER SUPPLY THAT CAN GET A CERTAIN CURRENT, AND
-%YOU WANT TO OPTIMIZE ITS WORK.
-%HOWEVER, THE SOL CAN BE DECREASED BEFORE IT REACHS TO ZERO CURRENT
-%This are advices from Agredano.
+%Initiate RZip PF Arrays used to calculate plasma and eddy currents
+I_PF_input = transpose(CoilWaveforms);  %Coil currents transposed from waveform array
+V_PF_input = NaN(nTime,nPF);            %Coil voltages are initiated to zero
 
-%%%%%HANDNY METHOD, 15ms ramp RESIDUAL!!!!!
-% nTime = 7; 
-%   T_ramp_Sol= 15; %constant to to the profile (ms) 25
-%   t_add=2*T_ramp_Sol; %1.95%time for the aditional point>t %1.4  with wrong Spitzer 
-%  time = [-100 -50 0 T_ramp_Sol t_add 45+T_ramp_Sol-5 55+T_ramp_Sol-5]*1e-3;
-%  
-%%%
-
-%Time intervals
-nTime = 7;                                                                          %number of time intervals
-discharge_time=20;                                                          %[ms], time duration of the flat-top 
-T_ramp_Sol=25;       %Seta as 25ms to match JJ               %[ms], min time to increase or decrease the Sol
-
-t_add=2*T_ramp_Sol; %2 with short breakdown               %time for the aditional point>T_ramp_Sol
-
-time = [-4*T_ramp_Sol -2*T_ramp_Sol 0 T_ramp_Sol t_add ...
-      t_add+discharge_time+5 t_add+discharge_time+T_ramp_Sol+5]*1e-3;                   %[ms]
- %%%%%% 
- 
- %Points 3 and 4 are (0,I_Sol_start), (t,ISol_to). Lets find the equation
- %for that line, and create the point 5 so it has the same slope
- 
- [coef]=polyfit([0 T_ramp_Sol],[I_Sol_max 0],1)
- 
- %If t5=something, we get I_5 should be:
- I_5=coef(1)*t_add+coef(2);
- 
- %%%
- 
-I_PF_input = zeros(nTime,nPF);
-
-% All PF coil currents start at zero
-I_PF_input(2,:) = 0;
-I_PF_input(3,:) = 0;
-
-% Solenoid waveform
-
-I_PF_null = -pinv(D1) * (C1*I_Sol_max);                                         % copy from ST25D stimation
-
-I_PF_input([2,3],iSol) = I_Sol_max;
-
-I_PF_input(2,2:end) = I_PF_null;
-I_PF_input(3,2:end) = I_PF_null;
-I_PF_input(4,2:end) = I_PF_null;
-
-I_PF_input(4,iSol) =0;
-I_PF_input(5,iSol) =I_5%-I_Sol_start*0.5; %0.6
-I_PF_input(6,iSol) =-I_Sol_max*0.85;                                                        %to maintain Ip=100k
-I_PF_input([5,6],iPF1) = coil_currents_steady_state(iPF1);
-I_PF_input([5,6],iPF2) = coil_currents_steady_state(iPF2);
-%I_PF_input([5,6],iDiv1) = coil_currents_steady_state(iDiv1);
-I_PF_input([5,6],iDiv2) = coil_currents_steady_state(iDiv2);
-
-%To finish the discharge
-%This is the simples way, all turned down rapidly
-I_PF_input(7,iPF1) =0;
-I_PF_input(7,iPF2) = 0;
-%I_PF_input(7,iDiv1) =0;
-I_PF_input(7,iDiv2) =0;
-I_PF_input(7,iSol) =0 ;
-
-I_PF_input([1:end],iDiv1) =I_PF_input([1:end],iSol);            %Div1 in series with Sol
 
 %Plot
     figure;
@@ -684,20 +638,9 @@ I_PF_input([1:end],iDiv1) =I_PF_input([1:end],iSol);            %Div1 in series 
     %%%optinos for tfg
     set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
     set(gca, 'FontSize', 13, 'LineWidth', 0.75);                    %<- Set properties TFG
-    Filename = '_InputCurrents';
-    saveas(gcf, strcat(ProjectName,Filename,FigExt));
+    %Filename = '_InputCurrents';
+    %saveas(gcf, strcat(ProjectName,Filename,FigExt));
 
-    %Plot in A*turn
-% figure;
-% plot( time*1e3, I_PF_input.*turns/(1e6) );
-% xlabel('time (ms)')
-% ylabel('I_{{input}} (MA \cdot turns)')
-% title('I_{{input}} versus time')
-% legend('Sol','PF2','PF3','Div1','Div2')
-% %%%optinos for tfg
-% set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
-% set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-% %print -depsc2 NOMBREPLOT.eps
 
 
 %Firstly the input profile is discretized in many intervals
@@ -773,8 +716,8 @@ I_Passive_VV=sum(I_Passive,2);
         %%%I_PF_output and plasma current
             figure;
             subplot(3,1,1)
-            plot(time_adaptive*1e3,I_PF_output/(1e3))
-            hold on
+            %plot(time_adaptive*1e3,I_PF_output/(1e3))
+            %hold on
             plot(time_adaptive*1e3,Ip_output/(1e3))
             ylabel('I (kA)')
             title('Dynamic response SST phase 1')
@@ -815,41 +758,40 @@ I_Passive_VV=sum(I_Passive,2);
     %computer resources==> :)
 
     %To save some memory, will rewrite things:
-      coilset_noVV=coilset; %the old coilset, without VV
-      coilset=fiesta_loadassembly(coilset, vessel);
-      config = fiesta_configuration( 'SMART with VV', Grid, coilset);
-      config_noVV = fiesta_configuration( 'SMART with VV', Grid, coilset_noVV);
+      %coilset_noVV=coilset; %the old coilset, without VV
+      coilsetVV=fiesta_loadassembly(coilset, vessel);
+      configVV = fiesta_configuration( 'SMART with VV', Grid, coilsetVV);
      
      %coil currents for the new equilibria calc
      
-    coil_currents = zeros(1,nPF+get(vessel,'n'));                       %n=308, number of filaments
-    coil_currents(iSol) =coil_currents_steady_state(iSol);              %Do not change, in principle
-    coil_currents(iPF1) =coil_currents_steady_state(iPF1);
-    coil_currents(iPF2) =coil_currents_steady_state(iPF2);
-    coil_currents(iDiv1) =coil_currents_steady_state(iDiv1);
-    coil_currents(iDiv2) =coil_currents_steady_state(iDiv2);            %May need to be changed
+    coil_currents_eddys = zeros(1,nPF+get(vessel,'n'));                       %n=308, number of filaments
+    coil_currents_eddys(iSol) =	CoilWaveforms(iSol,5);             %Do not change, in principle
+    coil_currents_eddys(iPF1) =CoilWaveforms(iPF1,5);  
+    coil_currents_eddys(iPF2) =CoilWaveforms(iPF2,5);  
+    coil_currents_eddys(iDiv1) =CoilWaveforms(iDiv1,5);  
+    coil_currents_eddys(iDiv2) =CoilWaveforms(iDiv2,5);            %May need to be changed
 
     %To select the eddy currents, provided that at the equil time the eddys are amx, can
     %just look at the max:
     
     [max_eddy,index_max_eddy]=max(I_Passive_VV);                %the total eddy, the max value
-    coil_currents(nPF+1:end)=I_Passive(index_max_eddy,:);       %eddy currents, have to define each filament
+    coil_currents_eddys(nPF+1:end)=I_Passive(index_max_eddy,:);       %eddy currents, have to define each filament
     
-    icoil = fiesta_icoil( coilset, coil_currents );
+    icoil_eddy = fiesta_icoil( coilsetVV, coil_currents_eddys );
     
     %%%1) EFIT
-    [efit_config, signals, weights, index]=efit_shape_controller(config, {'PF1','PF2'}, [0.44, 0, 0.44/1.85 1.8 0.2])
+    [efit_configVV, signalsVV, weightsVV, indexVV]=efit_shape_controller(configVV, {'PF1','PF2'}, [0.44, 0, 0.44/1.85 1.8 0.2])
     % The numbers you give are [Rgeo, Zgeo, a, kappa, delta], Rgeo,Zgeo,a are
     % mandatory.
     %I use the values of the standar shape, to get a similar equil
 
-    equil=fiesta_equilibrium('Target+eddys', config, Irod, jprofile, control,efit_config, icoil, signals, weights) %%EFIT!!!
+    equil_eddy=fiesta_equilibrium('Target+eddys', configVV, Irod, jprofile, control,efit_configVV, icoil_eddy, signalsVV, weightsVV) %%EFIT!!!
     %It does the case in line 96!! The equil calc is in lin 124
 
     %Now we have to extract the new currents from the equil, provided that EFIT
     %changed some of them to satisfy the conditions requested:
-    icoil=get(equil,'icoil');
-    current_post_EFIT=get(icoil,'currents');
+    icoil_eddy=get(equil_eddy,'icoil');
+    current_post_EFIT=get(icoil_eddy,'currents');
     coil_currents_VV(iPF1) =current_post_EFIT(iPF1);
     coil_currents_VV(iPF2) =current_post_EFIT(iPF2);
     coil_currents_VV(iDiv1) =current_post_EFIT(iDiv1);
@@ -867,8 +809,8 @@ I_Passive_VV=sum(I_Passive,2);
   %Plot of the equil with the eddys!
         %section_figure=section(equil); %THIS IS A PLOT
         figure;
-        plot(equil)
-        parametersshow(equil) %this plots the parameters in the equil
+        plot(equil_eddy)
+        parametersshow(equil_eddy) %this plots the parameters in the equil
         hold on
         plot(vessel)
         plot(coilset)
@@ -913,8 +855,8 @@ z_sensors=get(sensor_btheta,'z'); %size 1*200
 %Plot of the sensors
     figure; hold on; axis equal;
     plot(coilset);
-    contour( get(equil,'Psi'),60,'Color','Black', 'LineWidth',0.5 );
-    contour( get(equil,'Psi'),get(equil,'Psi_boundary')*[1 1],'Color','Black', 'LineWidth',1.5 );
+    contour( get(equil_eddy,'Psi'),60,'Color','Black', 'LineWidth',0.5 );
+    contour( get(equil_eddy,'Psi'),get(equil_eddy,'Psi_boundary')*[1 1],'Color','Black', 'LineWidth',1.5 );
     plot(vessel);
     fileName = 'ST_target_equilibrium';
     legend(gca,'hide');
@@ -1138,10 +1080,10 @@ z_sensors=get(sensor_btheta,'z'); %size 1*200
     %I will use here the fiesta_load_assembly to include the eddys of the
     %vessel
     
- coilsetVV=fiesta_loadassembly(coilset_noVV, vessel)
-coil_currents = zeros(1,nPF+get(vessel,'n'));                       %n=308, number of filaments
-coil_currents(iSol) = I_Sol_max;
-coil_currents(2:nPF) = I_PF_null';
+coil_currents_break = zeros(1,nPF+get(vessel,'n'));                       %n=308, number of filaments
+coil_currents_break(iSol) = I_Sol_max;
+coil_currents_break(2:nPF) = I_PF_null';
+coil_currents_break(iDiv1) =coil_currents_break(iSol); %Div1 in series with Sol
 
 %To set the eddy currents for the vessel, will select the maximum eddy
 %between a certain time interval. Will chose to determine the interval, the
@@ -1158,10 +1100,9 @@ coil_currents(2:nPF) = I_PF_null';
 
     %now will choose the one with the maximum total eddy current
 
-coil_currents(nPF+1:end)=I_Passive_Iplimit;                 %eddy currents, have to define each filament
+coil_currents_break(nPF+1:end)=I_Passive_Iplimit;                 %eddy currents, have to define each filament
 
-icoilVV_break = fiesta_icoil( coilsetVV, coil_currents );
-configVV  = fiesta_configuration( 'SMART_VV(break)', Grid, coilsetVV);
+icoilVV_break = fiesta_icoil( coilsetVV, coil_currents_break );
 equil_optimised_null = fiesta_equilibrium( 'optimised null', configVV, Irod, icoilVV_break );
     
     %Plot
@@ -1306,61 +1247,61 @@ Bpol_sensor=sqrt(Br_sensor.^2+Bz_sensor.^2);
 % % title('\vec{B_tokamak}+\vec{B_Earth} inside vessel')
 % 
 
- % Plot mod Br   
-    figure; 
-    surf(R_in,Z_in,log10(abs(Br_ins_vessel)),'FaceAlpha',0.5,'EdgeColor','none');
-    hold on;
-    plot(vessel)
-    colorbar %colorbar
-    view(2) %2D view
-    plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
-    [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
-    %plot(sensor_btheta)
-    xlabel('R (m)')
-    ylabel('Z (m)')
-    title('log_{10}(Br) inside vessel ')
-       
-  % Plot Br   
-    figure; 
-    surf(R_in,Z_in,Br_ins_vessel,'FaceAlpha',0.5,'EdgeColor','none');
-    hold on;
-    plot(vessel)
-    colorbar %colorbar
-    view(2) %2D view
-    plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
-    [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
-    %plot(sensor_btheta)
-    xlabel('R (m)')
-    ylabel('Z (m)')
-    title('Br ') 
-    
-% Plot mod Bz
-    figure; 
-    surf(R_in,Z_in,log10(abs(Bz_ins_vessel)),'FaceAlpha',0.5,'EdgeColor','none');
-    hold on;
-    plot(vessel)
-    colorbar %colorbar
-     view(2) %2D view
-    plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
-    [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
-    xlabel('R (m)')
-    ylabel('Z (m)')
-    title('log_{10}(Bz) inside vessel')
-  
-
- % Plot Bz   
-    figure; 
-    surf(R_in,Z_in,Bz_ins_vessel,'FaceAlpha',0.5,'EdgeColor','none');
-    hold on;
-    plot(vessel)
-    colorbar %colorbar
-    view(2) %2D view
-    plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
-    [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
-    %plot(sensor_btheta)
-    xlabel('R (m)')
-    ylabel('Z (m)')
-    title('Bz ') 
+%  % Plot mod Br   
+%     figure; 
+%     surf(R_in,Z_in,log10(abs(Br_ins_vessel)),'FaceAlpha',0.5,'EdgeColor','none');
+%     hold on;
+%     plot(vessel)
+%     colorbar %colorbar
+%     view(2) %2D view
+%     plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+%     [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
+%     %plot(sensor_btheta)
+%     xlabel('R (m)')
+%     ylabel('Z (m)')
+%     title('log_{10}(Br) inside vessel ')
+%        
+%   % Plot Br   
+%     figure; 
+%     surf(R_in,Z_in,Br_ins_vessel,'FaceAlpha',0.5,'EdgeColor','none');
+%     hold on;
+%     plot(vessel)
+%     colorbar %colorbar
+%     view(2) %2D view
+%     plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+%     [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
+%     %plot(sensor_btheta)
+%     xlabel('R (m)')
+%     ylabel('Z (m)')
+%     title('Br ') 
+%     
+% % Plot mod Bz
+%     figure; 
+%     surf(R_in,Z_in,log10(abs(Bz_ins_vessel)),'FaceAlpha',0.5,'EdgeColor','none');
+%     hold on;
+%     plot(vessel)
+%     colorbar %colorbar
+%      view(2) %2D view
+%     plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+%     [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
+%     xlabel('R (m)')
+%     ylabel('Z (m)')
+%     title('log_{10}(Bz) inside vessel')
+%   
+% 
+%  % Plot Bz   
+%     figure; 
+%     surf(R_in,Z_in,Bz_ins_vessel,'FaceAlpha',0.5,'EdgeColor','none');
+%     hold on;
+%     plot(vessel)
+%     colorbar %colorbar
+%     view(2) %2D view
+%     plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+%     [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
+%     %plot(sensor_btheta)
+%     xlabel('R (m)')
+%     ylabel('Z (m)')
+%     title('Bz ') 
     
  %Plot Bpol y Bphi   
     figure; 
