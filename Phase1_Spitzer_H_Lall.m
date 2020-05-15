@@ -330,7 +330,7 @@ I_PF2_Equil=-500;					%EFIT WILL GIVE IT!
 I_Div2_Equil=+900;					%+900;      %+900;
 
 %%%Sol current
- I_Sol_max =.95e3  %.953; .91 for short break                  %[A] Max solenoid current, to achieve the desire Ip in RZIp.
+ I_Sol_max =.97e3  %.953; .91 for short break                  %[A] Max solenoid current, to achieve the desire Ip in RZIp.
 ISol_equil=-I_Sol_max;%.05e3;                            % [A] the current of the Sol in the target eq calc
 %If>0, Sol will attract the plasma, no lower PF and DIv are
 %needed.
@@ -612,12 +612,30 @@ rzip_config = fiesta_rzip_configuration( 'RZIP', config, vessel, {sensor_btheta}
 
 %%%%%%  Optimised null  currents%%%%%%%%%%%%
 %Extract scaling factors for null-field coil currents - Copied from ST25D Simulation
-C_temp = C(end-get(sensor_btheta,'n')+1:end,1:nPF);
-C1 = C_temp(:,1);
-D1 = C_temp(:,2:end);
-%Compute PF null coil currents (excluding Solenoid) 
-I_PF_null = -pinv(D1) * (C1*ISol_Waveform(2));	%(PF1,PF2,Div1,Div2)
+C_temp = C(end-get(sensor_btheta,'n')+1:end,1:nPF);             %This ic Cn(:,1:nPF) 
+                                                  %Cn is the part of the matrix C related to the sensors
+                                                  %(see response)
+C1 = C_temp(:,iSol);                               %Elements of C_temp(Cn) related to Sol coil
 
+D1_PF1 = C_temp(:,iPF1);                            %Elements of C_temp(Cn) to PF1 coil
+D1_PF2 = C_temp(:,iPF2);                            %Elements of C_temp(Cn) to PF2 coil
+D1_Div1 = C_temp(:,iDiv1);                          %Elements of C_temp(Cn) to Div1 coil
+D1_Div2 = C_temp(:,iDiv2);                          %Elements of C_temp(Cn) to Div2 coil
+
+    %1) Compute all the coil currents (standar)
+        %D1=C_temp(:,iPF1:end);          %Elements of C_temp(Cn) related to the PF and Div coils
+        %I_PF_null = -pinv(D1) * (C1*ISol_Waveform(2));	%(PF1,PF2,Div1,Div2)
+
+    %2)Div1 in serie with Sol! :
+        %Since we want Div1 in serie with Sol, it should be reomved from the matrix
+        %to do the calc:
+        D1=[D1_PF1 D1_PF2 D1_Div2];                     %This is for Div1 in series with Sol, so 
+                                                                    %must not include it in the calculation for the currents                                                                                                                 
+        I_PF_null = -pinv(D1) * (C1*ISol_Waveform(2)+D1_Div1*ISol_Waveform(2));	%Div1 in serie with Sol
+        I_PF_null=[I_PF_null(1); I_PF_null(2); ISol_Waveform(2); I_PF_null(3)]; %To not have problems
+        
+        %redefining the coil currents
+%%%%%%
 %Update CoilWaveforms array with null-field values
 for i = 1:nPF;
 	for j = 1:nTime;
@@ -629,6 +647,10 @@ for i = 1:nPF;
 end
 %Note that since Div1 do not have any NaN (is equal to Sol), will not be
 %changed!
+
+%%%%%%%%%Construction to do the RZIp calculation%%%%%%%%%%
+%The input profile of I_PF currents have to be extended
+
 
 %%%%%%%%%Construction to do the RZIp calculation%%%%%%%%%%
 %The input profile of I_PF currents have to be extended
@@ -757,6 +779,14 @@ I_Passive_VV=sum(I_Passive,2);
             saveas(gcf, strcat(ProjectName,Filename,FigExt));
           %print -depsc2 NOMBREPLOT.eps
 
+            figure;           
+            plot(time_adaptive*1e3,Ip_output/(1e3))
+            ylabel('I_p (kA)')
+            xlabel(' time (ms)')
+            title('I_p SMART phase 1')
+            set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
+            %set(gca,'YLim',[-5 35]);
+            set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
 %%% END RZIP@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 %% %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -801,10 +831,11 @@ configVV = fiesta_configuration( 'SMART with VV', Grid, coilsetVV);
 
 %So, what I will do is a loop with the time from RZIp, to define the
 %current values. The time steps will be
-time_loop=[0 1 2 3]*1e-3 %[s]
+time_loop=[0 1 2]*1e-3 %[s]
 Ip_loop=interpn(time_adaptive,Ip_output,time_loop)  %[A] the plasma current when calculated
                                                                                     %the breakdwon
-                                                                                    
+ IPassive_loop=interpn(time_adaptive,I_Passive_VV*1e-3,time_loop)  %[kA] total eddy
+ 
 %A very rough stimate of the poloidal field of the plasma could be done by
 %considering the plasma a circular wire with radius Rgeo. I have used a
 %function to compute the field of a circular wire with Biot Savart, to see
@@ -962,7 +993,7 @@ for loop=1:length(time_loop)
 %     ylabel('Z (m)')
 %     title('Bz ') 
     
- %Plot Bpol y Bphi   
+ %Plot Bpol   
     figure; 
     subplot(1,2,1)
     %contourf(R_in,Z_in,log10(abs(Bpol_ins_vessel)),'EdgeColor','none');
@@ -981,20 +1012,7 @@ for loop=1:length(time_loop)
     ylabel('Z (m)')
      title(sprintf('log10(B_pol)  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
     
-%     subplot(1,3,2)
-%     contourf(R_in,Z_in,Bphi_ins_vessel);
-%     shading('interp') %this is to make the transition between values continuous,
-%     %instedad of discontinuously between pixels    
-%     hold on;
-%     plot(vessel)
-%     colorbar %colorbar
-%     view(2) %2D view
-%     plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
-%      [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
-%     xlabel('R (m)')
-%     ylabel('Z (m)')
-%     title(sprintf('Bphi at t %d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
-%     
+
     %Plot Bpol y quiver
 %      figure; 
 %     contourf(R_in,Z_in,log10(abs(Bpol_ins_vessel)));
@@ -1045,7 +1063,40 @@ for loop=1:length(time_loop)
         ylabel('Z (m)')
         title(sprintf('log10(B_pol plasma)  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
         
-        %
+        %Bphi structure
+        figure;
+        contourf(R_in,Z_in,Bphi_ins_vessel);
+        shading('interp') %this is to make the transition between values continuous,
+        %instedad of discontinuously between pixels  
+        colormap(Gamma_II)
+        hold on;
+        plot(vessel)
+        colorbar %colorbar
+        view(2) %2D view
+        plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+        [  min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'r.--')
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        title(sprintf('B_phi [T] at t %d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+    
+        %B pol alone
+         figure; 
+        %contourf(R_in,Z_in,log10(abs(Bpol_ins_vessel)),'EdgeColor','none');
+        %surf(R_in,Z_in,log10(abs(Bpol_ins_vessel)),'EdgeColor','none');
+        contourf(R_in,Z_in,log10(abs(Bpol_ins_vessel)));
+        shading('interp') %this is to make the transition between values continuous,
+        %instedad of discontinuously between pixels
+        colormap(Gamma_II)
+        hold on;
+        plot(vessel)
+        colorbar %colorbar
+        view(2) %2D view
+        plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+        [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        title(sprintf('log10(B_pol)  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+    
     
 %         figure; 
 %         subplot(2,2,1)
@@ -1149,170 +1200,192 @@ for loop=1:length(time_loop)
     %best option, since is >0 while the rest are ><0, and phi increase (or
     %decrease) when you follow a field line. (Carlos Soria)
 
-    phi_values=1000;
-    n_iter=1000                                         %integer, Number of iterations!!!!
-    phiSpan=linspace(0,2*pi*n_iter,phi_values*n_iter);    %the range of values of phi to do the integration. remember phi is
-                                        %the independent variable. To do more than 1 loop, we multiply
-                                        %by an integer, n_iter
-    L_max=1000;                                                 %max value for the integration; when L achieves
-                                                            %this value, the integration stops. ST have around 50m.
-
-    odefun= @(phi, rzL) Field_LineIntegrator(phi,rzL,Br_break_interp,...
-        Bz_break_interp,Bphi_break_interp);
-    event_colission_wall=@(phi,rzL)Colission_wall(phi,rzL,VesselRMaxPoint,...
-        VesselRMinPoint,VesselZMaxPoint,VesselZMinPoint,Br_break_interp,...
-        Bz_break_interp,Bphi_break_interp,L_max); 
-    options = odeset('OutputFcn',@ode_progress_bar,'Events',event_colission_wall,'AbsTol',1e-10,'RelTol',1e-6); 
-                                    %I include a fiesta funciton to show the progress of the ode
-
-    %Int eh Lazarus paper 1998, they compute connective length by avergaing on
-    %9 lines, the line with Bpol min, and the 8 surroundings. I will do the
-    %same. No need for loop, to avoid problems. I'll do it manually xD
-
-    %As suggested by Manolo, i will calculate L in thw whole grid inside the
-    %vessel. For doing this, provided that i already ahve the inner points,
-    %I can do it easily
-
-    %I redefine the grid to compute the connection length, for less computer
-    %demands (time)
-
-    n_pnts_insideL=15 %10%25 for a_eff=0.15;            %100 is the ideal to have good plots of the fields, but the L int failures. 
-
-    r_inside_VVL=linspace(VesselRMinPoint,VesselRMaxPoint,n_pnts_insideL); 
-    z_inside_VVL=linspace(VesselZMinPoint,VesselZMaxPoint,n_pnts_insideL);
-
-    %Plot
-        [r_ins_VVL,z_ins_VVL]=meshgrid(r_inside_VVL,z_inside_VVL);
-        figure;
-        plot(r_ins_VVL,z_ins_VVL,'r.')
-        hold on
-        plot(vessel)
-        xlabel('R (m)')
-        ylabel('Z (m)')
-
-    %Points inside, without the extremal points. This will be used in the ode45
-    r_inside_VV_noLimits=r_inside_VVL(2:end-1);
-    z_inside_VV_noLimits=z_inside_VVL(2:end-1);
-    r0_z0_L0=[0 0 0]; %the third column is always zero, since L starts at 0
-
-    tic
-
-    for i=1:length(r_inside_VV_noLimits)
-
-        for j=1:length(z_inside_VV_noLimits)
-        
-            points=[r_inside_VV_noLimits(i) z_inside_VV_noLimits(j)];      
-            r0_z0_L0=[ r0_z0_L0; points 0];       
-        end
-    
-    end
-
-    %I have the additional point 0 0 0 form the begining, that i can remove
-    %easily with
-    r0_z0_L0=r0_z0_L0(2:end,:);
-
-    %So, gotta solve 10^2*10^2=10^4 eq xD. Since I am only interested in L,
-    %could do a for loop simply saving the L value. Will do that:
-
-    for i=1:length(r0_z0_L0)
-        fprintf('Iter %d de %d',i,length(r0_z0_L0))
-        [phi_fieldline, rzL_fieldline]=ode45(odefun,phiSpan,r0_z0_L0(i,:),options);        %ode15s Carlos
-    
-        %To save the last values of R,Z,L
-        RZL_lastTEST(i,1)=rzL_fieldline(end,1);
-        RZL_lastTEST(i,2)=rzL_fieldline(end,2);
-        RZL_lastTEST(i,3)=rzL_fieldline(end,3);                                                     %this contains L
-    
-    end
-
-%To store start points that do not collide: first I get the index of both R
-%and Z, but together, since they do not collide if oth R and Z are greater
-%than the min value, and lower than the greatest value
-    
-        RZ_store_index=RZL_lastTEST(:,1)<VesselRMaxPoint &...
-            RZL_lastTEST(:,1)>VesselRMinPoint & RZL_lastTEST(:,2)<VesselZMaxPoint &...
-            RZL_lastTEST(:,2)>VesselZMinPoint;
-
-        RZ_no_collide=[r0_z0_L0(RZ_store_index,1) r0_z0_L0(RZ_store_index,2)];
-    
-    
-        %Plot    
-
-% %%Plot of one of the line
+%     phi_values=1000;
+%     n_iter=1000                                         %integer, Number of iterations!!!!
+%     phiSpan=linspace(0,2*pi*n_iter,phi_values*n_iter);    %the range of values of phi to do the integration. remember phi is
+%                                         %the independent variable. To do more than 1 loop, we multiply
+%                                         %by an integer, n_iter
+%     L_max=1000;                                                 %max value for the integration; when L achieves
+%                                                             %this value, the integration stops. ST have around 50m.
 % 
-% figure;
-% plot3(r0_z0_L0(end,1),0,r0_z0_L0(end,2),'k*','LineWidth',3)
-% hold on;
-% plot3(vessel)
-% plot3(coilset)
-% plot3(rzL_fieldline(:,1).*cos(phi_fieldline),rzL_fieldline(:,1).*sin(phi_fieldline),...
-%     rzL_fieldline(:,2),'r','LineWidth',3)
-% xlabel('x (m)');ylabel('y (m)');zlabel('z (m)');  
-% hold on
-% plot3(rzL_fieldline(length(rzL_fieldline),1).*cos(phi_fieldline(length(rzL_fieldline)))...
-%     ,rzL_fieldline(length(rzL_fieldline),1).*sin(phi_fieldline(length(rzL_fieldline))),...
-%     rzL_fieldline(length(rzL_fieldline),2),'g*','LineWidth',3)
-% title('Field line integration for the calculation of the connective length 3')
-% set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-% %legend('Starting point (Point with less Bpol)','Field line',...
-% %'End point (wall collision')
-
-   %Plot shading
-        figure; 
-    tri = delaunay(r0_z0_L0(:,1),r0_z0_L0(:,2));
-    plot(r0_z0_L0(:,1),r0_z0_L0(:,2),'.')
-    %
-    % How many triangles are there?
-    [r,c] = size(tri);
-    % Plot it with TRISURF
-    trisurf(tri, r0_z0_L0(:,1), r0_z0_L0(:,2),RZL_lastTEST(:,3),'FaceAlpha',1,'EdgeColor','none');
-    %view(2)
-    colorbar
-    hold on
-    shading('interp')                       %this is to make the transition between values continuous,
-                                                        %instedad of discontinuously between pixels
-    colormap(Gamma_II)
-        hh=plot(vessel);
-    set(hh,'HandleVisibility','off');
-    plot3([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
-    [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],...
-    ones(1,5)*max(RZL_lastTEST(:,3)),'g.--')
-    plot3(RZ_no_collide(:,1),RZ_no_collide(:,2),...
-        max(RZL_lastTEST(:,3))*ones(length(RZ_no_collide(:,1)),1),...
-        'm*','MarkerSize',7)
-    legend('L (m)','Field null region','Not colliding starting points')  
-    view(2) %2D view
-    colorbar
-    %caxis([min(RZ_no_collide(:,3)),max(RZ_no_collide(:,3))])
-    xlabel(' R (m)')
-    ylabel('Z (m)')
-    %axis([0,1.03,-1.1,1.1]) 
-    title(sprintf('L (m) depending on the starting point for the integration  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
-    set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-        %Note that I convert 2D plots into 3D to plot it at the plane z=max
-        %value of L, because the L plot is a surf, so it has height. 
-          
-%%%%%%%%%5
-%The event function is at the end!!
-time_Ode=toc;           %time of the ode
+%     odefun= @(phi, rzL) Field_LineIntegrator(phi,rzL,Br_break_interp,...
+%         Bz_break_interp,Bphi_break_interp);
+%     event_colission_wall=@(phi,rzL)Colission_wall(phi,rzL,VesselRMaxPoint,...
+%         VesselRMinPoint,VesselZMaxPoint,VesselZMinPoint,Br_break_interp,...
+%         Bz_break_interp,Bphi_break_interp,L_max); 
+%     options = odeset('OutputFcn',@ode_progress_bar,'Events',event_colission_wall,'AbsTol',1e-10,'RelTol',1e-6); 
+%                                     %I include a fiesta funciton to show the progress of the ode
+% 
+%     %Int eh Lazarus paper 1998, they compute connective length by avergaing on
+%     %9 lines, the line with Bpol min, and the 8 surroundings. I will do the
+%     %same. No need for loop, to avoid problems. I'll do it manually xD
+% 
+%     %As suggested by Manolo, i will calculate L in thw whole grid inside the
+%     %vessel. For doing this, provided that i already ahve the inner points,
+%     %I can do it easily
+% 
+%     %I redefine the grid to compute the connection length, for less computer
+%     %demands (time)
+% 
+%     n_pnts_insideL=15 %10%25 for a_eff=0.15;            %100 is the ideal to have good plots of the fields, but the L int failures. 
+% 
+%     r_inside_VVL=linspace(VesselRMinPoint,VesselRMaxPoint,n_pnts_insideL); 
+%     z_inside_VVL=linspace(VesselZMinPoint,VesselZMaxPoint,n_pnts_insideL);
+% 
+%     %Plot
+%         [r_ins_VVL,z_ins_VVL]=meshgrid(r_inside_VVL,z_inside_VVL);
+%         figure;
+%         plot(r_ins_VVL,z_ins_VVL,'r.')
+%         hold on
+%         plot(vessel)
+%         xlabel('R (m)')
+%         ylabel('Z (m)')
+% 
+%     %Points inside, without the extremal points. This will be used in the ode45
+%     r_inside_VV_noLimits=r_inside_VVL(2:end-1);
+%     z_inside_VV_noLimits=z_inside_VVL(2:end-1);
+%     r0_z0_L0=[0 0 0]; %the third column is always zero, since L starts at 0
+% 
+%     tic
+% 
+%     for i=1:length(r_inside_VV_noLimits)
+% 
+%         for j=1:length(z_inside_VV_noLimits)
+%         
+%             points=[r_inside_VV_noLimits(i) z_inside_VV_noLimits(j)];      
+%             r0_z0_L0=[ r0_z0_L0; points 0];       
+%         end
+%     
+%     end
+% 
+%     %I have the additional point 0 0 0 form the begining, that i can remove
+%     %easily with
+%     r0_z0_L0=r0_z0_L0(2:end,:);
+% 
+%     %So, gotta solve 10^2*10^2=10^4 eq xD. Since I am only interested in L,
+%     %could do a for loop simply saving the L value. Will do that:
+% 
+%     for i=1:length(r0_z0_L0)
+%         fprintf('Iter %d de %d',i,length(r0_z0_L0))
+%         [phi_fieldline, rzL_fieldline]=ode45(odefun,phiSpan,r0_z0_L0(i,:),options);        %ode15s Carlos
+%     
+%         %To save the last values of R,Z,L
+%         RZL_lastTEST(i,1)=rzL_fieldline(end,1);
+%         RZL_lastTEST(i,2)=rzL_fieldline(end,2);
+%         RZL_lastTEST(i,3)=rzL_fieldline(end,3);                                                     %this contains L
+%     
+%     end
+% 
+% %To store start points that do not collide: first I get the index of both R
+% %and Z, but together, since they do not collide if oth R and Z are greater
+% %than the min value, and lower than the greatest value
+%     
+%         RZ_store_index=RZL_lastTEST(:,1)<VesselRMaxPoint &...
+%             RZL_lastTEST(:,1)>VesselRMinPoint & RZL_lastTEST(:,2)<VesselZMaxPoint &...
+%             RZL_lastTEST(:,2)>VesselZMinPoint;
+% 
+%         RZ_no_collide=[r0_z0_L0(RZ_store_index,1) r0_z0_L0(RZ_store_index,2)];
+%     
+%     
+%         %Plot    
+% 
+% % %%Plot of one of the line
+% % 
+% % figure;
+% % plot3(r0_z0_L0(end,1),0,r0_z0_L0(end,2),'k*','LineWidth',3)
+% % hold on;
+% % plot3(vessel)
+% % plot3(coilset)
+% % plot3(rzL_fieldline(:,1).*cos(phi_fieldline),rzL_fieldline(:,1).*sin(phi_fieldline),...
+% %     rzL_fieldline(:,2),'r','LineWidth',3)
+% % xlabel('x (m)');ylabel('y (m)');zlabel('z (m)');  
+% % hold on
+% % plot3(rzL_fieldline(length(rzL_fieldline),1).*cos(phi_fieldline(length(rzL_fieldline)))...
+% %     ,rzL_fieldline(length(rzL_fieldline),1).*sin(phi_fieldline(length(rzL_fieldline))),...
+% %     rzL_fieldline(length(rzL_fieldline),2),'g*','LineWidth',3)
+% % title('Field line integration for the calculation of the connective length 3')
+% % set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+% % %legend('Starting point (Point with less Bpol)','Field line',...
+% % %'End point (wall collision')
+% 
+%    %Plot shading
+%         figure; 
+%     tri = delaunay(r0_z0_L0(:,1),r0_z0_L0(:,2));
+%     plot(r0_z0_L0(:,1),r0_z0_L0(:,2),'.')
+%     %
+%     % How many triangles are there?
+%     [r,c] = size(tri);
+%     % Plot it with TRISURF
+%     trisurf(tri, r0_z0_L0(:,1), r0_z0_L0(:,2),RZL_lastTEST(:,3),'FaceAlpha',1,'EdgeColor','none');
+%     %view(2)
+%     colorbar
+%     hold on
+%     shading('interp')                       %this is to make the transition between values continuous,
+%                                                         %instedad of discontinuously between pixels
+%     colormap(Gamma_II)
+%         hh=plot(vessel);
+%     set(hh,'HandleVisibility','off');
+%     plot3([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+%     [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],...
+%     ones(1,5)*max(RZL_lastTEST(:,3)),'g.--')
+%     plot3(RZ_no_collide(:,1),RZ_no_collide(:,2),...
+%         max(RZL_lastTEST(:,3))*ones(length(RZ_no_collide(:,1)),1),...
+%         'm*','MarkerSize',7)
+%     legend('L (m)','Field null region','Not colliding starting points')  
+%     view(2) %2D view
+%     colorbar
+%     %caxis([min(RZ_no_collide(:,3)),max(RZ_no_collide(:,3))])
+%     xlabel(' R (m)')
+%     ylabel('Z (m)')
+%     %axis([0,1.03,-1.1,1.1]) 
+%     title(sprintf('L (m) depending on the starting point for the integration  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+%     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+%         %Note that I convert 2D plots into 3D to plot it at the plane z=max
+%         %value of L, because the L plot is a surf, so it has height. 
+%           
+% %%%%%%%%%5
+% %The event function is at the end!!
+% time_Ode=toc;           %time of the ode
         
     
 end   
 
 
 figure;
-subplot(1,2,1)
-plot(time_loop*1e3,L_aver,'b.-','MarkerSize',10)
+subplot(1,2,2)
+plot(time_loop*1e3,L_aver,'r*-','MarkerSize',5)
 xlabel('time (ms)')
 ylabel('L_{emp} (m)')
 title('L (empirical) versus time')
 set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-subplot(1,2,2)
-plot(time_loop*1e3,Ip_loop*1e-3,'r.-','MarkerSize',10)
+subplot(1,2,1)
+plot(time_loop*1e3,Ip_loop*1e-3,'b*-','MarkerSize',5)
 xlabel('time (ms)')
 ylabel('I_{p} (kA)')
 title('I_p versus time')
 set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+
+
+time_plot=(0:1:5)*1e-3; %s
+I_plot=interpn(time_adaptive,Ip_output,time_plot);
+
+figure;
+plot(time_plot*1e3,I_plot*1e-3)
+xlabel('time (ms)')
+ylabel('I_{p} (kA)')
+title('I_p versus time')
+set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+
+time_plot=(0:1:20)*1e-3; %s
+I_plot=interpn(time_adaptive,Ip_output,time_plot);
+
+figure;
+plot(time_plot*1e3,I_plot*1e-3)
+xlabel('time (ms)')
+ylabel('I_{p} (kA)')
+title('I_p versus time')
+set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+
 %% COMPARISON PLASMA FIELD-plasma as wire
 
   %1) FIESTA
@@ -2052,13 +2125,13 @@ set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
     loglog(p,Emin(5,p))
     hold on
     %
-    loglog(p,Emin(7,p))
-    loglog(p,Emin(8,p))
     loglog(p,Emin(10,p))
+    loglog(p,Emin(70,p))
+    loglog(p,Emin(90,p))
     loglog(p,Emin(50,p))
     xlabel('Prefill pressure (Torr)')
     ylabel('E_{min} (V/m)')
-    legend('L=5m','L=7m','L=8m','L=10m','Globus-M, L=50m, V_{loop}=4.5-8V')
+    legend('L=5m','L=10m','L=70m','L=90m','Globus-M, L=50m, V_{loop}=4.5-8V')
     title(sprintf('Paschen curve, Gas=%s',Gas_type)); %d for numbers
     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
 %%%Estimation of the breakdown time
@@ -2144,14 +2217,14 @@ title('Breakdown duration (starts at t=0, finish at the y axis time')
         %variable, so the derviatvies are dr/dphi and dz/dphi
     
     
-    function [results]=Field_LineIntegrator(phi,rzL,Br_break_interp,Bz_break_interp,Bphi_break_interp)
+    function [results]=Field_LineIntegrator(phi,rzL,Br_interpn,Bz_interpn,Bphi_interpn)
     %rzL=[r z L]
    
     %First, the field needs to be evaluated at the point (r,phi,z):
     
-    Br_eval=Br_break_interp(rzL(1),rzL(2));
-    Bphi_eval=Bphi_break_interp(rzL(1),rzL(2));
-    Bz_eval=Bz_break_interp(rzL(1),rzL(2));
+    Br_eval=Br_interpn(rzL(1),rzL(2));
+    Bphi_eval=Bphi_interpn(rzL(1),rzL(2));
+    Bz_eval=Bz_interpn(rzL(1),rzL(2));
     
     %With the field, the eq to solve is:
     
@@ -2173,7 +2246,7 @@ title('Breakdown duration (starts at t=0, finish at the y axis time')
    
    function [rz_value isterminal direction]=Colission_wall(phi,rzL,...
        VesselRMaxPoint,VesselRMinPoint,VesselZMaxPoint,VesselZMinPoint,...
-       Br_break_interp,Bz_break_interp,Bphi_break_interp,L_max) 
+       Br_interp,Bz_interp,Bphi_interp,L_max) 
    
    %when rz_value is zero, stop the integration. To implement the 4
    %possible colission, we could do like the product of each, since when one of
@@ -2190,9 +2263,9 @@ title('Breakdown duration (starts at t=0, finish at the y axis time')
    
    %For the max condition of L, the field needs to be introduced:
    
-    Br_eval=Br_break_interp(rzL(1),rzL(2));
-    Bphi_eval=Bphi_break_interp(rzL(1),rzL(2));
-    Bz_eval=Bz_break_interp(rzL(1),rzL(2));
+    Br_eval=Br_interp(rzL(1),rzL(2));
+    Bphi_eval=Bphi_interp(rzL(1),rzL(2));
+    Bz_eval=Bz_interp(rzL(1),rzL(2));
    
    L_lim=rzL(3)-L_max;                                                  %[m] Maximum L value=20
    
