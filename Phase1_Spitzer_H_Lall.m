@@ -1265,17 +1265,17 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);
     
     %Plots!
     % % %%Quiver plot
-%  scale_factor=1; %graphic needs to be scaled
-% figure; 
-% %subplot(1,3,1)
-% quiver(R_in,Z_in,Br_ins_vessel/scale_factor, Bz_ins_vessel/scale_factor,'color',[1 0 0],'AutoScale','on','AutoScaleFactor', 10)
-% hold on;
-% plot(vessel)
-%    view(2) %2D view
-%       plot(sensor_btheta)
-% xlabel('R (m)')
-% ylabel('Z (m)')
-% title('\vec{B} inside vessel')
+ scale_factor=1; %graphic needs to be scaled
+figure; 
+%subplot(1,3,1)
+quiver(R_in,Z_in,Br_ins_vessel/scale_factor, Bz_ins_vessel/scale_factor,'color',[1 0 0],'AutoScale','on','AutoScaleFactor', 10)
+hold on;
+plot(vessel)
+   view(2) %2D view
+      plot(sensor_btheta)
+xlabel('R (m)')
+ylabel('Z (m)')
+title('\vec{B} inside vessel')
 % subplot(1,3,2)
 % quiver(R_in,Z_in,BrEarthVV/scale_factor, BzEarthVV/scale_factor,'color',[1 0 0],'AutoScale','off')
 % hold on;
@@ -1361,21 +1361,21 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);
 
     %Plots plasma field as a circular wirw
        
-        subplot(1,2,2)
-        contourf(R_in,Z_in,log10(abs(B_p_pol_wire)));
-        shading('interp') %this is to make the transition between values continuous,
-        %instedad of discontinuously between pixels
-        colormap(Gamma_II)
-        hold on;
-        plot(vessel)
-        colorbar %colorbar
-        view(2) %2D view
-        plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
-        [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
-        xlabel('R (m)')
-        ylabel('Z (m)')
-        title(sprintf('log10(B_pol plasma)  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
-        
+%         subplot(1,2,2)
+%         contourf(R_in,Z_in,log10(abs(B_p_pol_wire)));
+%         shading('interp') %this is to make the transition between values continuous,
+%         %instedad of discontinuously between pixels
+%         colormap(Gamma_II)
+%         hold on;
+%         plot(vessel)
+%         colorbar %colorbar
+%         view(2) %2D view
+%         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+%         [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+%         xlabel('R (m)')
+%         ylabel('Z (m)')
+%         title(sprintf('log10(B_pol plasma)  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+%         
         %Bphi structure
         figure;
         contourf(R_in,Z_in,log10(FieldsBreak_VV.Bphi));
@@ -1498,7 +1498,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);
     %averaged. To do this, if I use the sensor field, it will be much much more
     %easier, so I will do it.
 
-    Bpolmin_av=mean(mean(Bpol_sensor));              %to compute the mean inside the sensor region
+    Bpolmin_av=mean(mean(FieldsBreak_VV.Bpol));              %to compute the mean inside the sensor region
     L_aver(loop)=0.25*a_eff*Bphi_centerNull/Bpolmin_av                %[m] L with the average pol field
 
 
@@ -1826,14 +1826,14 @@ set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
 
 %Lets plot many things
     figure; 
-        %subplot(3,3,1)
+        subplot(3,3,1)
     contour(R_in,Z_in,log10(FieldsBreak_VV.Bpol),1000);
     shading('interp') %this is to make the transition between values continuous,
     %instedad of discontinuously between pixels
     colormap(Gamma_II)
     hold on;
     plot(vessel)
-    c=colorbar %colorbar
+    c=colorbar; %colorbar
     ylabel(c,'log10(Bpol[T])')
     view(2) %2D view
     plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
@@ -1858,9 +1858,8 @@ set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
      title(sprintf('B_phi  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
 
       subplot(3,3,3)
-      figure
     contour(R_in,Z_in,log10(R_in.*sqrt(1+FieldsBreak_VV.Bpol.^2./FieldsBreak_VV.Bphi.^2)),1000);
-    %shading('interp') %this is to make the transition between values continuous,
+    shading('interp') %this is to make the transition between values continuous,
     %instedad of discontinuously between pixels
     colormap(Gamma_II)
     hold on;
@@ -1934,11 +1933,11 @@ set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
      title(sprintf('log10(1+B_pol/B_phi)  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
 
      
+     %%%%End test plots field line%%%%%%%
      
      
      
-     
-     %%Plot fields and results
+     %%Plot fields and results%%%%%%%%
      %  % Plot Bz Br Bphi   
     figure; 
     subplot(1,7,1)
@@ -2075,7 +2074,7 @@ subplot(1,7,4)
         %Note that I convert 2D plots into 3D to plot it at the plane z=max
         %value of L, because the L plot is a surf, so it has height. 
     
-     
+ %%%%%%End plots B and L%%%%%%%%%    
      
      %% COMPARISON PLASMA FIELD-plasma as wire
 % 
