@@ -1679,18 +1679,25 @@ set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         
         figure;
         %contourf(r_insVV_noLimit,z_insVV_noLimit,L_int)
-        surf(r_insVV_noLimit,z_insVV_noLimit,L_int), shading('interp')
+        surf(r_insVV_noLimit,z_insVV_noLimit,L_int,'EdgeColor','none'), shading('interp')
         hold on
-        plot(vessel)
-        plot(coilset)
+        plot3([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+            [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],...
+            ones(1,5)*max(max(L_int)),'g.--')
+        hh=plot(vessel);
+        set(hh, 'EdgeColor', 'k')
+        set(hh,'HandleVisibility','off');
+        hh=plot(coilset);
+        set(hh, 'EdgeColor', 'k')
+        set(hh,'HandleVisibility','off');
         colormap(Gamma_II)
         c=colorbar; %colorbar
         ylabel(c, 'L(m)');
         view(2) %2D view
-        plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
-            [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+
         xlabel('R (m)')
         ylabel('Z (m)')
+        legend('L','Field null region')
         title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))          
     
   %Plot contour 'potential'
