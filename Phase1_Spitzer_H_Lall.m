@@ -133,19 +133,16 @@ nDiv2=nZDiv2*nRDiv2;
 nPF1=nZPF1*nRPF1; 
 nPF2=nZPF2*nRPF2;  
 
-%Dimensions of a turn
-width_PF=0.111;  % Width of the PF coil (m)     (Previously 0.042m) (diff 0.069 - to maintain relative edge)
-height_PF=0.074; % Height of a the PF coil (m)	(Previously 0.035m) (diff 0.039 - to maintain relative edge)
-
+%Dimensions of the PF coils
+width_PF=75*1e-3;  %[m] Width of the PF coil (m)  0.111chonky not updated   (initially 0.042m) (diff 0.069 - to maintain relative edge)
+height_PF=50*1e-3; %[m] Height of a the PF coil (m) 0.074 chonky updated	(Initially 0.035m) (diff 0.039 - to maintain relative edge)
+        %This neglects the separation between conductors in real desgin!!
+        
 %Position of the coils (m)
-R_PF1=0.90;  %R position of PF1 (m)		%0.90m
-Z_PF1=0.30;  %Z Position of PF1 (m)		%0.30m
-R_PF2=0.90;  %R Position of PF2 (m)		%0.90m
-Z_PF2=0.60;  %Z Position of PF2 (m)		%0.60m
-R_Div1=0.20; %R Position of Div1 (m)	%0.20m	(Previously 0.15m)
-Z_Div1=0.86+0.039; %Z Position of Div1 (m)	%0.86m  (Previously 0.85m)
-R_Div2=0.45; %R Position of Div2 (m)	%0.45m	(Previously 0.55m)
-Z_Div2=0.86+0.039; %Z Position of Div2 (m)	%0.86m  (Previously 0.85m)
+R_PF1=0.9375;  Z_PF1=0.3075;  %[m] Position of PF1 %(0.90,0.30) before 4/6 update
+R_PF2=0.9375;  Z_PF2=0.6075;  %[m] Position of PF2 	%(0.90,0.60) before 4/6 update
+R_Div1=0.2355;  Z_Div1=0.890;  %[m] Position of Div1	%(0.2,0.86+0.039) before 4/6 update
+R_Div2=0.4475;  Z_Div2=0.890;  %[m] Position of Div2  %(0.45,0.86+0.039) before 4/6 update
 
 % Make Solenoid
 nSol=210 %800;                                      % number of turns of the solenoid (Agredano suggested)
@@ -337,12 +334,12 @@ coilset = fiesta_coilset('STcoilset',[Sol_circuit,PF1,PF2,Div1,Div2],false,xaccu
 
 %Plot of the cross section
     figure;
+    set(gca, 'DataAspectRatio', [1,1,1], 'NextPlot', 'add')
     c=plot(coilset);
     set(c, 'EdgeColor', 'k')
     hold on
     c=plot(vessel);
     set(c, 'EdgeColor', 'k')    
-    %axis equal;
     xlabel('R (m)')
     ylabel('Z (m)')
     title('Cross-section for the reduced size')
@@ -366,11 +363,13 @@ coilset = fiesta_coilset('STcoilset',[Sol_circuit,PF1,PF2,Div1,Div2],false,xaccu
         %touches the outer (R max) wall
     
 %%%PF coil currents (At Equilibrium, time(5,6))                                                   [A]
-I_PF1_Equil=-500;					%EFIT WILL GIVE IT!
-I_PF2_Equil=-500;					%EFIT WILL GIVE IT!
+I_PF1_Equil=-500;	%400				%EFIT WILL GIVE IT!
+I_PF2_Equil=-500;	%400				%EFIT WILL GIVE IT!
 %I_Div1_Equil=NaN;					Div1 in series with Sol!
-I_Div2_Equil=+850;					%+900;      %+900;
-
+I_Div2_Equil=+1000;			%+900;  
+                                               %These first guesses have to
+                                               %be accurate!!!! It affects
+                                               %the results!!!!!!!!!
 %%%Sol current
  I_Sol_max =690%.97e3  %.953; .91 for short break                  %[A] Max solenoid current, to achieve the desire Ip in RZIp.
 ISol_equil=-I_Sol_max;%.05e3;                            % [A] the current of the Sol in the target eq calc
