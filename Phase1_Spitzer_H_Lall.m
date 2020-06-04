@@ -372,7 +372,7 @@ I_PF2_Equil=-500;					%EFIT WILL GIVE IT!
 I_Div2_Equil=+850;					%+900;      %+900;
 
 %%%Sol current
- I_Sol_max =675%.97e3  %.953; .91 for short break                  %[A] Max solenoid current, to achieve the desire Ip in RZIp.
+ I_Sol_max =690%.97e3  %.953; .91 for short break                  %[A] Max solenoid current, to achieve the desire Ip in RZIp.
 ISol_equil=-I_Sol_max;%.05e3;                            % [A] the current of the Sol in the target eq calc
 %If>0, Sol will attract the plasma, no lower PF and DIv are
 %needed.
@@ -402,7 +402,7 @@ time = [-4*T_ramp_Sol -2*T_ramp_Sol 0 T_ramp_Sol t_add ...
 %Construct Sol, PF/Div coil current waveforms vertices
 											  %!Breakdown!					%!Efit Icoil!
         %Time   	     [1,    2,              3,           4,        5,                  6,               7];
-ISol_Waveform =  [0,  I_Sol_max, I_Sol_max, 0, -I_Sol_max, -I_Sol_max*0.75,   0];
+ISol_Waveform =  [0,  I_Sol_max, I_Sol_max, 0, -I_Sol_max, -I_Sol_max*0.95,   0];
 IPF1_Waveform =  [0,  NaN,        NaN,        NaN,           I_PF1_Equil,   I_PF1_Equil,   0];
 IPF2_Waveform =  [0,  NaN,        NaN,        NaN,           I_PF2_Equil,   I_PF2_Equil,   0];
 %IDiv1_Waveform = [0,  NaN,        NaN,        NaN,           I_Div1_Equil,  I_Div1_Equil, 0];
@@ -417,8 +417,14 @@ CoilWaveforms = [ISol_Waveform; IPF1_Waveform; IPF2_Waveform; IDiv1_Waveform; ID
 slope= (ISol_Waveform(5)-ISol_Waveform(3))/(time(5)-time(3));          %[A/t] slope of the ramp down of the Sol
 V_loop=mu0*turns(iSol)/(ZMax_Sol-ZMin_Sol)*pi*RSol^2*slope     %[V] 1 loop voltage induced by Sol only
 
-E=V_loop/(2*pi*0.45)
-%0.28 Have obtained, a low value I think
+%VEST value: Vloop about 3V     GlobusM: about 2V
+
+%Vloop=0.24V for 0.25s T ramp Sol.  Too low
+%Vloop=0.6V for 0.10s T ramp Sol. Too low still 
+%Vloop=1.2V for 0.05(5ms) T ramp Sol, a bit low yet, but time is too low
+
+E=V_loop/(2*pi*0.45)            %[V/m]
+
 %%  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@@@@@@@@CONFIGURATION OF FIESTA@@@@@@@@
@@ -519,6 +525,8 @@ icoil_equil.Div2=CoilWaveforms(5,6);	%Div2 Equilibrium Current at time(5,6)
     equil=fiesta_equilibrium('ST', config, Irod, jprofile, control,efit_config, icoil_equil, signals, weights) %%EFIT!!!
     %It does the case in line 96!! The equil calc is in lin 124
 
+    close all %to close iterate solver pltos if converge
+    
     %Now we have to extract the new currents from the equil, provided that EFIT
     %changed some of them to satisfy the conditions requested:
     icoil_equil=get(equil,'icoil');                         %redefine icoil to save the new current values
@@ -2590,26 +2598,26 @@ set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
 C_1=[510 300]; %C_1 constant [ m^-1 Tor^-1] for H and He
 C_2=[1.25e4 3.4e4];  %C_2 constant [V m^-1 Tor^-1]
 Gas_type=["H_2","He"];
- p=linspace(1e-6,1e-3,10000);                           %[Tor]pressure of the prefill gas. size>1000 because if
+ p=linspace(1e-6,1e-3,100000);                           %[Tor]pressure of the prefill gas. size>1000 because if
                                                                             %not, It do not work properly
  Emin= @(L,p,C1,C2) C2*p./log(C1*p*L);
  
  %Plot H
  figure;
-    subplot(1,2,1)
-    loglog(p,Emin(5,p,C_1(1),C_2(1)))
-    hold on
-    %
+    %subplot(1,2,1)
     loglog(p,Emin(10,p,C_1(1),C_2(1)))
-    loglog(p,Emin(1000,p,C_1(1),C_2(1)))
+    hold on
     loglog(p,Emin(40,p,C_1(1),C_2(1)))
     loglog(p,Emin(400,p,C_1(1),C_2(1)))
+    loglog(p,Emin(1000,p,C_1(1),C_2(1)))
+    loglog(p,abs(E)*ones(size(p)),'k-')
     xlabel('Prefill pressure (Torr)')
     ylabel('E_{min} (V/m)')
-    legend('L=5m','L=10m','L=1000m','L=40m','Globus-M, L=400m, V_{loop}=4.5-8V')
+    legend('L=10m','L=40m','L=400m (GlobusM)','L=1000m','Actual E')
     title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
     %
+    
     subplot(1,2,2)
     loglog(p,Emin(5,p,C_1(2),C_2(2)))
     hold on
