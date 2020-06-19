@@ -2,7 +2,7 @@
 %V2C2 (the winner). PHASE 1, REDUCED SIZE
 %
 %Daniel López Aires // danlopair@alum.us.es
-%Updated to Juanjo Toledo, but modified, and optimized
+%Partially merged with Scott's code
 %Includes, at the end, eddy plots and stresses stimations
 
 clear 
@@ -106,6 +106,7 @@ RSol = (RSolInner+RSolOuter)/2; % Central radius of solenoid (0.13) [m]
 ZMinSol = ZMinCentre-(VWall_Upper/2); % Solenoid Min Z position           [m]
 ZMaxSol = ZMaxCentre+(VWall_Lower/2); % Solenoid Max Z position           [m]
 ZSol=ZMaxSol+ZMinSol;
+SolLength=ZMaxSol-ZMinSol;
 %Number of Radial (R) and axial (Z) PF coil windings
 nZDiv1=6; nRDiv1=4;
 nZDiv2=6; nRDiv2=4;
@@ -300,69 +301,55 @@ CoilWaveforms = [ISol_Waveform; IPF1_Waveform; IPF2_Waveform; IDiv1_Waveform; ID
 
 %%%%Loop voltage calc
 
-slope= (ISol_Waveform(5)-ISol_Waveform(3))/(time(5)-time(3));          %[A/t] slope of the ramp down of the Sol
-V_loop=abs(mu0*turns(iSol)/(ZMaxSol-ZMinSol)*pi*RSol^2*slope)     %[V] 1 loop voltage induced by Sol only
+slope= abs((ISol_Waveform(4)-ISol_Waveform(3))/(time(4)-time(3)));          %[A/t] slope of the ramp down of the Sol
+
+V_loopInner=mu0*turns(iSol)/SolLength*pi*RSolInner^2*slope %Inner contribution (Rin)
+V_loopOuter=mu0*turns(iSol)/SolLength*slope*(-2*pi/(RSolOuter-RSolInner)*(1/3*(RSolOuter^3-RSolInner^3)-RSolInner/2*(RSolOuter^2-RSolInner^2))+pi*(RSolOuter^2-RSolInner^2))                         
+            %outer contribution (from Rin to Rout
+V_loop=V_loopInner+V_loopOuter
+
 
 E_Rgeo=V_loop/(2*pi*0.45)            %[V/m] Electric field by Sol only, at RGeo
 
 E= @(R) V_loop./(2*pi*R); %[V/m] Electric field as a function of R, by Sol only!
 
-% %% Loop for Paschen plot%%%%%%%%%%
-%{ 
-%     C_1=[510 300]; %C_1 constant [ m^-1 Tor^-1] for H and He
-%     C_2=[1.25e4 3.4e4];  %C_2 constant [V m^-1 Tor^-1]
-%     Gas_type=["H_2","He"];
-%     p=linspace(1e-6,1e-3,100000);                           %[Tor]pressure of the prefill gas. size>1000 because if
-%                                                                             %not, It do not work properly
-%     Emin= @(L,p,C1,C2) C2*p./log(C1*p*L);
-% 
-%     T_ramp_Sol=[25 10 5 2.5];  
-% 
-% for tt=1:length(T_ramp_Sol)
-%     T_ramp=T_ramp_Sol(tt);
-%     t_add=2*T_ramp; %2 with short breakdown               %time for the aditional point>T_ramp_Sol
-% 
-%     time = [-100 -50 0 T_ramp t_add ...
-%       t_add+discharge_time+10 t_add+discharge_time+50]*1e-3;  
-%     %Loop voltage calc
-% 
-%     slope= (ISol_Waveform(5)-ISol_Waveform(3))/(time(5)-time(3));          %[A/t] slope of the ramp down of the Sol
-%     V_loop(tt)=mu0*turns(iSol)/(ZMaxSol-ZMinSol)*pi*RSol^2*slope;     %[V] 1 loop voltage induced by Sol only
-%     E(tt)=abs(V_loop(tt)/(2*pi*0.45));  
-%     
-%  
-% 
-% end
-%         figure;
-%         %subplot(1,2,1)
-%         loglog(p,Emin(10,p,C_1(1),C_2(1)),'*-')
-%         hold on
-%         loglog(p,Emin(50,p,C_1(1),C_2(1)),'*-')
-%         loglog(p,Emin(100,p,C_1(1),C_2(1)),'*-')
-%         loglog(p,Emin(500,p,C_1(1),C_2(1)),'*-')
-%         %VEST
-%         loglog(p,3/(2*pi*0.36)*ones(1,length(p)),'b--','LineWidth', 0.95) 
-%         loglog([2e-5 2e-5],[10^-1 10^5],'b--','LineWidth', 0.95)
-%         loglog([3e-5 3e-5],[10^-1 10^5],'b-.','LineWidth', 0.95)
-%         %GlobusM
-%         loglog(p,4.5/(2*pi*0.36)*ones(1,length(p)),'k--','LineWidth', 0.95)
-%         loglog(p,8/(2*pi*0.36)*ones(1,length(p)),'k--','LineWidth', 0.95)
-%         loglog([3e-5 3e-5],[10^-1 10^5],'k--','LineWidth', 0.95)
-%         loglog([6e-5 6e-5],[10^-1 10^5],'k--','LineWidth', 0.95)
-%         %
-%         loglog(p,abs(E(1))*ones(1,length(p)),'r-','LineWidth', 0.95)           
-%         loglog(p,abs(E(2))*ones(1,length(p)),'r-','LineWidth', 1.15)   
-%         loglog(p,abs(E(3))*ones(1,length(p)),'r-','LineWidth', 1.35)  
-%         loglog(p,abs(E(4))*ones(1,length(p)),'r-','LineWidth', 1.55)  
-%         xlabel('Prefill pressure (Torr)')
-%         ylabel('E_{min} (V/m)')
-%         legend('L=10m','L=50m (Globus)','L=100m','L=500m','','VEST','','','GlobusM','','','T_{ramp}=50ms (original)','T_{ramp}=20ms','T_{ramp}=10ms','T_{ramp}=5ms')
-%         title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
-%         set(gca, 'FontSize', 13); %<- Set properties TFG
+ %% Loop for Paschen plot%%%%%%%%%%
+ 
+    C_1=[510 300]; %C_1 constant [ m^-1 Tor^-1] for H and He
+    C_2=[1.25e4 3.4e4];  %C_2 constant [V m^-1 Tor^-1]
+    Gas_type=["H_2","He"];
+    p=linspace(1e-6,1e-3,100000);                           %[Tor]pressure of the prefill gas. size>1000 because if
+                                                                            %not, It do not work properly
+    Emin= @(L,p,C1,C2) C2*p./log(C1*p*L);
+
+        figure;
+        %subplot(1,2,1)
+        loglog(p,Emin(10,p,C_1(1),C_2(1)),'*-')
+        hold on
+        loglog(p,Emin(20,p,C_1(1),C_2(1)),'*-')
+        loglog(p,Emin(50,p,C_1(1),C_2(1)),'*-')
+        loglog(p,Emin(100,p,C_1(1),C_2(1)),'*-')
+        %VEST
+        loglog(p,3/(2*pi*0.36)*ones(1,length(p)),'b--','LineWidth', 0.95) 
+        loglog([2e-5 2e-5],[10^-1 10^5],'b--','LineWidth', 0.95)
+        loglog([3e-5 3e-5],[10^-1 10^5],'b-.','LineWidth', 0.95)
+        %GlobusM
+        loglog(p,4.5/(2*pi*0.36)*ones(1,length(p)),'k--','LineWidth', 0.95)
+        loglog(p,8/(2*pi*0.36)*ones(1,length(p)),'k--','LineWidth', 0.95)
+        loglog([3e-5 3e-5],[10^-1 10^5],'k--','LineWidth', 0.95)
+        loglog([6e-5 6e-5],[10^-1 10^5],'k--','LineWidth', 0.95)
+        %
+        loglog(p,2.901*ones(1,length(p)),'r-','LineWidth', 1.15)           
+        xlabel('Prefill pressure (Torr)')
+        ylabel('E_{min} (V/m)')
+        legend('L=10m','L=20m (Globus)','L=50m','L=100m','','VEST','','','GlobusM','','','SMART old E')
+        title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
+        set(gca, 'FontSize', 13); %<- Set properties TFG
 
 %%%%%%End loop paschen plots%%%%%%%%
 %}
 
+%%
 %%  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@@@@@@@@CONFIGURATION OF FIESTA@@@@@@@@
@@ -485,7 +472,7 @@ icoil_equil.Div2=CoilWaveforms(iDiv2,5);	%Div2 Equilibrium Current at time(5,6)
          plot(vessel)
          plot(coilset)
          parametersshow(equil)   %this plots the parameters in the equil
-         title('Target equilibria ph2')
+         title('Target equilibria ph1')
          set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
             %Watch out, R0 in the plot is r0_mag, not r0_geom!!
         Filename = 'Target_equilibria';
@@ -832,28 +819,28 @@ I_Passive_VV=sum(I_Passive,2);
             saveas(gcf, strcat(ProjectName,Filename,FigExt));
           %print -depsc2 NOMBREPLOT.eps
 
-%             figure;           
-%             plot(time_adaptive*1e3,Ip_output/(1e3))
-%             ylabel('I_p (kA)')
-%             xlabel(' time (ms)')
-%             title('I_p SMART phase 1')
-%             set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
-%             %set(gca,'YLim',[-5 35]);
-%             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-%             Filename = 'Ip';
-%             Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
-%             saveas(gcf, strcat(FigDir,Filename,FigExt));
-%             
-%             figure;
-%             plot(time_adaptive*1e3,I_Passive_VV/(1e3))
-%             xlabel(' time (ms)')
-%             ylabel('I_{passive} (kA)')
-%             title('I_{VV}')
-%             set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
-%             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-%             Filename = 'I_VV';
-%             Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
-%             saveas(gcf, strcat(FigDir,Filename,FigExt));
+            figure;           
+            plot(time_adaptive*1e3,Ip_output/(1e3))
+            ylabel('I_p (kA)')
+            xlabel(' time (ms)')
+            title('I_p SMART phase 1')
+            set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
+            %set(gca,'YLim',[-5 35]);
+            set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+            Filename = 'Ip';
+            %Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
+            saveas(gcf, strcat(FigDir,Filename,FigExt));
+            
+            figure;
+            plot(time_adaptive*1e3,I_Passive_VV/(1e3))
+            xlabel(' time (ms)')
+            ylabel('I_{VV} (kA)')
+            title('Net eddy current on VV')
+            set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
+            set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+            Filename = 'I_VV';
+            %Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
+            saveas(gcf, strcat(FigDir,Filename,FigExt));
             
     %HAVE TO CHECK Vp, is not closer to Vloop ==>?¿¿?¿?
     %HAVE TO DIG IN uFinal (x), because it has weird things
@@ -1173,6 +1160,32 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);
         %Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
         saveas(gcf, strcat(FigDir,Filename,FigExt));
         
+        %ln plot of Bpol (Scott)
+        figure;
+        contourf(R_in,Z_in,log(FieldsBreak.VV.Bpol),'ShowText','on')
+        hold on;
+        hh=plot(vessel);
+        set(hh, 'EdgeColor', 'k')
+        hh=plot(coilset);
+        set(hh, 'EdgeColor', 'k')
+        colormap(Gamma_II)
+        c=colorbar; %colorbar
+        ylabel(c, 'ln(Bpol (T))');  
+                %Try to show max and min of colorbar !!!!!!!!!!!!!
+        %t=get(c,'Limits');
+        %set(c,'Ticks',linspace(t(1),t(2),10));
+        view(2) %2D view
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+        plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+        [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        title(sprintf('B_{pol}  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+        %title(sprintf('B_{pol} at t=%dms for %dms',time_loop(loop)*1e3,T_ramp_Sol*2))        
+        Filename = 'Bpol_ln';
+        %Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
+        saveas(gcf, strcat(FigDir,Filename,FigExt));
+        
    %Lloyd
            
      Lloyd=E(R_in).*FieldsBreak.VV.Bphi./FieldsBreak.VV.Bpol;
@@ -1378,7 +1391,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);
         L_int=reshape(RZLPhiU_end(:,3),size(r_insVV_noLimit,1),size(r_insVV_noLimit,2));
         
         figure;
-        contourf(r_insVV_noLimit,z_insVV_noLimit,L_int,10)
+        contourf(r_insVV_noLimit,z_insVV_noLimit,L_int,10,'ShowText','On')
         %surf(r_insVV_noLimit,z_insVV_noLimit,L_int,'EdgeColor','none'), shading('interp')
         hold on
         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
@@ -1397,7 +1410,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);
         xlabel('R (m)')
         ylabel('Z (m)')
         legend('L','Field null region','Non colliding start points')
-        %title(sprintf('L  at t=%d ms (iter %d/%d) LP',time_loop(loop)*1e3,loop,length(time_loop)))   
+        title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
         %title(sprintf('L at t=%dms for %dms',time_loop(loop)*1e3,T_ramp_Sol*2))
         Filename = 'L';
         %Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
@@ -1722,20 +1735,22 @@ end
 %This have just stored the largest values of the eddy currents on all the
 %filaments.
 
-figure;
- scatter3(Rfil,Zfil,I_Passive_fil/(1e3),100,I_Passive_fil/(1e3),'filled')
- hold on
- plot(coilset)
-  view(2) %2D view
- colorbar %colorbar
-xlabel(' R (m)')
-ylabel('Z (m)')
-%zlabel('I (A)')
-axis([0,1.03,-1.1,1.1]) %for the tfg EDDY Y FORCES
-title('Eddy current in the vessel in kA')
-set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-grid off
-print -depsc2 NOMBREPLOT.eps
+%Plot
+    figure;
+    scatter3(Rfil,Zfil,I_Passive_fil/(1e3),100,I_Passive_fil/(1e3),'filled')
+    hold on
+    plot(coilset)
+    view(2) %2D view
+    c=colorbar; %colorbar
+     ylabel(c, 'I_{VV} (kA)');
+    xlabel(' R (m)')
+    ylabel('Z (m)')
+    %zlabel('I (A)')
+    axis([0,1.03,-1.1,1.1]) %for the tfg EDDY Y FORCES
+    title('Max Eddy current in each VVs filament')
+    set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+    grid off
+    %print -depsc2 NOMBREPLOT.eps
 
 %%%Plot for each instant
 % for i=1:5%length(time_adaptive)
@@ -1802,8 +1817,8 @@ stress_R_max=max(abs(stress_R))
 
 %plot
 figure; 
- scale_factor=2*10^5; %graphic needs to be scaled
-quiver(xaccum,yaccum,stress_R/scale_factor,stress_Z/scale_factor,'color',[1 0 0],'AutoScale','off')
+ scale_factor=1%2*10^5; %graphic needs to be scaled
+quiver(R_Fil_Array,Z_Fil_Array,stress_R/scale_factor,stress_Z/scale_factor,'color',[1 0 0],'AutoScale','on')
 hold on;
 plot(coilset)
 plot(vessel);
@@ -1827,21 +1842,19 @@ C_2=[1.25e4 3.4e4];  %C_2 constant [V m^-1 Tor^-1]
 Gas_type=["H_2","He"];
  p=linspace(1e-6,1e-3,100000);                           %[Tor]pressure of the prefill gas. size>1000 because if
                                                                             %not, It do not work properly
- Emin= @(L,p,C1,C2) C2*p./log(C1*p*L);
- 
  %Plot H
- figure;
-    %subplot(1,2,1)
-    loglog(p,Emin(10,p,C_1(1),C_2(1)))
-    hold on
-    loglog(p,Emin(40,p,C_1(1),C_2(1)))
-    loglog(p,Emin(100,p,C_1(1),C_2(1)))
-    loglog(p,abs(E_Rgeo)*ones(1,length(p)),'k-')
-    xlabel('Prefill pressure (Torr)')
-    ylabel('E_{min} (V/m)')
-    legend('L=10m','L=50m (GlobusM)','L=100m','Actual E')
-    title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
-    set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+%  figure;
+%     %subplot(1,2,1)
+%     loglog(p,Emin(10,p,C_1(1),C_2(1)))
+%     hold on
+%     loglog(p,Emin(40,p,C_1(1),C_2(1)))
+%     loglog(p,Emin(100,p,C_1(1),C_2(1)))
+%     loglog(p,abs(E_Rgeo)*ones(1,length(p)),'k-')
+%     xlabel('Prefill pressure (Torr)')
+%     ylabel('E_{min} (V/m)')
+%     legend('L=10m','L=50m (GlobusM)','L=100m','Actual E')
+%     title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
+%     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
     %
     
  
@@ -1875,11 +1888,11 @@ K_B=1.380649*10^(-23); %J K^-1
 %     
     %Plot3 varying E,p
     Ep=linspace(0.1,5e1,1000);  %[Tor]
-    p=linspace(1e-5,1e-3,1000);  %[Tor]
+    p_single=linspace(1e-5,1e-3,1000);  %[Tor]
     
     %Have to a meshgrid with p and E so that all the values of E are combined
     %with the p, and viceversa, which is was I want to see.
-    [p,Ep]=meshgrid(p,Ep);
+    [p,Ep]=meshgrid(p_single,Ep);
     
     %To plot this, will do as a I did with L inside the vessel. Since there
     %are problems with negative values, with substitute them with NaN. Have
@@ -1889,7 +1902,7 @@ K_B=1.380649*10^(-23); %J K^-1
     %Will do a loop to plot it for different L values
     clear tau
     tic
-    L_plot=[5 10 70 90]             %[m]
+    L_plot=[L_aver/2 L_aver 2*L_aver 4*L_aver]             %[m]
     
     for i_L=1:length(L_plot)
     
@@ -1897,27 +1910,33 @@ K_B=1.380649*10^(-23); %J K^-1
         
             for i_E=1:length(Ep)
             
-                tau(i_p,i_E)=tau_bd(Ep(i_p,i_E),p(i_p,i_E),L_plot(i_L),C_1,C_2); %[s] time 
+                tau(i_p,i_E)=tau_bd(Ep(i_p,i_E),p(i_p,i_E),L_plot(i_L),C_1(1),C_2(1)); %[s] time 
             end
         end
       time_Ep_loop=toc  
         %Plot
         figure;
-        contourf(p,Ep,log10(tau*1e3));
+        contourf(p,Ep,log10(tau*1e3),'ShowText','on');
         %contourf(p,E,tau);
         shading('interp') %this is to make the transition between values continuous,
                                     %instedad of discontinuously between pixels
-       colormap(Gamma_II)
-        hold on;
-        colorbar %colorbar
+       %colormap(Gamma_II)
+       %colormap('hot') 
+       hold on;
+        plot(p_single,E_Rgeo*ones(length(p_single),1),'r-','LineWidth',0.95)
+        c=colorbar; %colorbar
+        ylabel(c, 'log10(tau_{ava} (ms))');
         view(2) %2D view
         xlabel('p (Tor)')
         ylabel('E (V/m)')
         set(gca,'Xscale','log') %para poner el eje x en log   
         set(gca,'Yscale','log') %para poner el eje x en log 
-        title(sprintf('log10(time radiation wal[ms]) for L=%d m',L_plot(i_L)))
+        title(sprintf('Avalanche time for L=%3.1f m',L_plot(i_L)))
         %title(sprintf('time radiation wal[ms]) for L=%d m',L_plot(i_L)))
-        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG      
+        Filename = 'tau_ava';
+        Filename= sprintf('%s_L_%d',Filename,i_L);    
+        saveas(gcf, strcat(FigDir,Filename,FigExt));
 
     end
 
@@ -1930,22 +1949,24 @@ K_B=1.380649*10^(-23); %J K^-1
 %asuming a surface of 2pi R, can find the current:
 I_rad_wall= j_rad_wall*2*pi*0.2 %Pasma current [A], Assuming circular plasma of R=0.2m
     
- 
+ p_single=linspace(1e-5,1e-3,100000);  %[Tor]
  figure;
-     p=linspace(1e-5,1e-3,10000);  %[Tor]
-    loglog(p,Emin(5,p))
+    loglog(p_single,Emin(10,p_single,C_1(1),C_2(1)))
     hold on
     %
-    loglog(p,Emin(10,p))
-    loglog(p,Emin(70,p))
-    loglog(p,Emin(90,p))
-    loglog(p,Emin(50,p))
+    loglog(p_single,Emin(20,p_single,C_1(1),C_2(1)))  
+    loglog(p_single,Emin(50,p_single,C_1(1),C_2(1)))
+    loglog(p_single,Emin(100,p_single,C_1(1),C_2(1)))
+    loglog(p_single,E_Rgeo*ones(length(p_single),1),'r-','LineWidth',0.95)
     xlabel('Prefill pressure (Torr)')
     ylabel('E_{min} (V/m)')
-    legend('L=5m','L=10m','L=70m','L=90m','Globus-M, L=50m, V_{loop}=4.5-8V')
-    title(sprintf('Paschen curve, Gas=%s',Gas_type)); %d for numbers
+    legend('L=10m','L=20m','L=50m(Globus)','L=100m','SMART E')
+    title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
     axis([10^-5 10^-3 10^-1 50])
+    Filename = 'Paschen_ava';
+    %Filename= sprintf('%s_L_%3.1f',Filename,L_plot(i_L));    
+    saveas(gcf, strcat(FigDir,Filename,FigExt));
     
         
   %Plot of the mean free path%%%%%
@@ -1954,14 +1975,14 @@ I_rad_wall= j_rad_wall*2*pi*0.2 %Pasma current [A], Assuming circular plasma of 
   
   lambda= @(C1,p) 1./(C1.*p); 
   figure;
-  plot(p,lambda(C_1(1),p))
-  hold on;
-  plot(p,lambda(C_1(2),p))
+  plot(p_single,lambda(C_1(1),p_single))
+  %hold on;
+  %plot(p,lambda(C_1(2),p))
   xlabel('p (Tor)')
   ylabel('\lambda')
   set(gca,'Xscale','log') %para poner el eje x en log   
   title('Mean free path \lambda versus p')
-  legend(Gas_type(1),Gas_type(2))
+  legend(Gas_type(1))%,Gas_type(2))
   set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
   
  
