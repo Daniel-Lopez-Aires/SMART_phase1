@@ -67,7 +67,7 @@ ProjectName = 'SMART-P1';			%Define global project name
 
 %Create global output folders for saved data and figures
 ASCIIDir = 'RawData/'; mkdir(ASCIIDir);
-FigDir = 'FiguresSensorsNoeddyNoEarth/'; mkdir(FigDir);			%NOT CURRENTLY USED
+FigDir = 'FiguresSensors/'; mkdir(FigDir);			%NOT CURRENTLY USED
 
 %Create simulation name based upon relevant run parameters
 SimName = 'DefaultSimName';
@@ -293,37 +293,37 @@ E_Rgeo=V_loop/(2*pi*0.45)            %[V/m] Electric field by Sol only, at RGeo
 E= @(R) V_loop./(2*pi*R); %[V/m] Electric field as a function of R, by Sol only!
 
  %% Loop for Paschen plot%%%%%%%%%%
- 
-    C_1=[510 300]; %C_1 constant [ m^-1 Tor^-1] for H and He
-    C_2=[1.25e4 3.4e4];  %C_2 constant [V m^-1 Tor^-1]
-    Gas_type=["H_2","He"];
-    p=linspace(1e-6,1e-3,100000);                           %[Tor]pressure of the prefill gas. size>1000 because if
-                                                                            %not, It do not work properly
-    Emin= @(L,p,C1,C2) C2*p./log(C1*p*L);
-
-        figure;
-        %subplot(1,2,1)
-        loglog(p,Emin(10,p,C_1(1),C_2(1)),'*-')
-        hold on
-        loglog(p,Emin(20,p,C_1(1),C_2(1)),'*-')
-        loglog(p,Emin(50,p,C_1(1),C_2(1)),'*-')
-        loglog(p,Emin(100,p,C_1(1),C_2(1)),'*-')
-        %VEST
-        loglog(p,3/(2*pi*0.36)*ones(1,length(p)),'b--','LineWidth', 0.95) 
-        loglog([2e-5 2e-5],[10^-1 10^5],'b--','LineWidth', 0.95)
-        loglog([3e-5 3e-5],[10^-1 10^5],'b-.','LineWidth', 0.95)
-        %GlobusM
-        loglog(p,4.5/(2*pi*0.36)*ones(1,length(p)),'k--','LineWidth', 0.95)
-        loglog(p,8/(2*pi*0.36)*ones(1,length(p)),'k--','LineWidth', 0.95)
-        loglog([3e-5 3e-5],[10^-1 10^5],'k--','LineWidth', 0.95)
-        loglog([6e-5 6e-5],[10^-1 10^5],'k--','LineWidth', 0.95)
-        %
-        loglog(p,2.901*ones(1,length(p)),'r-','LineWidth', 1.15)           
-        xlabel('Prefill pressure (Torr)')
-        ylabel('E_{min} (V/m)')
-        legend('L=10m','L=20m (Globus)','L=50m','L=100m','','VEST','','','GlobusM','','','SMART old E')
-        title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
-        set(gca, 'FontSize', 13); %<- Set properties TFG
+ %{
+%     C_1=[510 300]; %C_1 constant [ m^-1 Tor^-1] for H and He
+%     C_2=[1.25e4 3.4e4];  %C_2 constant [V m^-1 Tor^-1]
+%     Gas_type=["H_2","He"];
+%     p=linspace(1e-6,1e-3,100000);                           %[Tor]pressure of the prefill gas. size>1000 because if
+%                                                                             %not, It do not work properly
+%     Emin= @(L,p,C1,C2) C2*p./log(C1*p*L);
+% 
+%         figure;
+%         %subplot(1,2,1)
+%         loglog(p,Emin(10,p,C_1(1),C_2(1)),'*-')
+%         hold on
+%         loglog(p,Emin(20,p,C_1(1),C_2(1)),'*-')
+%         loglog(p,Emin(50,p,C_1(1),C_2(1)),'*-')
+%         loglog(p,Emin(100,p,C_1(1),C_2(1)),'*-')
+%         %VEST
+%         loglog(p,3/(2*pi*0.36)*ones(1,length(p)),'b--','LineWidth', 0.95) 
+%         loglog([2e-5 2e-5],[10^-1 10^5],'b--','LineWidth', 0.95)
+%         loglog([3e-5 3e-5],[10^-1 10^5],'b-.','LineWidth', 0.95)
+%         %GlobusM
+%         loglog(p,4.5/(2*pi*0.36)*ones(1,length(p)),'k--','LineWidth', 0.95)
+%         loglog(p,8/(2*pi*0.36)*ones(1,length(p)),'k--','LineWidth', 0.95)
+%         loglog([3e-5 3e-5],[10^-1 10^5],'k--','LineWidth', 0.95)
+%         loglog([6e-5 6e-5],[10^-1 10^5],'k--','LineWidth', 0.95)
+%         %
+%         loglog(p,2.901*ones(1,length(p)),'r-','LineWidth', 1.15)           
+%         xlabel('Prefill pressure (Torr)')
+%         ylabel('E_{min} (V/m)')
+%         legend('L=10m','L=20m (Globus)','L=50m','L=100m','','VEST','','','GlobusM','','','SMART old E')
+%         title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
+%         set(gca, 'FontSize', 13); %<- Set properties TFG
 
 %%%%%%End loop paschen plots%%%%%%%%
 %}
@@ -474,19 +474,34 @@ clc
 
 %Initiate virtual B-field sensors centered on Rgeo
                     %InitiateBSensors(EquilParams,length_R,R_centre,Z_centre,length_Z)
-sensor_bthetaLoop(1) = InitiateBSensors(param_equil,a_eff);
-sensor_bthetaLoop(2) = InitiateBSensors(param_equil,a_eff,0.31);
-sensor_bthetaLoop(3) = InitiateBSensors(param_equil,a_eff/2,0.45/1.9); %moved left and half the size
-sensor_bthetaLoop(4) = InitiateBSensors(param_equil,a_eff/2,0.45/1.9,0.4); %moved left and upward
+sensor_bthetaLoop(1) = InitiateBSensors(param_equil,a_eff); %standar
+sensor_bthetaLoop(2) = InitiateBSensors(param_equil,a_eff,0.31); %moved inward
+sensor_bthetaLoop(3) = InitiateBSensors(param_equil,a_eff,0.31,0.4); %moved inward and upward
+sensor_bthetaLoop(4) = InitiateBSensors(param_equil,a_eff/2,0.45/1.9); %moved inward and half the size
+sensor_bthetaLoop(5) = InitiateBSensors(param_equil,1.9*a_eff); %moved left, larger size, square
 
-a_effRec_R=a_eff/2; %R minor radius of the rectange
+
+a_effRec_R=a_eff; %R minor radius of the rectange
 a_effRec_Z=a_eff*2; %Z minor radius of the rectangle
-R_centre=0.45/1.9; %central R for the square region
+R_centre=0.31; %central R for the square region
 
-sensor_bthetaLoop(5) = InitiateBSensors(param_equil,a_effRec_R,R_centre,param_equil.z0_geom,a_effRec_Z);
+sensor_bthetaLoop(6) = InitiateBSensors(param_equil,a_effRec_R,R_centre,param_equil.z0_geom,a_effRec_Z);
+
+
+
+ figure;
+        plot(equil)        
+        hold on
+        plot(vessel)
+        plot(coilset)
+        parametersshow(equil)   %this plots the parameters in the equil
+        %title(sprintf('Sensors for simu %d',sen))
+        plot(sensor_bthetaLoop(6));
+        %Filename = 'Sensors';
+        %Filename= sprintf('%s_simu_%d',Filename,sen);   
+        %saveas(gcf, strcat(FigDir,Filename,FigExt));
 
 for sen=1:length(sensor_bthetaLoop)
-
     sensor_btheta=sensor_bthetaLoop(sen); %actual sensor
 
     %r,z of the sensors
@@ -612,8 +627,6 @@ V_PF_input = NaN(nTime,nPF);            %Coil voltages are initiated to zero
     Filename= sprintf('%s_simu_%d',Filename,sen);      
     saveas(gcf, strcat(FigDir,Filename,FigExt));
    
-   
-%% 
 
 
 
@@ -643,7 +656,7 @@ PF_colors{iPF1} = 'Cyan';
 PF_colors{iPF2} = 'Green';
 
 
-%% RZIP AS FIESTA%%%%%%EXPERIMENTAL%%%%
+%%RZIP AS FIESTA%%%%%%EXPERIMENTAL%%%%
 %{
 % %Example as stated on the slides
 % t=linspace(0,1,1000)';
@@ -763,7 +776,7 @@ PF_colors{iPF2} = 'Green';
     %%%%%END RZIp as Slides, experimental%%%%%%%%%%%%%%%%%
 %}    
 
-%% %%%%%RZIp run%%%%%%%%%%%%%
+%%%%%%%RZIp run%%%%%%%%%%%%%
 %It is run 2 times. The coils are current driven always, but the plasma changes form
 %current driven to voltage driven. The control vector u is defined in
 %different ways for plasma current and voltage driven.
@@ -1123,6 +1136,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
         [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        axis equal
         xlabel('R (m)')
         ylabel('Z (m)')
         %title(sprintf('B_{pol}  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
@@ -1149,6 +1163,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
         [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        axis equal
         xlabel('R (m)')
         ylabel('Z (m)')
         %title(sprintf('B_{pol}  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
@@ -1173,6 +1188,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         view(2) %2D view
         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
             [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        axis equal
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         xlabel('R (m)')
         ylabel('Z (m)')
@@ -1223,7 +1239,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
 
     
     %%L calc by field line integration###########################
-% { 
+%{ 
          %Lazarus paper 1998, they compute connective length by avergaing on
             %9 lines, the line with Bpol min, and the 8 surroundings. 
          %However can compute the lines in all the VV
@@ -1233,20 +1249,20 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         %I redefine the grid to compute the connection length, for less computer
         %demands (time)
 
-        n_pnts_insideL=30; %15%30 for accurate           %100 is the ideal to have good plots of the fields, but the L int failures. 
+        n_pnts_insideL=30; %30 previously          %100 is the ideal to have good plots of the fields, but the L int failures. 
 
         r_inside_VVL=linspace(VesselRMinInner,VesselRMaxInner,n_pnts_insideL); 
         z_inside_VVL=linspace(VesselZMinInner,VesselZMaxInner,n_pnts_insideL);
 
         %Plot
-%         [r_ins_VVL,z_ins_VVL]=meshgrid(r_inside_VVL,z_inside_VVL);
-%         figure;
-%         plot(r_ins_VVL,z_ins_VVL,'r.')
-%         hold on
-%         plot(vessel)
-%         xlabel('R (m)')
-%         ylabel('Z (m)')
-%         title(sprintf('meshgrid for the integration with %d^2 points',n_pnts_insideL))
+        [r_ins_VVL,z_ins_VVL]=meshgrid(r_inside_VVL,z_inside_VVL);
+        figure;
+        plot(r_ins_VVL,z_ins_VVL,'r.')
+        hold on
+        plot(vessel)
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        title(sprintf('meshgrid for the integration with %d^2 points',n_pnts_insideL))
 
         %Points inside, without the extremal points. This will be used in the ode45
         r_inside_VV_noLimits=r_inside_VVL; %r_inside_VVL(2:end-1);
@@ -1378,6 +1394,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         set(hh,'HandleVisibility','off');
         colormap(Gamma_II)
         c=colorbar; %colorbar
+        axis equal
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         ylabel(c, 'L(m)');
         xlabel('R (m)')
@@ -1407,6 +1424,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         view(2) %2D view
         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
             [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        axis equal
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         xlabel('R (m)')
         ylabel('Z (m)')
@@ -1438,6 +1456,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         view(2) %2D view
         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
             [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        axis equal
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         xlabel('R (m)')
         ylabel('Z (m)')
@@ -1446,7 +1465,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         Filename = 'U_L';
         %Filename= sprintf('%s_simu_%d',Filename,sen);   
         saveas(gcf, strcat(FigDir,Filename,FigExt));
-% }
+%}
 
 end    %end loop time (not in use right now)!!!!
 
@@ -1462,6 +1481,97 @@ Store(sen).Lemp=L_aver; %store of L_emp for sensor loop
 Store(sen).i_VV_t0=IPassive_loop; %store of I_VV at t=0ms for sensor loop
 Store(sen).Bphi_Bpol_av_L_emp=Campos_L(loop); %to store the fields to compute L empirical
 
+
+% %PLOTTING THINGS THAT VARY
+%             %pF1
+%             figure(100)
+%             plot(Store(sen).time_IPF*1e3,Store(sen).IPF(:,iPF1)*1e-3)
+%             hold on
+%             title('PF1 current')
+%             legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
+%             xlabel('time (ms)')
+%             ylabel('I (kA)')
+%             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+%            
+%             if sen==length(sensor_bthetaLoop) %store plots now 
+%             Filename = 'PF1';
+%             saveas(gcf, strcat(FigDir,Filename,FigExt));
+%             end
+%             
+%             %pF2
+%             figure(101)
+%             plot(Store(sen).time_IPF*1e3,Store(sen).IPF(:,iPF2)*1e-3)
+%             hold on
+%             title('PF2 current')
+%             legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
+%             xlabel('time (ms)')
+%             ylabel('I (kA)')
+%             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+%            
+%             if sen==length(sensor_bthetaLoop) %store plots now 
+%                 Filename = 'PF2';
+%                 saveas(gcf, strcat(FigDir,Filename,FigExt));
+%             end     
+%             
+%             %Div2
+%             figure(102)
+%             plot(Store(sen).time_IPF*1e3,Store(sen).IPF(:,iDiv2)*1e-3)
+%             hold on
+%             title('Div2 current')
+%             legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
+%             xlabel('time (ms)')
+%             ylabel('I (kA)')
+%             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+%            
+%             if sen==length(sensor_bthetaLoop) %store plots now 
+%                 Filename = 'PF2';
+%                 saveas(gcf, strcat(FigDir,Filename,FigExt));
+%             end
+%             
+%             %Ip
+%             figure(103)
+%             plot(Store(sen).time_adap*1e3,Store(sen).Ip*1e-3)
+%             hold on
+%             title('Plasma current')
+%             legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
+%             xlabel('time (ms)')
+%             ylabel('I (kA)')
+%             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+%            
+%             if sen==length(sensor_bthetaLoop) %store plots now 
+%                 Filename = 'Ip_comp';
+%                 saveas(gcf, strcat(FigDir,Filename,FigExt));
+%             end
+%             
+%             %IVV
+%             figure(104)
+%             plot(Store(sen).time_adap*1e3,Store(sen).Ip*1e-3)
+%             hold on
+%             title('Net eddy on VV')
+%             legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
+%             xlabel('time (ms)')
+%             ylabel('I (kA)')
+%             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+%           
+%             if sen==length(sensor_bthetaLoop) %store plots now 
+%                 Filename = 'IVV_comp';
+%                 saveas(gcf, strcat(FigDir,Filename,FigExt));
+%             end
+%             
+%             %Lemp
+%             figure(105)
+%             bar(sen,Store(sen).Lemp)
+%             hold on
+%             title('Empirical L')
+%             legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
+%             xlabel('simu')
+%             ylabel('L(m)')
+%             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+%            
+%             if sen==length(sensor_bthetaLoop) %store plots now 
+%                 Filename = 'Lemp';
+%                 saveas(gcf, strcat(FigDir,Filename,FigExt));
+%             end            
 end %end SENSORS LOOP
      
     %Plot coil currents
@@ -1479,14 +1589,15 @@ end %end SENSORS LOOP
     
         %PF1
         figure;
-        plot(Store(1).time_IPF*1e3,Store(1).IPF(:,iPF1)*1e-3)
+        plot(Store(1).time_IPF*1e3,Store(1).IPF(:,iPF1)*1e-3,'LineWidth',1.15)
         hold on
-        plot(Store(2).time_IPF*1e3,Store(2).IPF(:,iPF1)*1e-3)
-        plot(Store(3).time_IPF*1e3,Store(3).IPF(:,iPF1)*1e-3)
-        plot(Store(4).time_IPF*1e3,Store(4).IPF(:,iPF1)*1e-3)
-        plot(Store(5).time_IPF*1e3,Store(5).IPF(:,iPF1)*1e-3)
+        plot(Store(2).time_IPF*1e3,Store(2).IPF(:,iPF1)*1e-3,'LineWidth',1.15)
+        plot(Store(3).time_IPF*1e3,Store(3).IPF(:,iPF1)*1e-3,'LineWidth',1.15)
+        plot(Store(4).time_IPF*1e3,Store(4).IPF(:,iPF1)*1e-3,'LineWidth',1.15)
+        plot(Store(5).time_IPF*1e3,Store(5).IPF(:,iPF1)*1e-3,'LineWidth',1.15)
+        plot(Store(6).time_IPF*1e3,Store(6).IPF(:,iPF1)*1e-3,'LineWidth',1.15)
         title('PF1 current')
-        legend('simu 1','simu 2','simu 3','simu4','simu5')
+        legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
         xlabel('time (ms)')
         ylabel('I (kA)')
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
@@ -1495,14 +1606,15 @@ end %end SENSORS LOOP
         
         %PF2
         figure;
-        plot(Store(1).time_IPF*1e3,Store(1).IPF(:,iPF2)*1e-3)
+        plot(Store(1).time_IPF*1e3,Store(1).IPF(:,iPF2)*1e-3,'LineWidth',1.15)
         hold on
-        plot(Store(2).time_IPF*1e3,Store(2).IPF(:,iPF2)*1e-3)
-        plot(Store(3).time_IPF*1e3,Store(3).IPF(:,iPF2)*1e-3)
-        plot(Store(4).time_IPF*1e3,Store(4).IPF(:,iPF2)*1e-3)
-        plot(Store(5).time_IPF*1e3,Store(5).IPF(:,iPF2)*1e-3)
+        plot(Store(2).time_IPF*1e3,Store(2).IPF(:,iPF2)*1e-3,'LineWidth',1.15)
+        plot(Store(3).time_IPF*1e3,Store(3).IPF(:,iPF2)*1e-3,'LineWidth',1.15)
+        plot(Store(4).time_IPF*1e3,Store(4).IPF(:,iPF2)*1e-3,'LineWidth',1.15)
+        plot(Store(5).time_IPF*1e3,Store(5).IPF(:,iPF2)*1e-3,'LineWidth',1.15)
+        plot(Store(6).time_IPF*1e3,Store(6).IPF(:,iPF2)*1e-3,'LineWidth',1.15)
         title('PF2 current')
-        legend('simu 1','simu 2','simu 3','simu4','simu5')
+        legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
         xlabel('time (ms)')
         ylabel('I (kA)')
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
@@ -1511,14 +1623,15 @@ end %end SENSORS LOOP
         
             %Div2
         figure;
-        plot(Store(1).time_IPF*1e3,Store(1).IPF(:,iDiv2)*1e-3)
+        plot(Store(1).time_IPF*1e3,Store(1).IPF(:,iDiv2)*1e-3,'LineWidth',1.15)
         hold on
-        plot(Store(2).time_IPF*1e3,Store(2).IPF(:,iDiv2)*1e-3)
-        plot(Store(3).time_IPF*1e3,Store(3).IPF(:,iDiv2)*1e-3)
-        plot(Store(4).time_IPF*1e3,Store(4).IPF(:,iDiv2)*1e-3)
-        plot(Store(5).time_IPF*1e3,Store(5).IPF(:,iDiv2)*1e-3)
+        plot(Store(2).time_IPF*1e3,Store(2).IPF(:,iDiv2)*1e-3,'LineWidth',1.15)
+        plot(Store(3).time_IPF*1e3,Store(3).IPF(:,iDiv2)*1e-3,'LineWidth',1.15)
+        plot(Store(4).time_IPF*1e3,Store(4).IPF(:,iDiv2)*1e-3,'LineWidth',1.15)
+        plot(Store(5).time_IPF*1e3,Store(5).IPF(:,iDiv2)*1e-3,'LineWidth',1.15)
+        plot(Store(6).time_IPF*1e3,Store(6).IPF(:,iDiv2)*1e-3,'LineWidth',1.15)
         title('Div2 current')
-        legend('simu 1','simu 2','simu 3','simu4','simu5')
+        legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
         xlabel('time (ms)')
         ylabel('I (kA)')        
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
@@ -1528,14 +1641,15 @@ end %end SENSORS LOOP
      %Plot of Ip
      
         figure;
-        plot(Store(1).time_adap*1e3,Store(1).Ip*1e-3)
+        plot(Store(1).time_adap*1e3,Store(1).Ip*1e-3,'LineWidth',1.15)
         hold on
-        plot(Store(2).time_adap*1e3,Store(2).Ip*1e-3)
-        plot(Store(3).time_adap*1e3,Store(3).Ip*1e-3)
-        plot(Store(4).time_adap*1e3,Store(4).Ip*1e-3)
-        plot(Store(5).time_adap*1e3,Store(5).Ip*1e-3)
+        plot(Store(2).time_adap*1e3,Store(2).Ip*1e-3,'LineWidth',1.15)
+        plot(Store(3).time_adap*1e3,Store(3).Ip*1e-3,'LineWidth',1.15)
+        plot(Store(4).time_adap*1e3,Store(4).Ip*1e-3,'LineWidth',1.15)
+        plot(Store(5).time_adap*1e3,Store(5).Ip*1e-3,'LineWidth',1.15)
+        plot(Store(6).time_adap*1e3,Store(6).Ip*1e-3,'LineWidth',1.15)
         title('Plasma current')
-        legend('simu 1','simu 2','simu 3','simu4','simu5')
+        legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
         xlabel('time (ms)')
         ylabel('I (kA)')
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
@@ -1545,14 +1659,15 @@ end %end SENSORS LOOP
      %Plot of IVV
      
         figure;
-        plot(Store(1).time_adap*1e3,Store(1).I_PassiveVV*1e-3)
+        plot(Store(1).time_adap*1e3,Store(1).I_PassiveVV*1e-3,'LineWidth',1.15)
         hold on
-        plot(Store(2).time_adap*1e3,Store(2).I_PassiveVV*1e-3)
-        plot(Store(3).time_adap*1e3,Store(3).I_PassiveVV*1e-3)
-        plot(Store(4).time_adap*1e3,Store(4).I_PassiveVV*1e-3)
-        plot(Store(5).time_adap*1e3,Store(5).I_PassiveVV*1e-3)
+        plot(Store(2).time_adap*1e3,Store(2).I_PassiveVV*1e-3,'LineWidth',1.15)
+        plot(Store(3).time_adap*1e3,Store(3).I_PassiveVV*1e-3,'LineWidth',1.15)
+        plot(Store(4).time_adap*1e3,Store(4).I_PassiveVV*1e-3,'LineWidth',1.15)
+        plot(Store(5).time_adap*1e3,Store(5).I_PassiveVV*1e-3,'LineWidth',1.15)
+        plot(Store(6).time_adap*1e3,Store(6).I_PassiveVV*1e-3,'LineWidth',1.15)
         title('Net eddy on VV')
-        legend('simu 1','simu 2','simu 3','simu4','simu5')
+        legend('simu 1','simu 2','simu 3','simu4','simu5','simu6')
         xlabel('time (ms)')
         ylabel('I (kA)')
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
@@ -1564,13 +1679,16 @@ end %end SENSORS LOOP
    %Plot L emp     
         
         figure;
-        bar([1 2 3 4 5],[Store(1).Lemp Store(2).Lemp Store(3).Lemp Store(4).Lemp Store(5).Lemp])
+        bar([1 2 3 4 5 6],[Store(1).Lemp Store(2).Lemp Store(3).Lemp Store(4).Lemp Store(5).Lemp Store(6).Lemp])
         xlabel('simu')
         ylabel('L(m)')    
         title('Empirical L')
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         Filename = 'Lemp';
         saveas(gcf, strcat(FigDir,Filename,FigExt));   
+        
+    
+            
         %{ 
 Plot Vloop
   
