@@ -1687,8 +1687,17 @@ end %end SENSORS LOOP
         Filename = 'Lemp';
         saveas(gcf, strcat(FigDir,Filename,FigExt));   
         
-    
-            
+    %Plot L emp     
+        
+        figure;
+        bar([1 2 3 4 5 6],[Store(1).Bphi_Bpol_av_L_emp Store(2).Bphi_Bpol_av_L_emp Store(3).Bphi_Bpol_av_L_emp Store(4).Bphi_Bpol_av_L_emp Store(5).Bphi_Bpol_av_L_emp Store(6).Bphi_Bpol_av_L_emp])
+        xlabel('simu')
+        ylabel('L/(0.25a_{eff)')    
+        title('Empirical L/(0.25 a_{eff})')
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG   
+        Filename = 'Lemp_B';
+        saveas(gcf, strcat(FigDir,Filename,FigExt)); 
+        
         %{ 
 Plot Vloop
   
