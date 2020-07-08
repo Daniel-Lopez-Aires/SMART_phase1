@@ -452,8 +452,10 @@ param_equil=parameters(equil);                             %Will be used in the 
 %% % Make virtual sensors where we want breakdown  %%%%%%%
 %Simu2 from 30/6 slides the winner, moved inward same size and shape
 
-                    %InitiateBSensors(EquilParams,length_R,R_centre,Z_centre,length_Z)
-sensor_btheta = InitiateBSensors(param_equil,a_eff,0.31); %moved inward
+        %InitiateBSensors(EquilParams,length_R,R_centre,Z_centre,length_Z)
+R_null=0.31;                %[m] R of the sensor region (major raidus)
+                                    %Value so that the region is closer to inner wall
+sensor_btheta = InitiateBSensors(param_equil,a_eff,R_null); %moved inward
 
     %r,z of the sensors
 r_sensors=get(sensor_btheta,'r'); %size 1*200
@@ -1041,10 +1043,26 @@ for loop=1:length(time_loop)
   
 psi_null_interpn=  @(r,z) interpn(zGrid,rGrid,psi_null,z,r,'mikama');        
 psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
+    %Plot
+        figure;
+        contour(R_in,Z_in,psi_null_ins_VV,500)
+        xlabel('R(m)') 
+        ylabel('Z(m)')
+        hold on;
+        hh=plot(vessel);
+        set(hh, 'EdgeColor', 'k')
+        hh=plot(coilset);
+        set(hh, 'EdgeColor', 'k')
+        colormap(Gamma_II)
+        c=colorbar; %colorbar
+        ylabel(c, 'Psi(W)');  
+        title(sprintf('Psi  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG      
+        Filename = 'Psi';
+        %Filename= sprintf('%s_L_%d',Filename,i_L);    
+        saveas(gcf, strcat(FigDir,Filename,FigExt));
     
-     
- 
-%Extraction of the fields (Earth inside)!
+    %Extraction of the fields (Earth inside)!
     [FieldsBreak, FieldsBreakNoEarth]=fields(equil_break); %To include Earths!!!
     %[thisDoIncludeEarths,FieldsBreak]=fields(equil_break); %To NOT include Earths!!!   
     
@@ -1167,7 +1185,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
     L_aver(loop)=0.25*R_minor_sensor*Bphi_centerNull/Bpolmin_av                %[m] L with the average pol field
     Campos_L(loop)=Bphi_centerNull/Bpolmin_av; %field to compute L emp
     
-    L_emp_Scott=0.25*param_equil.rin*Bphi_centerNull/Bpolmin_av   
+    L_emp_Scott=0.25*(R_null-VWall_Inboard)*Bphi_centerNull/Bpolmin_av   
     
     %REMEMBER THAT THIS IS COMPUTED INSIDE NULL REGION, WHILE THE LOWER
     %BPOL IS NOT IN THAT REGION DUE TO EDDYS (AND EARTH)!!!!!!!!!!!!!!!!!!
@@ -1459,7 +1477,8 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
       %1) L
         figure;
         contourf(r_ins_VVL_contour,z_ins_VVL_contour,L_int,'ShowText','On')
-        %surf(r_insVV_noLimit,z_insVV_noLimit,L_int,'EdgeColor','none'), shading('interp')
+        %surf(r_ins_VVL_contour,z_ins_VVL_contour,L_int,'EdgeColor','none'), shading('interp')
+        view(2)
         hold on
         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
             [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'g.--')
@@ -1477,12 +1496,67 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         ylabel(c, 'L(m)');
         xlabel('R (m)')
         ylabel('Z (m)')
-        legend('L','Field null region','Non colliding start points')
+        %legend('L','Field null region','Non colliding points')
         title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
         %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
-        Filename = 'L';
+        Filename = 'L_cont';
         %Filename= sprintf('%s_simu_%d',Filename,sen);     
         saveas(gcf, strcat(FigDir,Filename,FigExt));       
+
+        %1D to 2D plot
+        figure;
+        tri = delaunay(y0(:,1),y0(:,2));
+        plot(y0(:,1),y0(:,2),'.')
+        [r,c] = size(tri); %number of triangles there
+        trisurf(tri, y0(:,1), y0(:,2),y_end(:,3),'FaceAlpha',1,'EdgeColor','none'), shading('interp');
+        view(2)
+        colorbar
+        hold on                     %this is to make the transition between values continuous,                                                        %instedad of discontinuously between pixels
+        colormap(Gamma_II)
+        plot3([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+            [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],...
+            ones(1,5)*max(y_end(:,3)),'g.--')
+        plot3(RZ_no_collide(:,1),RZ_no_collide(:,2),max(y_end(:,3))*ones(length(RZ_no_collide(:,2)),1),'m*')
+        hh=plot(vessel);
+        set(hh, 'EdgeColor', 'k')
+        set(hh,'HandleVisibility','off');
+        hh=plot(coilset);
+        set(hh, 'EdgeColor', 'k')
+        set(hh,'HandleVisibility','off');
+        colormap(Gamma_II)
+        c=colorbar; %colorbar
+        axis equal
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+        ylabel(c, 'L(m)');
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        %legend('L','Field null region','Non colliding points')
+        title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
+        %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        Filename = 'L';        
+        saveas(gcf, strcat(FigDir,Filename,FigExt));  
+        
+        figure;
+        plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+            [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'g.--')
+        hold on
+        plot(RZ_no_collide(:,1),RZ_no_collide(:,2),'m*') 
+        hh=plot(vessel);
+        set(hh, 'EdgeColor', 'k')
+        set(hh,'HandleVisibility','off');
+        hh=plot(coilset);        
+        set(hh, 'EdgeColor', 'k')
+        set(hh,'HandleVisibility','off');      
+        colormap(Gamma_II)
+        axis equal
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        %legend('Field null region','Non colliding points')
+        title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
+        %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        Filename = 'L_noL';                
+        saveas(gcf, strcat(FigDir,Filename,FigExt));  
         
       %2) Pseudo potential U/Vloop
         figure;
@@ -1505,9 +1579,44 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         ylabel('Z (m)')
         title(sprintf('Pseudo potential  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))          
         %title(sprintf('Pseudo potential at t=%dms for simu %d',time_loop(loop)*1e3,sen))
-        Filename = 'Pseudo';
+        Filename = 'Pseudo_contour';
         %Filename= sprintf('%s_simu_%d',Filename,sen);     
         saveas(gcf, strcat(FigDir,Filename,FigExt));
+        
+        %1D to 2D plot
+                %1D to 2D plot
+        figure;
+        tri = delaunay(y0(:,1),y0(:,2));
+        plot(y0(:,1),y0(:,2),'.')
+        [r,c] = size(tri); %number of triangles there
+        trisurf(tri, y0(:,1), y0(:,2),y_end(:,5),'FaceAlpha',1,'EdgeColor','none'), shading('interp');
+        view(2)
+        colorbar
+        hold on                     %this is to make the transition between values continuous,                                                        %instedad of discontinuously between pixels
+        colormap(Gamma_II)
+        plot3([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+            [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],...
+            ones(1,5)*max(y_end(:,3)),'g.--')
+        plot3(RZ_no_collide(:,1),RZ_no_collide(:,2),max(y_end(:,3))*ones(length(RZ_no_collide(:,2)),1),'m*')
+        hh=plot(vessel);
+        set(hh, 'EdgeColor', 'k')
+        set(hh,'HandleVisibility','off');
+        hh=plot(coilset);
+        set(hh, 'EdgeColor', 'k')
+        set(hh,'HandleVisibility','off');
+        colormap(Gamma_II)
+        c=colorbar; %colorbar
+        axis equal
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+        ylabel(c, 'U/Vloop');
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        %legend('U/Vloop','Field null region','Non colliding points')
+        title(sprintf('U/Vloop  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
+        %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        Filename = 'Pseudo';        
+        saveas(gcf, strcat(FigDir,Filename,FigExt));  
+        
         
       %%%3)[Experimental] E_rel plot, to predict where the gas breaks down
         
@@ -1910,11 +2019,11 @@ Emin= @(L,p,C1,C2) C2*p./log(C1*p*L); %Min E as Paschen state
 
         figure;
         %subplot(1,2,1)
-        loglog(p,Emin(10,p,C_1(1),C_2(1)),'*-')
+        loglog(p,Emin(20,p,C_1(1),C_2(1)),'-','LineWidth', 0.95)
         hold on
-        loglog(p,Emin(20,p,C_1(1),C_2(1)),'*-')
-        loglog(p,Emin(50,p,C_1(1),C_2(1)),'*-')
-        loglog(p,Emin(100,p,C_1(1),C_2(1)),'*-')
+        loglog(p,Emin(50,p,C_1(1),C_2(1)),'-','LineWidth', 0.95)
+        loglog(p,Emin(70,p,C_1(1),C_2(1)),'-','LineWidth', 0.95)
+        loglog(p,Emin(100,p,C_1(1),C_2(1)),'-','LineWidth', 0.95)
         %VEST
         loglog(p,3/(2*pi*0.36)*ones(1,length(p)),'b--','LineWidth', 0.95) 
         loglog([2e-5 2e-5],[10^-1 10^5],'b--','LineWidth', 0.95)
@@ -1929,7 +2038,7 @@ Emin= @(L,p,C1,C2) C2*p./log(C1*p*L); %Min E as Paschen state
         loglog(p,E_Rgeo*ones(1,length(p)),'r--','LineWidth', 1.15) 
         xlabel('Prefill pressure (Torr)')
         ylabel('E_{min} (V/m)')
-        legend('L=10m','L=20m (Globus)','L=50m','L=100m','','VEST','','','GlobusM','','','SMART E(Rin)','SMART E (Rgeo)')
+        legend('L=20m','L=50m','L=70m','L=100m','','VEST','','','GlobusM','','','SMART E(Rin)','SMART E (Rgeo)')
         title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
         set(gca, 'FontSize', 13); %<- Set properties TFG
         Filename='Paschen_complete';
@@ -2009,16 +2118,16 @@ I_rad_wall= j_rad_wall*2*pi*0.2 %Pasma current [A], Assuming circular plasma of 
     
  p_single=linspace(1e-5,1e-3,100000);  %[Tor]
  figure;
-    loglog(p_single,Emin(10,p_single,C_1(1),C_2(1)),'LineWidth',0.95) 
+    loglog(p_single,Emin(20,p_single,C_1(1),C_2(1)),'LineWidth',0.95) 
     hold on
     %
-    loglog(p_single,Emin(20,p_single,C_1(1),C_2(1)),'LineWidth',0.95) 
-    loglog(p_single,Emin(50,p_single,C_1(1),C_2(1)),'LineWidth',0.95)
+    loglog(p_single,Emin(50,p_single,C_1(1),C_2(1)),'LineWidth',0.95) 
+    loglog(p_single,Emin(70,p_single,C_1(1),C_2(1)),'LineWidth',0.95)
     loglog(p_single,Emin(100,p_single,C_1(1),C_2(1)),'LineWidth',0.95)
     loglog(p_single,E(param_equil.rin)*ones(length(p_single),1),'r-','LineWidth',1.15)
     xlabel('Prefill pressure (Torr)')
     ylabel('E_{min} (V/m)')
-    legend('L=10m','L=20m','L=50m(Globus)','L=100m','SMART E')
+    legend('L=20m','L=50m','L=70m','L=100m','SMART E')
     title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
     axis([10^-5 10^-3 10^-1 50])
@@ -2046,7 +2155,12 @@ I_rad_wall= j_rad_wall*2*pi*0.2 %Pasma current [A], Assuming circular plasma of 
   legend(Gas_type(1))%,Gas_type(2))
   set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
   
- 
+  %%
+  
+  Scott_tava=tau_ava(E(param_equil.rin),5e-5,L_plot(3),C_1(1),C_2(1)); %[s] time
+  fprintf('tus muertos')
+  
+ %%
   %% SAVING THINGS%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %1)Current data
