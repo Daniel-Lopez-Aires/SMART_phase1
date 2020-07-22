@@ -1065,6 +1065,29 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
     
 %Plots!
 
+  %Quiver plot Bpol
+        figure;
+        quiver(R_in,Z_in,FieldsBreak.VV.Br,FieldsBreak.VV.Bz,'AutoScale','off')
+        hold on;
+        hh=plot(vessel);
+        set(hh, 'EdgeColor', 'k')
+        hh=plot(coilset);
+        set(hh, 'EdgeColor', 'k')
+        colormap(Gamma_II)
+        view(2) %2D view
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+        plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+        [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        axis equal
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        title(sprintf('B_{pol}  at t=%d ms (iter %d/%d) ph1',time_loop(loop)*1e3,loop,length(time_loop)))
+        %title(sprintf('B_{pol} t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        Filename = 'Bpol_quiver';
+        %Filename= sprintf('%s_simu_%d',Filename,sen);      
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));       
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,'.fig'));     
+        
   %Bpol 
         figure; 
         %contourf(R_in,Z_in,log10(abs(Bpol_ins_vessel)),'EdgeColor','none');
@@ -1338,14 +1361,14 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                     FieldsBreak.interpn.Bz,FieldsBreak.interpn.Bphi);                
                 
                 %4) Integration
-                        %%%%%%%%SINGLE FIELD LINE TRACER and plotter
+                        %% %%%%%%SINGLE FIELD LINE TRACER and plotter
 
                         %need to find i for the chosen R,Z value in r0_z0_L0_U0.
                         %I= 85 for a line inside, 49 for a max L outside, 152 for the
                         %outward arm (Z>0). 135 for the outward Z<0 line. 64 for the upper
                         %arm
         
-                        i=49 %looked in the y0
+                        i=652 %looked in the y0
                         [t_fieldline, y_fieldline]=ode45(odefun,tSpan,y0(i,:),options);    
     
                         %To save the last values of R,Z,L
@@ -1366,7 +1389,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
                             %legend('Starting point (Point with less Bpol)','Field line',...
                         %%%END ONE LINE TRACER
-   
+                            %%
                         for i=1:length(y0)
                             fprintf('Iter %d de %d',i,length(y0))
                             [t_fieldline, y_fieldline]=ode45(odefun,tSpan,y0(i,:),options);        %ode15s Carlos
@@ -2109,7 +2132,13 @@ Emin= @(L,p,C1,C2) C2*p./log(C1*p*L); %Min E as Paschen state
         Filename = 'tau_ava';
         Filename= sprintf('%s_L_%d',Filename,i_L);    
         saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
-
+    
+     %Compute min avalanche time for the actual E(Rin)
+        for i=1:length(p_single) %calc time for all p
+            tau_acccum(i)=tau_ava(E(param_equil.rin),p_single(i),L_plot(i_L),C_1(1),C_2(1)); %[s] time 
+        end
+        [tau_ava_min(i_L) min_index(i_L)]=min(tau_acccum);
+        p_tau_ava_min(i_L)=p_single(min_index(i_L));
     end
 
   %Also, assuming the ionization fraction of 5%=0.05, the plasma current when
@@ -2140,7 +2169,7 @@ I_rad_wall= j_rad_wall*2*pi*0.2 %Pasma current [A], Assuming circular plasma of 
     Filename = 'Paschen_ava';
     %Filename= sprintf('%s_L_%3.1f',Filename,L_plot(i_L));    
     saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));     
-
+    
 %%%%%%End loop paschen plots%%%%%%%%
 
     
