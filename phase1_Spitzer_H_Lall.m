@@ -74,7 +74,7 @@ close all
 FigExt = '.png'; 		%'.png','.eps','.pdf'
 
 %Define project and series names
-ProjectName = 'SMART-P1';			%Define global project name
+ProjectName = 'S1-000018';		%Define global project name
 %SeriesName = 'VaryTauP';		%Define parameter scan series name
 
 %Create global output folders for saved data and figures
@@ -112,16 +112,16 @@ RMaxCentre=VesselRMaxInner+(VWall_Outboard/2);	% Outboard wall 'grows outwards (
 %%%%%%%%%%%%%%%%%%%%%%%  DEFINE COIL GEOMETRY  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Define Solenoid Geometry and Parameters
-nSol = 210;					 		  % Number of Solenoid Windings
+nSol = 230;		%210			 		  % Number of Solenoid Windings
 RSolInner = 0.115; RSolOuter = 0.145; % Inner and Outer solenoid radii    [m]
 RSol = (RSolInner+RSolOuter)/2; % Central radius of solenoid (0.13) [m]
-ZMinSol = ZMinCentre;                   % Solenoid Min Z position           [m]
-ZMaxSol = ZMaxCentre;                   % Solenoid Max Z position           [m]
+ZMinSol = -0.7750; %ZMinCentre;             % Solenoid Min Z position           [m]
+ZMaxSol = -ZMinSol; %ZMaxCentre;             % Solenoid Max Z position           [m]
 ZSol=ZMaxSol+ZMinSol;
 SolLength=ZMaxSol-ZMinSol;
 
 %Number of Radial (R) and axial (Z) PF coil windings
-nZDiv1=6; nRDiv1=4;
+nZDiv1=6; nRDiv1=6; %4 on S2-14
 nZDiv2=6; nRDiv2=4;
 nZPF1=6; nRPF1=4;
 nZPF2=6; nRPF2=4;
@@ -145,8 +145,10 @@ nPF = length(turns);                                %The number of total coils, 
 
 
 %Define coil total cross-sectional dimensions
-width_PF = 0.075;  % Width of the PF coil (m)     (Previously 0.111m) 
-height_PF = 0.050; % Height of a the PF coil (m)  (Previously 0.074m)  
+width_PF1 = 0.075; height_PF1 = 0.050;    %[m]
+width_PF2 = 0.075; height_PF2 = 0.050;    %[m]
+width_Div1 = 0.075; height_Div1 = 0.075;  %[m]
+width_Div2 = 0.075; height_Div2 = 0.050;  %[m]
 
 %Define central location of coil sets                                          %NOTES  (Outer midplane flange diameter = 176.8mm (180 mm))
 R_PF1 = 0.940;  %R position of PF1 (m)	%0.940m     (MINIMUM OF 938mm)
@@ -177,10 +179,10 @@ coil_density = 1;                       % Relative Coil Density      [Arb]
 coil_temp = 293.0;                      % Initial Coil Temperature   [K]
 resistivity = copper_resistivity_at_temperature(coil_temp);
 
-PF1  = CreateSMARTPFCircuit( 'PF1',R_PF1,Z_PF1,width_PF,height_PF,turns(iPF1),nZPF1,nRPF1,true, coil_temp, resistivity, coil_density);
-PF2  = CreateSMARTPFCircuit( 'PF2',R_PF2,Z_PF2,width_PF,height_PF,turns(iPF2),nZPF2,nRPF2,true, coil_temp, resistivity, coil_density);
-Div1 = CreateSMARTPFCircuit('Div1', R_Div1, Z_Div1, width_PF,height_PF, turns(iDiv1), nZDiv1,  nRDiv1, true, coil_temp, resistivity, coil_density);
-Div2 = CreateSMARTPFCircuit('Div2', R_Div2, Z_Div2, width_PF,height_PF, turns(iDiv2), nZDiv2,  nRDiv2, true, coil_temp, resistivity, coil_density);
+PF1  = CreateSMARTPFCircuit( 'PF1',R_PF1,Z_PF1,width_PF1,height_PF1,turns(iPF1),nZPF1,nRPF1,true, coil_temp, resistivity, coil_density);
+PF2  = CreateSMARTPFCircuit( 'PF2',R_PF2,Z_PF2,width_PF2,height_PF2,turns(iPF2),nZPF2,nRPF2,true, coil_temp, resistivity, coil_density);
+Div1 = CreateSMARTPFCircuit('Div1', R_Div1, Z_Div1, width_Div1,height_Div1, turns(iDiv1), nZDiv1,  nRDiv1, true, coil_temp, resistivity, coil_density);
+Div2 = CreateSMARTPFCircuit('Div2', R_Div2, Z_Div2, width_Div2,height_Div2, turns(iDiv2), nZDiv2,  nRDiv2, true, coil_temp, resistivity, coil_density);
     %Create coil set from parameters defined above. (Function made by Carlos Soria)
 %Function createVESTPFCircuit creates two PF coils. One in (R, Z) and another in (R, -Z)
 
@@ -234,7 +236,7 @@ global coilset; coilset = fiesta_coilset('SMARTcoilset',[Sol,PF1,PF2,Div1,Div2],
     %axis([0,1.1,-1.1,1.1]) 
     %print -depsc2 NOMBREPLOT.eps
     Filename = 'CrossSection';
-    saveas(gcf, strcat(FigDir,Filename,FigExt));
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
 
 % @@@@@@@END CREATION OF THE TOKAMAK@@@@@@@@@@@@@@@
 
@@ -258,27 +260,28 @@ global coilset; coilset = fiesta_coilset('SMARTcoilset',[Sol,PF1,PF2,Div1,Div2],
 %time(3)-->time(5) lasts timescale TauR (Solenoid Ramp-Down TimeScale)
 %time(5)-->time(6) lasts timescale TauP (Pulse/Discharge Timescale)
 %%%%%%%
-
-%Solenoid coil currents [kA]		%Phase1Base     %Phase1NegTri   %Phase1PosTri (@TauR1 = 5.0ms)
+                                    %TauR1=3.5ms    %TauR=3.5ms		%TauR=3.5ms
+                                    %RGeo=0.42      %RGeo=0.42      %RGeo=0.46
+%Solenoid coil currents [kA]		%Phase1Base     %Phase1NegTri   %Phase1PosTri
 I_Sol_Null=+1000;					%+1000;         %+1000;         %+1000;
 I_Sol_MidRamp=+000;                 %+000           %+000;          %+000;
-I_Sol_Equil=-400;			        %-400;          %-520;          %-450;
-I_Sol_EndEquil=-375;                %-375;          %-500;          %-425;
+I_Sol_Equil=-100;			        %-100;          %-250;          %-350;
+I_Sol_EndEquil=-075;                %-075;          %-225;          %-325;
 
 %PF coil currents (At Equilibrium, time(4,5,6))
-I_PF1_Equil=-400;					%-400;          %-400;          %-400;
-I_PF2_Equil=-400;					%-400;          %-400;          %-400;          (NEG FOR +delta, POS FOR -delta, after efit) 
-I_Div1_Equil=+0525;					%+0500;         %-1500/1800;    %+1000/1800;    (HIGH FOR +delta, LOW FOR -delta, before efit)
+I_PF1_Equil=-0400;					%-0400;         %-0400;         %-0400;
+I_PF2_Equil=-0400;					%-0400;         %-0400;         %-0400;		(NEG FOR +delta, POS FOR -delta, after efit) 
+I_Div1_Equil=+0300;					%+0300;         %-0600;    		%+0900;		(HIGH FOR +delta, LOW FOR -delta, before efit)
 I_Div2_Equil=+0000;					%+0000;         %+0000;         %+0000;
 
 %Define number of time-steps (vertices) in the current waveforms
-TauB  = 0.015;			% Null Buffer Timescale     [s] Determines null-field buffer
-TauR1 = 0.005;			% Breakdown Ramp Timescale  [s] Determines max loop voltage
-TauR2 = 0.022;			% PF & Div Ramp Timescale   [s] Determines max PF/Div current ramp              0.020?? (Limited by -d)
-TauR  = TauR1+TauR2;    % Total Ramp Timescale      [s]
+TauN  = 0.015;			% Null-Field Timescale      [s] Determines null-field decay timescale
+TauR1 = 0.0035;			% Breakdown Ramp Timescale  [s] Determines max loop voltage
+TauR2 = 0.015;			% PF & Div Ramp Timescale   [s] Determines max PF/Div current ramp
+TauR  = TauR1+TauR2;    % Total Ramp Timescale      [s] 
 TauP  = 0.020;			% Pulse Timescale      		[s] Determines flat-top timescale
-%Time   [Init      PrePulse  InitRampDown  MidRampDown  EndRampDown  MidEquil     Terminate         ];
-time =  [-2*TauB   -TauB     0.0           TauR1        TauR         TauR+TauP    TauR+TauP+(2*TauB)];
+%Time   [Init      PrePulse   InitRampDown  MidRampDown  EndRampDown  MidEquil     Terminate         ];
+time =  [-2*TauN   -TauN      0.0           TauR1        TauR         TauR+TauP    TauR+TauP+(2*TauN)];
 nTime = length(time);	% Coil Waveform Timesteps	[-]
 
 %Fit any dynamic coil currents, set with 'linear', {pre-ramp, mid-ramp, end-ramp}
@@ -345,7 +348,7 @@ ZGrid=get(Grid,'Z'); %1*50200, 50200=251*250
 Te=250;                                     %[eV] electron temperature. Calcualted by Eli with my tfg equilibria
 Ti=Te*0.1;                                  %[eV] ion temperature
 Ip=30e3;                                    %[A] plasma current
-RGeo=0.44;                                %[m] This is Rmajor in the excel. From the eq plot!
+RGeo=0.42;                                %[m] This is Rmajor in the excel. From the eq plot!
 Rmax=0.7 ;                                 %[m] The max value of R (separatrix), for Z=0. From the eq plot!
 a=Rmax-RGeo;                            %[m] minor radius
 ZGeo=0;                                      %Major Z, zero due to the symmetry with respect to Z=0
@@ -439,7 +442,7 @@ icoil_equil.Div2=CoilWaveforms(iDiv2,5);	%Div2 Equilibrium Current at time(5,6)
          set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
             %Watch out, R0 in the plot is r0_mag, not r0_geom!!
         Filename = 'Target_equilibria';
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
+            saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
         
         clc %to delete all teh warnings that appears
 
@@ -452,10 +455,8 @@ param_equil=parameters(equil);                             %Will be used in the 
 %% % Make virtual sensors where we want breakdown  %%%%%%%
 %Simu2 from 30/6 slides the winner, moved inward same size and shape
 
-        %InitiateBSensors(EquilParams,length_R,R_centre,Z_centre,length_Z)
-R_null=0.31;                %[m] R of the sensor region (major raidus)
-                                    %Value so that the region is closer to inner wall
-sensor_btheta = InitiateBSensors(param_equil,a_eff,R_null); %moved inward
+                    %InitiateBSensors(EquilParams,length_R,R_centre,Z_centre,length_Z)
+sensor_btheta = InitiateBSensors(param_equil,a_eff,0.31); %moved inward
 
     %r,z of the sensors
 r_sensors=get(sensor_btheta,'r'); %size 1*200
@@ -477,7 +478,7 @@ z_sensors=get(sensor_btheta,'z'); %size 1*200
         plot(sensor_btheta);
         Filename = 'Sensors';
         %Filename= sprintf('%s_simu_%d',Filename,sen);   
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
+            saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
 %%%%%%%%%%%%
 
 %%%%END OF FIESTA EQ@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -486,6 +487,18 @@ z_sensors=get(sensor_btheta,'z'); %size 1*200
 % @@@@@@@@@@@@@@@RZIp@@@@@@@@@@@@@@@@@@@@@@
 % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+%<<<<<<<<<<<<TO DO list
+    %*RZIp+EDDYS
+    %* Issue with Vp very low and different fromVloop  
+    %* Undersntadn Fiesta's RZIp:
+        %- Do not match entirely Ati's not/r Lster's JT60S)
+        %- Tilde amtrices?
+        %- 2 runs??
+        %-Inversion to pass from V as input to I?
+    %*R,Z eqs have been removed from solver v4, Peter told us
+        
+
+%<<<<<<<<<<<<<<<<<<<<<<
 % It has the virtual sensors
 
 rzip_config = fiesta_rzip_configuration( 'RZIP', config, vessel, {sensor_btheta} );
@@ -562,7 +575,7 @@ V_PF_input = NaN(nTime,nPF);            %Coil voltages are initiated to zero
     set(gca, 'FontSize', 13, 'LineWidth', 0.75);                    %<- Set properties TFG
     Filename = 'Input_currents';
     %Filename= sprintf('%s_simu_%d',Filename,sen);      
-    saveas(gcf, strcat(FigDir,Filename,FigExt));
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
    
 
 
@@ -789,7 +802,7 @@ I_Passive_VV=sum(I_Passive,2);
             
             Filename = '_RZIpOutputs';
             %Filename= sprintf('%s_simu_%d',Filename,sen);  
-            saveas(gcf, strcat(FigDir,Filename,FigExt));
+                saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
           %print -depsc2 NOMBREPLOT.eps
 
           %v{
@@ -803,7 +816,7 @@ I_Passive_VV=sum(I_Passive,2);
             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
             Filename = 'Ip';
             %Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
-            saveas(gcf, strcat(FigDir,Filename,FigExt));
+                saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
             
             figure;
             plot(time_adaptive*1e3,I_Passive_VV/(1e3))
@@ -814,7 +827,7 @@ I_Passive_VV=sum(I_Passive,2);
             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
             Filename = 'I_VV';
             %Filename= sprintf('%s_Trampdown_%dms',Filename,2*T_ramp_Sol);    
-            saveas(gcf, strcat(FigDir,Filename,FigExt));
+                saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
   % }          
           
      %{     
@@ -1043,26 +1056,10 @@ for loop=1:length(time_loop)
   
 psi_null_interpn=  @(r,z) interpn(zGrid,rGrid,psi_null,z,r,'mikama');        
 psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
-    %Plot
-        figure;
-        contour(R_in,Z_in,psi_null_ins_VV,500)
-        xlabel('R(m)') 
-        ylabel('Z(m)')
-        hold on;
-        hh=plot(vessel);
-        set(hh, 'EdgeColor', 'k')
-        hh=plot(coilset);
-        set(hh, 'EdgeColor', 'k')
-        colormap(Gamma_II)
-        c=colorbar; %colorbar
-        ylabel(c, 'Psi(W)');  
-        title(sprintf('Psi  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
-        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG      
-        Filename = 'Psi';
-        %Filename= sprintf('%s_L_%d',Filename,i_L);    
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
     
-    %Extraction of the fields (Earth inside)!
+     
+ 
+%Extraction of the fields (Earth inside)!
     [FieldsBreak, FieldsBreakNoEarth]=fields(equil_break); %To include Earths!!!
     %[thisDoIncludeEarths,FieldsBreak]=fields(equil_break); %To NOT include Earths!!!   
     
@@ -1096,7 +1093,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         %title(sprintf('B_{pol} t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'Bpol';
         %Filename= sprintf('%s_simu_%d',Filename,sen);      
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
+            saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
 
 %Bphi
         figure; 
@@ -1123,7 +1120,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         %title(sprintf('B_{phi} t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'Bphi';
         %Filename= sprintf('%s_simu_%d',Filename,sen);      
-        saveas(gcf, strcat(FigDir,Filename,FigExt));        
+            saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));         
         
    %Lloyd
            
@@ -1150,7 +1147,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         %title(sprintf('Lloyd criteria t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'LLoyd';
         %Filename= sprintf('%s_simu_%d',Filename,sen);    
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
+            saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
                
    %%L CALC FORMULAE%%%%%%%%%%%%
 
@@ -1180,12 +1177,12 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
     
     Bpolmin_av=mean(mean(FieldsBreak.sensor.Bpol));              %to compute the mean inside the sensor region
     
-    R_minor_sensor=(max(get(sensor_btheta,'r'))-min(get(sensor_btheta,'r')))/2; %minor radius of the null region
-    
-    L_aver(loop)=0.25*R_minor_sensor*Bphi_centerNull/Bpolmin_av                %[m] L with the average pol field
+    a_sensor=(max(get(sensor_btheta,'r'))-min(get(sensor_btheta,'r')))/2; %[m]minor radius of the null region
+    R_major_sensor=min(get(sensor_btheta,'r'))+a_sensor;            %[m] Major raidus  of the sensorregion
+    L_aver(loop)=0.25*a_sensor*Bphi_centerNull/Bpolmin_av                %[m] L with the average pol field
     Campos_L(loop)=Bphi_centerNull/Bpolmin_av; %field to compute L emp
     
-    L_emp_Scott=0.25*(R_null-VWall_Inboard)*Bphi_centerNull/Bpolmin_av   
+    L_emp_Scott=0.25*R_major_sensor*Bphi_centerNull/Bpolmin_av   
     
     %REMEMBER THAT THIS IS COMPUTED INSIDE NULL REGION, WHILE THE LOWER
     %BPOL IS NOT IN THAT REGION DUE TO EDDYS (AND EARTH)!!!!!!!!!!!!!!!!!!
@@ -1228,10 +1225,10 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         
        %Now, if the coils are inside, the grid points there have to be removed because ode 'se raya', and spent too long time
        
-       Rin_coils=[R_PF2 R_Div1 R_Div2]-width_PF/2*ones(1,nPF-2); %inner R of coilset (no SOl and PF1 (outside))
-       Rout_coils=[R_PF2 R_Div1 R_Div2]+width_PF/2*ones(1,nPF-2); %outer R of coilset (no SOl and PF1 (outside))
-       Zdown_coils=[Z_PF2 Z_Div1 Z_Div2]-height_PF/2*ones(1,nPF-2); %lowerZ of coilset (no SOl and PF1 (outside))
-       Zup_coils=[Z_PF2 Z_Div1 Z_Div2]+height_PF/2*ones(1,nPF-2); %higher Z of coilset (no SOl and PF1 (outside))    
+       Rin_coils=[R_PF2 R_Div1 R_Div2]-[width_PF2 width_Div1 width_Div2]/2; %[m] inner R of coilset (no SOl and PF1 (outside))
+       Rout_coils=[R_PF2 R_Div1 R_Div2]+[width_PF2 width_Div1 width_Div2]/2;   %[m]outer R of coilset (no SOl and PF1 (outside))
+       Zdown_coils=[Z_PF2 Z_Div1 Z_Div2]-[height_PF2 height_Div1 height_Div2]/2;   %[m]lowerZ of coilset (no SOl and PF1 (outside))
+       Zup_coils=[Z_PF2 Z_Div1 Z_Div2]+[height_PF2 height_Div1 height_Div2]/2;    %[m]higher Z of coilset (no SOl and PF1 (outside))    
             %They are good
         
        %Lets rehape the meshgrid to do the loop to remove points
@@ -1450,6 +1447,13 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
    Time_Run_Integrator=toc     %Time spent by the integrator
    
    L_int=reshape(y_end(:,3),size(r_ins_VVL_contour,1),size(r_ins_VVL_contour,2));
+    
+   %Calc of average L on the null region
+        index= y0(:,1)<=max(get(sensor_btheta,'r')) & y0(:,1)>=min(get(sensor_btheta,'r')) &...
+            y0(:,2)<=max(get(sensor_btheta,'z')) & y0(:,2)>=min(get(sensor_btheta,'z')); 
+                    %Index of R,Z inside null
+        L_int_row=y_end(:,3); %[m] L in row form
+        L_int_null=mean(L_int_row(index))
         
    %%%Storing of the non colliding starting points
     %To store start points that do not collide: first I get the index of both R
@@ -1473,7 +1477,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
           RZ_no_collide=[RZ_no_collide(Index,1) RZ_no_collide(Index,2)];
                    
        
-    %%%Contour plots
+     %%%Contour plots
       %1) L
         figure;
         contourf(r_ins_VVL_contour,z_ins_VVL_contour,L_int,'ShowText','On')
@@ -1501,7 +1505,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'L_cont';
         %Filename= sprintf('%s_simu_%d',Filename,sen);     
-        saveas(gcf, strcat(FigDir,Filename,FigExt));       
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));        
 
         %1D to 2D plot
         figure;
@@ -1534,7 +1538,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
         %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'L';        
-        saveas(gcf, strcat(FigDir,Filename,FigExt));  
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));   
         
         figure;
         plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
@@ -1556,7 +1560,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
         %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'L_noL';                
-        saveas(gcf, strcat(FigDir,Filename,FigExt));  
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));   
         
       %2) Pseudo potential U/Vloop
         figure;
@@ -1581,7 +1585,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         %title(sprintf('Pseudo potential at t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'Pseudo_contour';
         %Filename= sprintf('%s_simu_%d',Filename,sen);     
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
         
         %1D to 2D plot
                 %1D to 2D plot
@@ -1615,7 +1619,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         title(sprintf('U/Vloop  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
         %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'Pseudo';        
-        saveas(gcf, strcat(FigDir,Filename,FigExt));  
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));   
         
         
       %%%3)[Experimental] E_rel plot, to predict where the gas breaks down
@@ -1647,7 +1651,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         %title(sprintf('E_{rel} at t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'U_L';
         %Filename= sprintf('%s_simu_%d',Filename,sen);   
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
 % }
 
 end    %end loop time (not in use right now)!!!!
@@ -1670,7 +1674,7 @@ Plot Vloop
 %     title('V_{loop} at t=0ms vs ramp-down time')
 %     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
 %         Filename = 'V_loop_vs_ramp_down'; 
-%         saveas(gcf, strcat(FigDir,Filename,FigExt));                
+%             saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));                 
 %}        
 
 
@@ -2039,10 +2043,10 @@ Emin= @(L,p,C1,C2) C2*p./log(C1*p*L); %Min E as Paschen state
         xlabel('Prefill pressure (Torr)')
         ylabel('E_{min} (V/m)')
         legend('L=20m','L=50m','L=70m','L=100m','','VEST','','','GlobusM','','','SMART E(Rin)','SMART E (Rgeo)')
-        title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
+        title(sprintf('Paschen curve ph1, Gas=%s',Gas_type(1))); %d for numbers
         set(gca, 'FontSize', 13); %<- Set properties TFG
         Filename='Paschen_complete';
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
     
  
  %%%Estimation of the time when the avalancha has ended (begin
@@ -2082,7 +2086,7 @@ Emin= @(L,p,C1,C2) C2*p./log(C1*p*L); %Min E as Paschen state
       time_Ep_loop=toc  
         %Plot
         figure;
-        contourf(p,Ep,log10(tau*1e3),'ShowText','on');
+        contourf(p,Ep,log10(tau*1e3),10,'ShowText','on');
         %contourf(p,E,tau);
         shading('interp') %this is to make the transition between values continuous,
                                     %instedad of discontinuously between pixels
@@ -2090,6 +2094,7 @@ Emin= @(L,p,C1,C2) C2*p./log(C1*p*L); %Min E as Paschen state
        %colormap('hot') 
        hold on;
         plot(p_single,E(param_equil.rin)*ones(length(p_single),1),'r-','LineWidth',1.15)
+        plot(p_single,E_Rgeo*ones(length(p_single),1),'r--','LineWidth',1.15)
         c=colorbar; %colorbar
         ylabel(c, 'log10(tau_{ava} (ms))');
         view(2) %2D view
@@ -2098,12 +2103,12 @@ Emin= @(L,p,C1,C2) C2*p./log(C1*p*L); %Min E as Paschen state
         set(gca,'Xscale','log') %para poner el eje x en log   
         set(gca,'Yscale','log') %para poner el eje x en log 
         grid on
-        title(sprintf('Avalanche time for L=%3.1f m',L_plot(i_L)))
+        title(sprintf('Avalanche time for L=%3.1f m, ph1',L_plot(i_L)))
         %title(sprintf('time radiation wal[ms]) for L=%d m',L_plot(i_L)))
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG      
         Filename = 'tau_ava';
         Filename= sprintf('%s_L_%d',Filename,i_L);    
-        saveas(gcf, strcat(FigDir,Filename,FigExt));
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
 
     end
 
@@ -2125,15 +2130,16 @@ I_rad_wall= j_rad_wall*2*pi*0.2 %Pasma current [A], Assuming circular plasma of 
     loglog(p_single,Emin(70,p_single,C_1(1),C_2(1)),'LineWidth',0.95)
     loglog(p_single,Emin(100,p_single,C_1(1),C_2(1)),'LineWidth',0.95)
     loglog(p_single,E(param_equil.rin)*ones(length(p_single),1),'r-','LineWidth',1.15)
+    loglog(p_single,E_Rgeo*ones(length(p_single),1),'r--','LineWidth',1.15)
     xlabel('Prefill pressure (Torr)')
     ylabel('E_{min} (V/m)')
-    legend('L=20m','L=50m','L=70m','L=100m','SMART E')
-    title(sprintf('Paschen curve, Gas=%s',Gas_type(1))); %d for numbers
+    legend('L=20m','L=50m','L=70m','L=100m','E(Rin)','E(Rgeo)')
+    title(sprintf('Paschen curve ph1, Gas=%s',Gas_type(1))); %d for numbers
     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
     axis([10^-5 10^-3 10^-1 50])
     Filename = 'Paschen_ava';
     %Filename= sprintf('%s_L_%3.1f',Filename,L_plot(i_L));    
-    saveas(gcf, strcat(FigDir,Filename,FigExt));    
+    saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));     
 
 %%%%%%End loop paschen plots%%%%%%%%
 
@@ -2155,12 +2161,7 @@ I_rad_wall= j_rad_wall*2*pi*0.2 %Pasma current [A], Assuming circular plasma of 
   legend(Gas_type(1))%,Gas_type(2))
   set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
   
-  %%
-  
-  Scott_tava=tau_ava(E(param_equil.rin),5e-5,L_plot(3),C_1(1),C_2(1)); %[s] time
-  fprintf('tus muertos')
-  
- %%
+ 
   %% SAVING THINGS%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %1)Current data
