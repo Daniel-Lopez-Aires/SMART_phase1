@@ -63,7 +63,9 @@ close all
 %####################################################
 
 
-
+%Set maximum number of concurrent CPU threads in use
+NumThreads = 6; %6 max
+NumThreads = maxNumCompThreads(NumThreads);
 
 
 
@@ -74,12 +76,12 @@ close all
 FigExt = '.png'; 		%'.png','.eps','.pdf'
 
 %Define project and series names
-ProjectName = 'S1-000018';		%Define global project name
+ProjectName = 'S1-000019';		%Define global project name
 %SeriesName = 'VaryTauP';		%Define parameter scan series name
 
 %Create global output folders for saved data and figures
 ASCIIDir = 'RawData/'; mkdir(ASCIIDir);
-FigDir = 'FiguresSensors/'; mkdir(FigDir);			%NOT CURRENTLY USED
+FigDir = 'Figures/'; mkdir(FigDir);			
 
 %Create simulation name based upon relevant run parameters
 SimName = 'DefaultSimName';
@@ -121,16 +123,16 @@ ZSol=ZMaxSol+ZMinSol;
 SolLength=ZMaxSol-ZMinSol;
 
 %Number of Radial (R) and axial (Z) PF coil windings
-nZDiv1=6; nRDiv1=6; %4 on S2-14
-nZDiv2=6; nRDiv2=4;
-nZPF1=6; nRPF1=4;
-nZPF2=6; nRPF2=4;
+nZDiv1=6; nRDiv1=6;     % Square
+nZDiv2=6; nRDiv2=4;     % Axial Rectangle
+nZPF1=6; nRPF1=4;       % Axial Rectangle
+nZPF2=6; nRPF2=4;       % Axial Rectangle
 
 %Calculate total number of windings in each coil
-nDiv1=nZDiv1*nRDiv1;
-nDiv2=nZDiv2*nRDiv2;
-nPF1=nZPF1*nRPF1;
-nPF2=nZPF2*nRPF2;
+nDiv1=nZDiv1*nRDiv1;    % 36 Total Windings
+nDiv2=nZDiv2*nRDiv2;    % 24 Total Windings
+nPF1=nZPF1*nRPF1;       % 24 Total Windings
+nPF2=nZPF2*nRPF2;       % 24 Total Windings
 
 turns=[];
 
@@ -263,7 +265,7 @@ global coilset; coilset = fiesta_coilset('SMARTcoilset',[Sol,PF1,PF2,Div1,Div2],
                                     %TauR1=3.5ms    %TauR=3.5ms		%TauR=3.5ms
                                     %RGeo=0.42      %RGeo=0.42      %RGeo=0.46
 %Solenoid coil currents [kA]		%Phase1Base     %Phase1NegTri   %Phase1PosTri
-I_Sol_Null=+1000;					%+1000;         %+1000;         %+1000;
+I_Sol_Null=+1200;					%+1000 on S1-18
 I_Sol_MidRamp=+000;                 %+000           %+000;          %+000;
 I_Sol_Equil=-100;			        %-100;          %-250;          %-350;
 I_Sol_EndEquil=-075;                %-075;          %-225;          %-325;
@@ -276,7 +278,7 @@ I_Div2_Equil=+0000;					%+0000;         %+0000;         %+0000;
 
 %Define number of time-steps (vertices) in the current waveforms
 TauN  = 0.015;			% Null-Field Timescale      [s] Determines null-field decay timescale
-TauR1 = 0.0035;			% Breakdown Ramp Timescale  [s] Determines max loop voltage
+TauR1 = 0.004;	%.0035 on S1-18		% Breakdown Ramp Timescale  [s] Determines max loop voltage
 TauR2 = 0.015;			% PF & Div Ramp Timescale   [s] Determines max PF/Div current ramp
 TauR  = TauR1+TauR2;    % Total Ramp Timescale      [s] 
 TauP  = 0.020;			% Pulse Timescale      		[s] Determines flat-top timescale
@@ -474,7 +476,7 @@ z_sensors=get(sensor_btheta,'z'); %size 1*200
         plot(coilset)
         parametersshow(equil)   %this plots the parameters in the equil
         %title(sprintf('Sensors for simu %d',sen))
-        title('Sensors')
+        title('Sensors ph1')
         plot(sensor_btheta);
         Filename = 'Sensors';
         %Filename= sprintf('%s_simu_%d',Filename,sen);   
@@ -567,7 +569,7 @@ V_PF_input = NaN(nTime,nPF);            %Coil voltages are initiated to zero
     plot( time*1e3, I_PF_input/(1e3),'*-' );
     xlabel('time (ms)')
     ylabel('I_{{input}} (kA)')
-    title('I_{{input}} versus time')
+    title('Input currents ph1')
     %title(sprintf('I_{{input}} for simu %d',sen))
     legend('Sol','PF1','PF2','Div1','Div2')
     %%%optinos for tfg
@@ -777,7 +779,7 @@ I_Passive_VV=sum(I_Passive,2);
             %hold on
             plot(time_adaptive*1e3,Ip_output/(1e3))
             ylabel('I (kA)')
-            title('Dynamic response SMART phase 1')
+            title('Dynamic response SMART ph1')
             set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
             %set(gca,'YLim',[-5 35]);
             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
@@ -810,7 +812,7 @@ I_Passive_VV=sum(I_Passive,2);
             plot(time_adaptive*1e3,Ip_output/(1e3))
             ylabel('I_p (kA)')
             xlabel(' time (ms)')
-            title('I_p SMART phase 1')
+            title('Plasma currrent SMART ph1')
             set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
             %set(gca,'YLim',[-5 35]);
             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
@@ -822,7 +824,7 @@ I_Passive_VV=sum(I_Passive,2);
             plot(time_adaptive*1e3,I_Passive_VV/(1e3))
             xlabel(' time (ms)')
             ylabel('I_{VV} (kA)')
-            title('Net eddy current on VV')
+            title('Net eddy current on VV ph1')
             set(gca,'XLim',[min(time*1e3) max(time*1e3)]);
             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
             Filename = 'I_VV';
@@ -1112,11 +1114,12 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         axis equal
         xlabel('R (m)')
         ylabel('Z (m)')
-        title(sprintf('B_{pol}  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+        %title(sprintf('B_{pol}  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+        title(sprintf('B_{pol} at t=%d ms ph1',time_loop(loop)*1e3))        
         %title(sprintf('B_{pol} t=%dms for simu %d',time_loop(loop)*1e3,sen))
         Filename = 'Bpol';
         %Filename= sprintf('%s_simu_%d',Filename,sen);      
-            saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
 
 %Bphi
         figure; 
@@ -1139,8 +1142,9 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         axis equal
         xlabel('R (m)')
         ylabel('Z (m)')
-        title(sprintf('B_{phi}  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+        %title(sprintf('B_{phi}  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
         %title(sprintf('B_{phi} t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        title(sprintf('B_{phi} at t=%d ms ph1',time_loop(loop)*1e3))        
         Filename = 'Bphi';
         %Filename= sprintf('%s_simu_%d',Filename,sen);      
             saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));         
@@ -1166,8 +1170,9 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         xlabel('R (m)')
         ylabel('Z (m)')
         %axis([0,1,0,1])        %For reduced size and compare to VEST plot
-        title(sprintf('Lloyd criteria  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))          
+        %title(sprintf('Lloyd criteria  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))          
         %title(sprintf('Lloyd criteria t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        title(sprintf('Lloyd criteria at t=%d ms ph1',time_loop(loop)*1e3))        
         Filename = 'LLoyd';
         %Filename= sprintf('%s_simu_%d',Filename,sen);    
             saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
@@ -1218,7 +1223,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
             %9 lines, the line with Bpol min, and the 8 surroundings. 
          %However can compute the lines in all the VV
       
-   IntMethod='Lp';         % ''Phi'or 'Lp' to switch the integration mode 
+   IntMethod='Phi';   %Lp faster, Phi for debug!!!      % ''Phi'or 'Lp' to switch the integration mode 
 
         %Grid
         %I redefine the grid to compute the connection length, for less computer
@@ -1247,6 +1252,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
          %z_inside_VVL=z_inside_VVL(2:end-1); 
         
        %Now, if the coils are inside, the grid points there have to be removed because ode 'se raya', and spent too long time
+       global Rin_coils Rout_coils Zdown_coils Zup_coils
        
        Rin_coils=[R_PF2 R_Div1 R_Div2]-[width_PF2 width_Div1 width_Div2]/2; %[m] inner R of coilset (no SOl and PF1 (outside))
        Rout_coils=[R_PF2 R_Div1 R_Div2]+[width_PF2 width_Div1 width_Div2]/2;   %[m]outer R of coilset (no SOl and PF1 (outside))
@@ -1326,12 +1332,14 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                                                             %this value, the integration stops. 
                                                             %Iter 55,85,86,81 achieves about 10,000, spending 4h
                                      
-    event_colission_wall=@(t,y) Colission_wall(t,y,VesselRMaxInner,...
-            VesselRMinInner,VesselZMaxInner,VesselZMinInner,FieldsBreak.interpn.Br,...
-            FieldsBreak.interpn.Bz,FieldsBreak.interpn.Bphi,L_max); 
-    options = odeset('OutputFcn',@ode_progress_bar,'Events',event_colission_wall,'AbsTol',1e-10,'RelTol',1e-6); 
-                                    %I include a Fiesta funciton to show the progress of the ode
-  
+    event_colission=@(t,y) Colission(t,y,VesselRMaxInner,...
+            VesselRMinInner,VesselZMaxInner,VesselZMinInner,L_max);   
+   
+     options = odeset('OutputFcn',@ode_progress_bar,'Events',event_colission,'AbsTol',1e-10,'RelTol',1e-6); 
+%                                     %I include a Fiesta funciton to show the progress of the ode
+   
+                                    
+                                    
    %Both integrators are programmed, so to swich between them will use a
    %switch (xD)
    tic          %to measure time the intergration takes
@@ -1352,10 +1360,11 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 y0=y0(2:end,:);
                 
                %2)Independt variable values, t0
-                 t_values=1000; %1000            %Max value of the independent variable
+                 t_values=1000000; %1000            %Max value of the independent variable
                  n_iter_t=30000000; %3000000 on s1-14                 %Integer, number of values for tSpan
                  tSpan=linspace(0,t_values,n_iter_t);            %the range of values of independant variable
-                                     
+                    %TOO LITTLE FOR s1-19, MOST LINES DO NOT COLLIDE NOR
+                    %ACHIEVE LMAX
                 %3)Odefun
                  odefun= @(Lp, rzLphiU) Field_LineIntegrator_Lp(Lp,rzLphiU,FieldsBreak.interpn.Br,...
                     FieldsBreak.interpn.Bz,FieldsBreak.interpn.Bphi);                
@@ -1418,7 +1427,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 y0=y0(2:end,:);
             
                %2)Independt variable values, t0
-                 t_values=1000; %100 to little                            %Cycles(toroidal turns)
+                 t_values=1000; %10 for debug                           %Cycles(toroidal turns)
                  n_iter_t=300000;         %3000                         %Integer, number of values for tSpan
                  tSpan=linspace(0,2*pi*t_values,n_iter_t);    %the range of values of independant variable
                
@@ -1433,8 +1442,12 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                         %outward arm (Z>0). 135 for the outward Z<0 line. 64 for the upper
                         %arm
         
-                        i=49 %looked in the y0
-                        [t_fieldline, y_fieldline]=ode45(odefun,tSpan,y0(i,:),options);    
+                        i=472 %looked in the y0
+                                    %652 line collides with lower PF2
+                                    %672 for collision upper PF2
+                                    %116 for colission with upper Div1
+                                    %472 for coliision with lower wall (VV)
+                        [t_fieldline, y_fieldline t_event y_event]=ode45(odefun,tSpan,y0(i,:),options);    
     
                         %To save the last values of R,Z,L
                         L_single=y_fieldline(end,3);         %L      
@@ -1479,27 +1492,102 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         L_int_null=mean(L_int_row(index))
         
    %%%Storing of the non colliding starting points
-    %To store start points that do not collide: first I get the index of both R
-    %and Z, but together, since they do not collide if oth R and Z are greater
-    %than the min value, and lower than the greatest value
+        %1) Non colliding with the VV
+            %To store start points that do not collide: first I get the index of both R
+            %and Z, but together, since they do not collide if oth R and Z are greater
+            %than the min value, and lower than the greatest value
     
-    RZ_store_index=y_end(:,1)<VesselRMaxInner & ...
-         y_end(:,1)>VesselRMinInner & y_end(:,2)<VesselZMaxInner...
-         & y_end(:,2)>VesselZMinInner; %100*5==> error, has to ve vector,, not matrix!!!
+            RZ_store_index=y_end(:,1)<VesselRMaxInner & ...
+                y_end(:,1)>VesselRMinInner & y_end(:,2)<VesselZMaxInner...
+                & y_end(:,2)>VesselZMinInner; %100*5==> error, has to ve vector,, not matrix!!!
                         
-    RZ_no_collide=[y0(RZ_store_index,1) y0(RZ_store_index,2)];    
+            RZ_no_collide=[y0(RZ_store_index,1) y0(RZ_store_index,2)];    
+            
+       %2) Colliding with the VV
+            RZ_no_collide_end=[y_end(RZ_store_index,1) y_end(RZ_store_index,2)];
+                                %y_end of points that do not collide with
+                                %the VV. Same size as RZ_no_collide
+               %Those points have to be tested.
+                R_no_collide_end=RZ_no_collide_end(:,1); %R of y_end
+                Z_no_collide_end=RZ_no_collide_end(:,2); %Z of y_end
+                
+                %The corresponding starting points are
+                R_no_collide=RZ_no_collide(:,1); % R of y0
+                Z_no_collide=RZ_no_collide(:,2); % Z of y0
+                
+        for co=1:length(Rin_coils)              %at each iter, removes the colliding points
+              StoreRZ=[0 0];                        %initialization of stored start points
+              StoreRZ_end=[0 0]; %initialization of stored ending points DEBUG!!!
+              
+            for i=1:length(R_no_collide_end)         %Have to check each ending point
+                        %this points will be renewed as the coils are
+                        %checked, so that it removes progressively the
+                        %points
+                Point=[R_no_collide_end(i) Z_no_collide_end(i)];        %ending point to test            
+                Point_y0=[R_no_collide(i) Z_no_collide(i)];                 %corresponding starting point
+                
+                switch sign(Point(2)) %First lets check if Z><0
+                    
+                    case 1 %z>0
+                
+                    if Point(1)<Rin_coils(co) | Point(1)>Rout_coils(co) %R out of the coil
+                                                                                                   %All Z are good
+                               StoreRZ=[StoreRZ; Point_y0]; %store of good start points                                                                                           
+                               StoreRZ_end=[StoreRZ_end; Point]; %store of good end points DEBUG!!  
+                               
+                    elseif  Point(1)>Rin_coils(co) | Point(1)<Rout_coils(co) %R inside of the coil
+                            if Point(2)<Zdown_coils(co) | Point(2)>Zup_coils(co)  %Z out coil
+                                
+                                StoreRZ=[StoreRZ; Point_y0]; %store of good start points
+                                StoreRZ_end=[StoreRZ_end; Point]; %store of good end points DEBUG!! 
+                            end
+                    end
+                        
+                    case -1 %z<0
+                
+                    if Point(1)<Rin_coils(co) | Point(1)>Rout_coils(co) %R out of the coil
+                                                                                                   %All Z are good
+                               StoreRZ=[StoreRZ; Point_y0]; %store of good start points                                                                                        
+                               StoreRZ_end=[StoreRZ_end; Point]; %store of good end points DEBUG!! 
+                               
+                    elseif  Point(1)>Rin_coils(co) | Point(1)<Rout_coils(co) %R inside of the coil
+                            if Point(2)>-Zdown_coils(co) | Point(2)<-Zup_coils(co)  %Z out coil
+                                                              
+                                StoreRZ=[StoreRZ; Point_y0]; %store of good start points
+                                StoreRZ_end=[StoreRZ_end; Point]; %store of good end points DEBUG!! 
+                            end
+                    end  
+                        
+                end             
+            end
+            %y0_points
+            StoreRZ=StoreRZ(2:end,:); %remove first row, the initialization one
+            R_no_collide=StoreRZ(:,1); %to store R of y0 whose yend do not collide with coil 
+            Z_no_collide=StoreRZ(:,2); %to store  Z of y0 whose yend do not collide with coil 
+            %y_end points
+            StoreRZ_end=StoreRZ_end(2:end,:); %remove first row, the initialization one
+            R_no_collide_end=StoreRZ_end(:,1); %to store R of yend that do not collide with coil 
+            Z_no_collide_end=StoreRZ_end(:,2); %to store  Z of yend that do not collide with coil            
+            %Note that after the last loop, this values will be the final
+            %values!!!
+        end                     
+           RZ_no_collide=[R_no_collide Z_no_collide];
+   
            
-    %However, this is not perfect, when including in the grid the points in the wall,
-    %something extrange happens, some of them are store in the non colliding points
-    %thought they do not collide since the starting point is also the ending points
-    %(you get like some stars just in the VV, but not all, only some of them)
-    %To remove it:
-     Index=RZ_no_collide(:,1)<VesselRMaxInner & ...
-          RZ_no_collide(:,1)>VesselRMinInner & RZ_no_collide(:,2)<VesselZMaxInner...
-          & RZ_no_collide(:,2)>VesselZMinInner;
-          RZ_no_collide=[RZ_no_collide(Index,1) RZ_no_collide(Index,2)];
-                   
-       
+            %However, this is not perfect, when including in the grid the points in the wall,
+            %something extrange happens, some of them are store in the non colliding points
+            %thought they do not collide since the starting point is also the ending points
+            %(you get like some stars just in the VV, but not all, only some of them)
+            %To remove it:
+            Index=RZ_no_collide(:,1)<VesselRMaxInner & ...
+                RZ_no_collide(:,1)>VesselRMinInner & RZ_no_collide(:,2)<VesselZMaxInner...
+                & RZ_no_collide(:,2)>VesselZMinInner;
+            RZ_no_collide=[RZ_no_collide(Index,1) RZ_no_collide(Index,2)];                
+           
+
+            
+            %%    
+    
      %%%Contour plots
       %1) L
         figure;
@@ -1524,8 +1612,9 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         xlabel('R (m)')
         ylabel('Z (m)')
         %legend('L','Field null region','Non colliding points')
-        title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
+        %title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
         %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        title(sprintf('L at t=%d ms ph1',time_loop(loop)*1e3))        
         Filename = 'L_cont';
         %Filename= sprintf('%s_simu_%d',Filename,sen);     
         saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));        
@@ -1558,8 +1647,9 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         xlabel('R (m)')
         ylabel('Z (m)')
         %legend('L','Field null region','Non colliding points')
-        title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
+        %title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
         %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        title(sprintf('L at t=%d ms ph1',time_loop(loop)*1e3))   
         Filename = 'L';        
         saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));   
         
@@ -1580,8 +1670,9 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         xlabel('R (m)')
         ylabel('Z (m)')
         %legend('Field null region','Non colliding points')
-        title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
+        %title(sprintf('L  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
         %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        title(sprintf('Non colliding at t=%d ms ph1',time_loop(loop)*1e3))   
         Filename = 'L_noL';                
         saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));   
         
@@ -1604,8 +1695,9 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
         xlabel('R (m)')
         ylabel('Z (m)')
-        title(sprintf('Pseudo potential  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))          
+        %title(sprintf('Pseudo potential  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))          
         %title(sprintf('Pseudo potential at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        title(sprintf('Pseudo potential at t=%d ms ph1',time_loop(loop)*1e3)) 
         Filename = 'Pseudo_contour';
         %Filename= sprintf('%s_simu_%d',Filename,sen);     
         saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
@@ -1616,7 +1708,15 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         tri = delaunay(y0(:,1),y0(:,2));
         plot(y0(:,1),y0(:,2),'.')
         [r,c] = size(tri); %number of triangles there
-        trisurf(tri, y0(:,1), y0(:,2),y_end(:,5),'FaceAlpha',1,'EdgeColor','none'), shading('interp');
+        
+        switch IntMethod
+            
+            case 'Phi'
+                trisurf(tri, y0(:,1), y0(:,2),y_end(:,4),'FaceAlpha',1,'EdgeColor','none'), shading('interp');
+            
+            case 'Lp'
+                trisurf(tri, y0(:,1), y0(:,2),y_end(:,5),'FaceAlpha',1,'EdgeColor','none'), shading('interp');
+        end
         view(2)
         colorbar
         hold on                     %this is to make the transition between values continuous,                                                        %instedad of discontinuously between pixels
@@ -1639,15 +1739,16 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         xlabel('R (m)')
         ylabel('Z (m)')
         %legend('U/Vloop','Field null region','Non colliding points')
-        title(sprintf('U/Vloop  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))   
-        %title(sprintf('L at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        %title(sprintf('Pseudo potential  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))          
+        %title(sprintf('Pseudo potential at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        title(sprintf('Pseudo potential at t=%d ms ph1',time_loop(loop)*1e3))
         Filename = 'Pseudo';        
         saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));   
         
         
       %%%3)[Experimental] E_rel plot, to predict where the gas breaks down
         
-        p_test=5*10^-5; %Tor
+        p_test=1*10^-4; %Tor
         E_RZmin=C_2*p_test./(log(C_1*p_test*L_int)); %E min, Paschen, but 2D        
         E_RZmin(E_RZmin<0)=NaN; %when Emin<0, there is no breakdwon, so NaN not
                     %to plot it
@@ -1671,7 +1772,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
         xlabel('R (m)')
         ylabel('Z (m)')
         %title(sprintf('Pseudo potential  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))          
-        %title(sprintf('E_{rel} at t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        title(sprintf('E_{rel} at t=%dms for p= %1.2d Tor',time_loop(loop)*1e3,p_test))
         Filename = 'U_L';
         %Filename= sprintf('%s_simu_%d',Filename,sen);   
         saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
@@ -2184,12 +2285,13 @@ I_rad_wall= j_rad_wall*2*pi*0.2 %Pasma current [A], Assuming circular plasma of 
   %hold on;
   %plot(p,lambda(C_1(2),p))
   xlabel('p (Tor)')
-  ylabel('\lambda')
+  ylabel('\lambda (m)')
   set(gca,'Xscale','log') %para poner el eje x en log   
   title('Mean free path \lambda versus p')
   legend(Gas_type(1))%,Gas_type(2))
   set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
-  
+  Filename = 'lambda'; 
+  saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));   
  
   %% SAVING THINGS%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2523,37 +2625,61 @@ end
    %Only one function can be introduced into ode, so this event has to have
    %all the conditions
    
-   function [rz_value isterminal direction]=Colission_wall(phi,rzL,...
-       VesselRMaxPoint,VesselRMinPoint,VesselZMaxPoint,VesselZMinPoint,...
-       Br_interp,Bz_interp,Bphi_interp,L_max) 
+   function [rz_value isterminal direction]=Colission(phi,rzL,...
+       VesselRMaxPoint,VesselRMinPoint,VesselZMaxPoint,VesselZMinPoint,L_max) 
    
-   %when rz_value is zero, stop the integration. To implement the 4
-   %possible colission, we could do like the product of each, since when one of
-   %them is zero, the product will be zero, and also to define row vectors
-   %for isterminal, direction, and rz_value. Will do this second option
+    global Rin_coils Rout_coils Zdown_coils Zup_coils %limits of coils inside VV
    
-   isterminal=[1 1 1 1 1];                                                  %to stop the integration
-   direction= [0 0 0 0 0];                                                  %to not worry about the sloop 
+    %when rz_value is zero, stop the integration. There are two possibles
+    %coliisions, with the VV and with the coils
    
-   up_colission=rzL(2)-VesselZMaxPoint; 
-   down_colission=rzL(2)-VesselZMinPoint;
-   out_colission=rzL(1)-VesselRMaxPoint; 
-   in_colission=rzL(1)-VesselRMinPoint;
+    %1) Wall colission
    
-   %For the max condition of L, the field needs to be introduced:
+        %To implement the 4
+        %possible colission, we could do like the product of each, since when one of
+        %them is zero, the product will be zero, and also to define row vectors
+        %for isterminal, direction, and rz_value. Will do this second option
+      
+        up_colission=rzL(2)-VesselZMaxPoint;            %colission with upper wall
+        down_colission=rzL(2)-VesselZMinPoint;      %colission with lower vall
+        out_colission=rzL(1)-VesselRMaxPoint;           %colission with outer
+        in_colission=rzL(1)-VesselRMinPoint;            %colission with inner
    
-    Br_eval=Br_interp(rzL(1),rzL(2));
-    Bphi_eval=Bphi_interp(rzL(1),rzL(2));
-    Bz_eval=Bz_interp(rzL(1),rzL(2));
+        %Max condition of L, to stop the integration  
+        L_lim=rzL(3)-L_max;                                                  %[m] Maximum L value
    
-   L_lim=rzL(3)-L_max;                                                  %[m] Maximum L value=20
+        rz_value_VV=[up_colission down_colission out_colission in_colission L_lim];
    
-   rz_value=[up_colission down_colission out_colission in_colission L_lim];
-   
-    %Have checked that if I dont use the minR condition, it will impige 
-    %in the upper wall, which was was happens at the beggining, when
-    %I dont have the inner wall condition
+        %Have checked that if I dont use the minR condition, it will impige 
+        %in the upper wall, which was was happens at the beggining, when
+        %I dont have the inner wall condition
+    
+    %2) Colission with the coils
+               Point=[rzL(1) rzL(2)]; %point of the line
+          for coo=1:length(Rin_coils)   %Iter for the coils
+            switch sign(Point(2)) %z><0
+                
+                case 1 %z>0
+                    rz_value_Coil(coo)= Point(1)>=Rin_coils(coo) & Point(1)<=Rout_coils(coo) & Point(2)>=Zdown_coils(coo) & Point(2)<=Zup_coils(coo); 
+                                    %this value is 0 if the point is inside
+                                    %the coil
+                                    
+                case -1        %z< 0
+                    rz_value_Coil(coo)= Point(1)>=Rin_coils(coo) & Point(1)<=Rout_coils(coo) & Point(2)<=-Zdown_coils(coo) & Point(2)>=-Zup_coils(coo); 
+                                    %this value is 0 if the point is inside
+                                    %the coil
+            end
+          end
+          
+          rz_value=[rz_value_VV rz_value_Coil]; %contain both conditions, VV and coils
+          isterminal=ones(1,length(rz_value));                   %to stop the integration
+          direction=zeros(1,length(rz_value));                    %to not worry about the sloop   
+        %works for coil colliding with lower PF2 (652)
+        %works for coil colliding with upper PF2 (672)
+        %Works for upper Div1(116)
+        %Works for colission with lower VV wall (472) ==>work correctly
    end
+   
 
 %% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %@@@@@@Sensors creation@@@@
