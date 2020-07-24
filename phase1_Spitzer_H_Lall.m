@@ -41,7 +41,7 @@ close all
             
     %2) Greenwald fraction
     
-                Gr_fraction=0.15;%0.15;                              %This is to scale the Gr_limit==> <=1
+                Gr_fraction=0.2;%0.15;                              %This is to scale the Gr_limit==> <=1
     
     %3) a_eff                                                        %[m] This defines the size of the field null region.
    
@@ -267,7 +267,7 @@ global coilset; coilset = fiesta_coilset('SMARTcoilset',[Sol,PF1,PF2,Div1,Div2],
 %Solenoid coil currents [kA]		%Phase1Base     %Phase1NegTri   %Phase1PosTri
 I_Sol_Null=+1200;					%+1000 on S1-18
 I_Sol_MidRamp=+000;                 %+000           %+000;          %+000;
-I_Sol_Equil=-100;			        %-100;          %-250;          %-350;
+I_Sol_Equil=-150;			        %-100;          %-250;          %-350;
 I_Sol_EndEquil=-075;                %-075;          %-225;          %-325;
 
 %PF coil currents (At Equilibrium, time(4,5,6))
@@ -1058,7 +1058,34 @@ for loop=1:length(time_loop)
   
 psi_null_interpn=  @(r,z) interpn(zGrid,rGrid,psi_null,z,r,'mikama');        
 psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
-    
+    %Plot
+        figure; 
+        contour(R_in,Z_in,psi_null_ins_VV,500)
+        hold on;
+        hh=plot(vessel);
+        set(hh, 'EdgeColor', 'k')
+        hh=plot(coilset);
+        set(hh, 'EdgeColor', 'k')
+        %colormap(Gamma_II)
+        c=colorbar; %colorbar
+        ylabel(c, 'Psi(W)');  
+                %Try to show max and min of colorbar !!!!!!!!!!!!!
+        %t=get(c,'Limits');
+        %set(c,'Ticks',linspace(t(1),t(2),10));
+        view(2) %2D view
+        set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
+        plot([min(r_sensors) min(r_sensors) max(r_sensors) max(r_sensors) min(r_sensors)],...
+        [min(z_sensors) max(z_sensors) max(z_sensors) min(z_sensors) min(z_sensors)],'k.--')
+        axis equal
+        xlabel('R (m)')
+        ylabel('Z (m)')
+        title(sprintf('Psi  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+        %title(sprintf('B_{pol} t=%dms for simu %d',time_loop(loop)*1e3,sen))
+        Filename = 'Psi';
+        %title(sprintf('Psi  at t=%d ms (iter %d/%d)',time_loop(loop)*1e3,loop,length(time_loop)))
+        title(sprintf('Psi at t=%d ms ph1',time_loop(loop)*1e3))        
+        %title(sprintf('Psi t=%dms for simu %d',time_loop(loop)*1e3,sen))  
+        saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));     
      
  
 %Extraction of the fields (Earth inside)!
@@ -1223,7 +1250,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
             %9 lines, the line with Bpol min, and the 8 surroundings. 
          %However can compute the lines in all the VV
       
-   IntMethod='Phi';   %Lp faster, Phi for debug!!!      % ''Phi'or 'Lp' to switch the integration mode 
+   IntMethod='Lp';   %Lp faster, Phi for debug!!!      % ''Phi'or 'Lp' to switch the integration mode 
 
         %Grid
         %I redefine the grid to compute the connection length, for less computer
