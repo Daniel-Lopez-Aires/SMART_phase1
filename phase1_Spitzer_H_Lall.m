@@ -283,7 +283,7 @@ TauR2 = 0.015;			% PF & Div Ramp Timescale   [s] Determines max PF/Div current r
 TauR  = TauR1+TauR2;    % Total Ramp Timescale      [s] 
 TauP  = 0.020;			% Pulse Timescale      		[s] Determines flat-top timescale
 %Time   [Init      PrePulse   InitRampDown  MidRampDown  EndRampDown  MidEquil     Terminate         ];
-time =  [-2*TauN   -TauN      0.0           TauR1        TauR         TauR+TauP    TauR+TauP+(2*TauN)];
+time =  [-3*TauN   -TauN      0.0           TauR1        TauR         TauR+TauP    TauR+TauP+(3*TauN)];
 nTime = length(time);	% Coil Waveform Timesteps	[-]
 
 %Fit any dynamic coil currents, set with 'linear', {pre-ramp, mid-ramp, end-ramp}
@@ -852,14 +852,14 @@ MinDelta_VPFoutput = min(Delta_VPFoutput); MaxDelta_IPFoutput = max(Delta_IPFout
 
     %Plot of the delta
     figure;
-    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iSol)*1e-3) 
+    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iSol)) 
     hold on    
-    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iPF1)*1e-3)
-    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iPF2)*1e-3)
-    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iDiv1)*1e-3)
-    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iDiv2)*1e-3)
+    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iPF1))
+    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iPF2))
+    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iDiv1))
+    plot(time_adaptive(2:end)*1e3,Delta_IPFoutput(:,iDiv2))
     xlabel('t (ms)')
-    ylabel('Delta I (kA/ms)')
+    ylabel('Delta I (A/ms)')
     title('Delta I_{PF}')
     legend('Sol','PF2','PF3','Div1','Div2')
     set(gca,'XLim',[min(time*1e3) max(time*1e3)]);    
@@ -869,14 +869,14 @@ MinDelta_VPFoutput = min(Delta_VPFoutput); MaxDelta_IPFoutput = max(Delta_IPFout
     saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
     
     figure;
-    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iSol)*1e-3) 
+    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iSol)) 
     hold on    
-    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iPF1)*1e-3)
-    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iPF2)*1e-3)
-    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iDiv1)*1e-3)
-    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iDiv2)*1e-3)
+    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iPF1))
+    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iPF2))
+    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iDiv1))
+    plot(time_adaptive(2:end)*1e3,Delta_VPFoutput(:,iDiv2))
     xlabel('t (ms)')
-    ylabel('Delta V (kV/ms)')
+    ylabel('Delta V (V/ms)')
     title('Delta V')
     legend('Sol','PF2','PF3','Div1','Div2')
     set(gca,'XLim',[min(time*1e3) max(time*1e3)]);    
@@ -886,9 +886,9 @@ MinDelta_VPFoutput = min(Delta_VPFoutput); MaxDelta_IPFoutput = max(Delta_IPFout
     saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt));     
     
     figure;
-    plot(time_adaptive(2:end)*1e3,Delta_Ip_output(:)*1e-3) 
+    plot(time_adaptive(2:end)*1e3,Delta_Ip_output(:)) 
     xlabel('t (ms)')
-    ylabel('Delta I_p (kA/ms)')
+    ylabel('Delta I_p (A/ms)')
     title('Delta Ip' )
     set(gca,'XLim',[min(time*1e3) max(time*1e3)]);    
     set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG    
@@ -1314,22 +1314,27 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
             %9 lines, the line with Bpol min, and the 8 surroundings. 
          %However can compute the lines in all the VV
       
-   IntMethod='Phi';   %Lp faster, Phi for debug!!!      % ''Phi'or 'Lp' to switch the integration mode 
+   IntMethod='Lp';   %Lp faster, Phi for debug!!!      % ''Phi'or 'Lp' to switch the integration mode 
 
         %Grid
         %I redefine the grid to compute the connection length, for less computer
         %demands (time). Will label it with an L at the end!
 
-        n_pnts_insideL=30; %30 previously          %100 is the ideal to have good plots of the fields, but the L int failures. 
-
+        n_pnts_insideL=20;          %100 is the ideal to have good plots of the fields, but the L int failures. 
+                %30 gives relative resol of 3.2% (anterior value)
+                %20 gives 5.2%, good enough
+                
         r_inside_VVL=linspace(VesselRMinInner,VesselRMaxInner,n_pnts_insideL); 
         z_inside_VVL=linspace(VesselZMinInner,VesselZMaxInner,n_pnts_insideL);
         
         %Resolution
-        Resol_R=(r_inside_VVL(2)-r_inside_VVL(1))*100 % R resolution in %
-        Resol_Z=(z_inside_VVL(2)-z_inside_VVL(1))*100 % R resolution in %       
+        Resol_R=(r_inside_VVL(2)-r_inside_VVL(1))   %[m] R resolution  
+        Resol_Z=(z_inside_VVL(2)-z_inside_VVL(1))   %[m]Z resolution        
         
-         
+        %Resolution relative to VV size
+        Resol_rel_R=Resol_R/(VesselRMaxInner-VesselRMinInner)*100  %[%] relative R resol
+        Resol_rel_Z=Resol_Z/(VesselZMaxInner-VesselZMinInner)*100  %[%] relative Z resol
+        
          %Lets do a meshgrid, will be needed
         [r_ins_VVL,z_ins_VVL]=meshgrid(r_inside_VVL,z_inside_VVL);
         
@@ -1420,6 +1425,18 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 axis equal
                 title(sprintf('iter %d',co))    
   
+                figure;
+                plot(StoreRZ(:,1),StoreRZ(:,2),'r.')
+                hold on
+                plot(vessel)
+                plot(coilset)
+                xlabel('R(m)')
+                ylabel('Z(m)')
+                axis equal
+                title('Grid for line tracing')
+                Filename = 'Grid_tracing';
+                %Filename= sprintf('%s_simu_%d',Filename,sen);     
+                saveas(gcf, strcat(FigDir,ProjectName,Filename,FigExt)); 
     %%%End grid
     
     %%%Begin integration
@@ -1456,8 +1473,8 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 y0=y0(2:end,:);
                 
                %2)Independt variable values, t0
-                 t_values=1000000; %1000            %Max value of the independent variable
-                 n_iter_t=30000000; %3000000 on s1-14                 %Integer, number of values for tSpan
+                 t_values=1000; %1000            %Max value of the independent variable
+                 n_iter_t=3000000; %3000000 on s1-14                 %Integer, number of values for tSpan
                  tSpan=linspace(0,t_values,n_iter_t);            %the range of values of independant variable
                     %TOO LITTLE FOR s1-19, MOST LINES DO NOT COLLIDE NOR
                     %ACHIEVE LMAX
@@ -1473,7 +1490,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                         %outward arm (Z>0). 135 for the outward Z<0 line. 64 for the upper
                         %arm
         
-                        i=652 %looked in the y0
+                        i=50%652 %looked in the y0
                         [t_fieldline, y_fieldline]=ode45(odefun,tSpan,y0(i,:),options);    
     
                         %To save the last values of R,Z,L
@@ -1612,7 +1629,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 Z_no_collide=RZ_no_collide(:,2); % Z of y0
                 
         for co=1:length(Rin_coils)              %at each iter, removes the colliding points
-              StoreRZ=[0 0];                        %initialization of stored start points
+              StoreRZ_y0=[0 0];                        %initialization of stored start points
               StoreRZ_end=[0 0]; %initialization of stored ending points DEBUG!!!
               
             for i=1:length(R_no_collide_end)         %Have to check each ending point
@@ -1628,13 +1645,13 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 
                     if Point(1)<Rin_coils(co) | Point(1)>Rout_coils(co) %R out of the coil
                                                                                                    %All Z are good
-                               StoreRZ=[StoreRZ; Point_y0]; %store of good start points                                                                                           
+                               StoreRZ_y0=[StoreRZ_y0; Point_y0]; %store of good start points                                                                                           
                                StoreRZ_end=[StoreRZ_end; Point]; %store of good end points DEBUG!!  
                                
                     elseif  Point(1)>Rin_coils(co) | Point(1)<Rout_coils(co) %R inside of the coil
                             if Point(2)<Zdown_coils(co) | Point(2)>Zup_coils(co)  %Z out coil
                                 
-                                StoreRZ=[StoreRZ; Point_y0]; %store of good start points
+                                StoreRZ_y0=[StoreRZ_y0; Point_y0]; %store of good start points
                                 StoreRZ_end=[StoreRZ_end; Point]; %store of good end points DEBUG!! 
                             end
                     end
@@ -1643,13 +1660,13 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 
                     if Point(1)<Rin_coils(co) | Point(1)>Rout_coils(co) %R out of the coil
                                                                                                    %All Z are good
-                               StoreRZ=[StoreRZ; Point_y0]; %store of good start points                                                                                        
+                               StoreRZ_y0=[StoreRZ_y0; Point_y0]; %store of good start points                                                                                        
                                StoreRZ_end=[StoreRZ_end; Point]; %store of good end points DEBUG!! 
                                
                     elseif  Point(1)>Rin_coils(co) | Point(1)<Rout_coils(co) %R inside of the coil
                             if Point(2)>-Zdown_coils(co) | Point(2)<-Zup_coils(co)  %Z out coil
                                                               
-                                StoreRZ=[StoreRZ; Point_y0]; %store of good start points
+                                StoreRZ_y0=[StoreRZ_y0; Point_y0]; %store of good start points
                                 StoreRZ_end=[StoreRZ_end; Point]; %store of good end points DEBUG!! 
                             end
                     end  
@@ -1657,9 +1674,9 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 end             
             end
             %y0_points
-            StoreRZ=StoreRZ(2:end,:); %remove first row, the initialization one
-            R_no_collide=StoreRZ(:,1); %to store R of y0 whose yend do not collide with coil 
-            Z_no_collide=StoreRZ(:,2); %to store  Z of y0 whose yend do not collide with coil 
+            StoreRZ_y0=StoreRZ_y0(2:end,:); %remove first row, the initialization one
+            R_no_collide=StoreRZ_y0(:,1); %to store R of y0 whose yend do not collide with coil 
+            Z_no_collide=StoreRZ_y0(:,2); %to store  Z of y0 whose yend do not collide with coil 
             %y_end points
             StoreRZ_end=StoreRZ_end(2:end,:); %remove first row, the initialization one
             R_no_collide_end=StoreRZ_end(:,1); %to store R of yend that do not collide with coil 
