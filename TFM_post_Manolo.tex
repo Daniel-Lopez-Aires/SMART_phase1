@@ -1,0 +1,1987 @@
+%%%%%%-----Realizado por Daniel López Aires----%%%%%%
+%
+%%YOU AHVE TO LABEL CAPTIONS, NOT FIGURES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%------PREAMBULO------%%%%%%%%%%%%%
+%
+\documentclass[a4paper,12pt,oneside]{book}
+%el twoside es necesario para lo de poner cosas en la parte superior del folio, para poner cosas distintas segun las paginas sean pares o impares.
+%los tamaños de letra estandares son 10,11 y 12pt.
+\usepackage[utf8]{inputenc} %la codificacion, la estandar
+\usepackage[labelsep=period]{caption} %para q en las figuras no ponga dos puntos, sino solo uno.
+%\usepackage[english]{babel}  %para trabajar en español
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+%lo del ams y to eso es para escribir formulas matematicas, asi que debes ponerlo siempre que quieras escribir formulas
+\usepackage{lscape} %para poder poner paginas sueltas en horizontal, para tablas y eso(myo)
+\usepackage{graphicx}  %para incluir graficas
+\usepackage{longtable} %para usar tablas grandes, q son las q ocupan mas de una pagina
+\usepackage[margin=2.0cm]{geometry} %para que no deje mucho espacio en todos los margenes. %2.5 TFG
+\usepackage{float} %para el manejo de los entornos flotantes
+\usepackage{multirow} %para vertical rows
+%\usepackage{caption} %para manejar lo de nombrar a las figuras y eso
+\usepackage{subfigure} %para usar el subfigure
+\usepackage[]{hyperref} %esto hace que todo sea interactivo, y el hidelinks, que se pone en los [], hace que no los recuadre en rojo todas las cosas que son interactivas.
+%\usepackage{flushend}
+%esto es para ajustar la altura de las columnas de la última página
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+%Esto tb es para el hyyperref, para q ponga colorines
+\usepackage[font=footnotesize]{caption} %esto para hacer que el caption se escriba mas pequeño que el texto normal. Se escribe todo, el caption y lo que escribes tú, asi que no es necesario declarar \footnotesize donde vas a escribir tú.
+%\usepackage{cleveref} %para sub ref
+\usepackage{fancyhdr}%entorno para el encabezado
+\pagestyle{fancy}%estilo de encabezado
+%%
+%\fancyhead[LE]{}%inserta TEXTO en la cabecera a la izquierda en las páginas pares
+%\fancyhead[LO]{}  %inserta TEXTO en la cabecera a la izquierda en las páginas impares  
+% Comentado hace que salga los apartados
+%%
+\renewcommand{\footrulewidth}{1pt} %para  poner la linea abajo (la de arriba se pone sola al haber puesto que ponga cosas encima).
+%\decimalpoint %para poner un punto decimal en lugar de una coma. Esto evitara coonfusiones en las comas del texto y comas de separar parte entera y decimal
+%\usepackage[numbib]{tocbibind} %para que te numere las referencias
+%\usepackage[toc,page]{appendix} %para que te muestre los apendices en el indice
+\linespread{1.50} %esto por elt fg
+\usepackage{graphicx,wrapfig,lipsum} %esto para cuadrar imagenes con texto
+\usepackage[numbib]{tocbibind} %para que te numere las referencias
+\usepackage{ulem} %para cancelar cosas
+\usepackage{cancel} %para cancelar cosas
+%%%%%%%%%%%%%%%REDEFINICIONES COMANDOS, POR FLOJERA%%%%
+
+\newcommand{\p}{\partial}
+
+%%%%%%%%%%%%%%%%%
+%
+%%---------------- PORTADA -----------------
+%\title{\bf Simulations of Eddy currents in the Seville spherical Tokamak}
+%\author{Juan Garrido García \hspace{3cm} Daniel López Aires}
+%En author, lo que va en [] es lo que aparece abajo, y lo otro es lo que va en la portada
+
+%\date{ \vspace{0.3cm} TE I, Electrónica física (Universidad de Sevilla) \\ \vspace{0.3cm} Grupo Lunes de 16:30 h a 19:30 h \\ \vspace{.5cm} 10-17 de diciembre de 2018}
+%Estas son las opciones de portada que se pueden poner para el formato artcicle, asi q debes agrupar varias cosas en un mismo sitio, como yo he hecho.
+%
+%%---------------------------------------------------
+%
+%%%%%%%%%%%%%%%%%%%
+%%%    DOCUMENTO   %%%%%%
+%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\thispagestyle{empty}
+
+
+
+%\maketitle
+%%%%%%%%%%TITLEPAGE%%%%%
+
+\begin{center}
+
+
+\textbf{\huge Modelling of a plasma break-down for the SMART tokamak} \\
+%
+\vspace{3cm}
+\textbf{\Large Daniel López Aires} \\
+\begin{large}
+
+email: danlopair@gmail.com\end{large} \\
+\vspace{.3cm}
+Supervisors: Carlos Soria del Hoyo\footnote{Department of Electronics and Electromagnetism, Faculty of Physics, University of Seville} and Manuel García Muñoz\footnote{Department of Atomic, Molecular and Nuclear Physics, Faculty of Physics, University of Seville}\\
+%
+%
+\vfill
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=3]{imagenes/logo_us}
+\end{figure}
+
+\vfill
+
+Faculty of Physics, University of Seville \\
+\today \\
+
+%
+%
+%
+\end{center}
+%
+
+\newpage\null
+\thispagestyle{empty}
+
+%
+\newpage
+
+\pagenumbering{roman}
+
+\begin{center}
+\begin{large}
+\textbf{Abstract}
+\end{large}
+
+\end{center}
+
+%The human kind has always been fascinating about the stars. Nowadays it is known the stars shine due to nuclear fusion, confining the reactants gravitationally. Is it possible to create a device that provides energy to the human kind by means of a certain fusion reaction? Could a star be created on Earth?  It can not be created a device as massive as a star, but this is not the only approach to achieve nuclear fusion. The reactants can also be confined by magnetic field, since they are nuclei, which has electric charge. To pursue this, the reactants have to be so hot they reach the fourth state of matter, the plasma state. Achieving controlled nuclear fusion on Earth could also provide a huge step against the climate change fight, since it could replace fossic-fuels. Furthermore, there is enough fuel on Earth for thousands of years.
+
+Achieving controlled nuclear fusion on Earth could be a decisive step on the climate change fight since it would bring a virtually renewable energy source without CO$_2$ emissions. It is also an exciting field because of its scientific and technological challenges. The Plasma Science and Fusion Technology group of the University of Seville is planning to build a magnetic fusion device, a \textit{spherical tokamak} for research in different aspects on controlled nuclear fusion, called SMall Aspect Ratio Tokamak (SMART).
+
+To pursue controlled nuclear fusion, the fuel must be heated to $10^8$K, an extremely high temperature, hotter than the Sun's core ($10^7$K). The first challenge is the creation of such hot fuel, which would be in the plasma state. This master's thesis will focus on the first phase of the creation of the plasma (plasma start-up), called the break-down phase, in which the initial gas that is introduced into the reactor is ionized and turns into a plasma (the gas breaks-down into a plasma).
+
+The fundamentals of tokamaks, particularly the start-up will be reviewed and discussed. The configuration for the break-down phase of the SMART reactor have have been studied and optimized using Fiesta, an object-oriented toolbox programmed in MATLAB, so that this first stage is completed successfully.
+
+
+\newpage
+
+\begin{center}
+\begin{large}
+\textbf{Acknowledgements}
+\end{large}
+
+\end{center}
+
+I would like to thank J. Lister, who referred me to Izaskun Garrido, who gave me the main reference to understand the RZIp code.  I would also like to thank Geoff Cunningham for his help and comments which help me focus on the right issues regarding break-down, and which also provide us with the Fiesta repository on git and a brief Fiesta documentation.
+
+Special thanks you also to my tutors, although I also have to apologize to Carlos for not telling him all the rapid upgrades the SMART reactor was suffering to ensure proper break-down conditions, isolating him a bit from the group and from my work.
+
+Special thanks also to Scott, who, despite arriving to the group in march,  have learned very rapidly and have played a critical role in the changes in the SMART reactor, and to Alessio and Manu too, which played also a critical role in the changes from the engineering point of view. 
+
+I would also like to thank to Jesús Poley, our talks about fusion and science in general were really interesting and helpful for both of us.
+
+Special mention also to the CS-GO team for all the good Friday nights during the Covid-19 quarantine.
+
+
+Finally, I would like to thank Alexandra Elbakyan for developing a website that make scientific research freely available for everyone, as it should be.
+
+\begin{figure}[b]
+\centering
+\includegraphics[scale=0.4]{imagenes/Scihub}
+\end{figure}
+
+
+%%%%%%%%%%Table of contents
+
+\tableofcontents %esto hace el indice solo
+\cleardoublepage %para que lo numere todo, ya q a veces algunas cosas no se numeran.
+%\addcontentsline{Section}{1} %debes meter la seccion de referencias a mano
+
+%%%%%%%%%55
+
+%%Table of figures and tables
+
+%\listoffigures
+
+%\listoftables
+
+%%%%%%%%%%
+
+\pagenumbering{arabic} %to number the document with numbers, the usual
+
+\chapter{Introduction}
+
+%\include{chapter_1} %ESTO PARA TRABAJAR POR APRTES, PERO NO LO ENTIENDO BIEN, ASI Q LO QUE HAGO ES CREAR VARIOS LATEX XD
+
+\section[Nuclear fusion]{Nuclear fusion as an energy source}
+
+%The human's demand of energy is increasing constantly due to the progress in techonology. At the same, humand kind is begining to understand the damage its behaviour is making on Earth. Fosil fuels have been used as an energy resource since the industrial revolution, but now we are conscious of its impact on the environment, and it is a priority to replace them. Nuclear fision is now an important energy resource, but it has the drawback of long-live radioactive waste. Renewvable sources like solar or wind energy are desirables candidates to use, and lately it have emerged the idea of use nuclear fusion as an energy source. 
+%
+%REFINE THIS, BUT TAKE IT EASY; IF NECCESARY, DO IT THE LAST, SINCE THIS IS THE LAST IMPORTANT THING (ACTUALLY NOT) OF THE THESIS
+
+Nowadays, the human kind is beginning to understand the damage its activity is causing on Earth, that could lead to the destruction of the planet we live in and, as a consequence, of ourselves. A radical change is needed in human's life before it is too late. One fundamental step is to cease using fossil fuels as an energy source, and  use renewable sources instead, like wind energy, solar energy, or geothermal energy. However, there is another energy source, virtually renewable that could provide a huge step forward this transition,  \textit{nuclear fusion}. Virtually means that it is enough fuel for thousands of years on Earth. This will be explained later.
+
+Nuclear fusion is a type of nuclear reaction in which two or more atomic nuclei (reactants) $X$ and $Y$ interact and produce a heavier nuclei, generally in an excited state $(X+Y)*$. This compound nuclei could de-excitate by emiting electromagnetic radiation or if the excitation energy is sufficiently high, could release neutrons (evaporation).
+%
+\begin{equation}
+X+Y \rightarrow (X+Y)*
+\end{equation}
+%
+Applying the conservation of energy to the reaction, using the laboratory reference frame
+%
+\begin{equation}
+	\left.
+	\begin{array}{c}
+E_X+E_Y=E_{(X+Y)*}=E_{(X+Y)}+E_{exc} \Rightarrow T_i+(m_X+m_Y)c^2=T_f+(m_X+m_Y)c^2 +E_{exc} \\ 
+\Rightarrow T_f-T_i \equiv Q =-E_{exc},
+\end{array}
+\right.
+\end{equation}
+Since the excitation energy $E_{exc}$ is always positive, the $Q$ factor of the reaction is negative, meaning that there is a reference frame in which $T_f=0$, but $T_i$ can never be zero. This means that this reaction is an endothermic reaction, it needs energy to take place.
+
+%
+\begin{wrapfigure}{r}{7cm}
+\centering
+\includegraphics[scale=0.3]{imagenes/Coulomb_barrier}
+\caption{Coulomb barrier between two nuclei of mass number $A$ and $a$. $e=e/(4 \pi \varepsilon_0)$. Source: \cite{Satchler}.}
+\label{fig_Coulomb_barrier}
+\end{wrapfigure} 
+%
+The need of energy to produce a nuclear fusion reaction can be easily understood. Due to the positive charges of the nuclei, their Coulomb interaction is repulsive. However, not always the interaction is repulsive, if the nuclei are close enough, the nuclear interaction appears, and since its much more intense than the electromagnetic interaction, the dominant interaction is nuclear, which will attracts the nuclei, enabling them to bring the nuclei close enough so they can fuse into a new nuclei. If we plotted the potential between two nuclei, it would look similar to the one on figure \ref{fig_Coulomb_barrier}. There are two regions, the region for $r>>$, in which the nuclei are far away from each other so there is no nuclear interaction between them and the potential is the Coulomb potential, and the $r<<$ region, in which the nuclear interaction appears, so the potential is the nuclear potential and the nuclei attract each other. The point where Coulomb interaction is compensated by the nuclear interaction is usually estimated as $R_N \simeq 1.45 (A_1^{1/3}+A_2^{1/3})$fm, where $A_1$,$A_2$ are the mass number of the nuclei ($A$ and $a$ in figure \ref{fig_Coulomb_barrier}).
+
+The main challenge of nuclear fusion reactions is that the Coulomb barrier have to be overcomed, allowing the nuclei to approach enough so that they can fuse into a new nuclei.
+
+Although nuclear fusion reactions need energy to take place, the reactions could release more energy than the needed to stimulate it. This can be understood if considering the concept of binding energy $B(N,Z)$, which is the energy needed to split the nuclei into its components, 
+%
+\begin{equation}
+B(A,Z) \equiv Zm_p+(A-Z)m_n-[M(A,Z)-Zm_e])c^2,
+\end{equation} 
+where $M(A,Z)$ is the mass of an atom of atomic number $Z$ and mass number $A$, and $m_p$, $m_n$ and $m_e$ are the proton, neutron and electron masses respectively. 
+
+If $B/A$ is plotted, figure \ref{fig_B/A}  is obtained. $B/A$ increases with A up to $^{56}$Fe, and then it starts decreasing. This means that if combining elements to the left of $^{56}$Fe, the compound nuclei is more stable than the initial nuclei, and the difference of binding energy from the stable compound nuclei and the less stable separate nuclei is released in the form of kinetic energy. Equivalently, if a nuclei heavier than $^{56}$Fe splits into lighter nuclei, since the final nuclei will have higher binding energy than the original nuclei, the difference of binding energy will be released.
+
+\begin{wrapfigure}{r}{9cm}
+\centering
+\includegraphics[scale=0.35]{imagenes/Binding_energy}
+\caption{Binding energy per nucleon. The maximum $B/A$ correspond to $^{56}$Fe, the most stable element. Source: \cite{Krane}.}
+\label{fig_B/A}
+\end{wrapfigure} 
+
+Figure \ref{fig_B/A} essentially explains why energy can be obtained from fission reactions, which have lead to the creation of nuclear power plants to obtain energy by fission reactions. But, in the same way it suggest that we could obtain energy as well by pursuing nuclear fusion reaction. In both cases, the fundamental condition to obtain energy is that the energy released is greater than the energy applied. In energy context, it is defined a variable called $Q$ factor which is the ratio between the power obtained and the power applied to the system,
+%
+\begin{equation}
+Q=\dfrac{P_\text{obt}}{P_\text{app}}.
+\end{equation} 
+
+How can we achieve nuclear fusion reactions on Earth so it can be used as an energy source (\textit{controlled nuclear fusion})? The first challenge is that for nuclear fusion to happen, the Coulomb barrier needs to be overcomed (actually, considering quantum tunneling, energy lower than the needed to surpass the Coulomb barrier would be needed to allow fusion reactions). Nuclear fusion reactions considered to be pursued on Earth involve Deuterium, ${}_1^2 \text{H}$, because it is an abundant element, it exist on Earth's oceans, it comprises 0.015 atom percent of the hydrogen in sea water with the volume of about $1.35 \cdot 10^9$ km$^3$ \cite{Miyamoto} (section 1.3). The possible reactions are:
+%
+\begin{enumerate}
+	\item ${}_1^2 \text{H}+{}_1^2 \text{H} \rightarrow {}_1^3 \text{H}(1.01 \text{MeV})+p(3.03 \text{MeV})$,
+	\item ${}_1^2 \text{H}+{}_1^2 \text{H} \rightarrow {}_2^3 \text{He}(0.82 \text{MeV})+n(2.45 \text{MeV})$,
+	\item ${}_1^2 \text{H}+{}_1^3 \text{H} \rightarrow {}_2^4 \text{He}(3.52 \text{MeV})+n(14.06 \text{MeV})$,
+	\item ${}_1^2 \text{H}+{}_2^3 \text{He} \rightarrow {}_2^4 \text{He}(3.67 \text{MeV})+p(14.67 \text{MeV})$,
+	\end{enumerate}
+where the kinetic energy each product carries its also indicated. Their cross-sections are plotted in figure \ref{fig_Cross_section}, where the cross-section of the two ${}_1^2 \text{H}$-${}_1^2 \text{H}$ reactions have been added, and the X-axis is the projectile energy, ${}_1^2 \text{H}$, assuming the target nuclei at rest. ${}_1^2 \text{H}+{}_1^3 \text{H}$ reaction is the best option since its cross-section is the highest, and it peaks at the lowest energy\footnote{Tritium, ${}_1^3 \text{H}$, do not exist naturally on Earth's, but it could be produced by certain nuclear reactions with Lithium, which is naturally abundant on Earth. Because both ${}_1^2 \text{H}$ and Lithium exist in abundance on Earth, usually nuclear fusion as an energy source is referred as a \textit{virtually renewable} energy source, there would be enough fuel for thousands of years and without creating long-lived radioactive waste \cite{Wesson} (section 1.2).}.
+
+\begin{wrapfigure}{r}{10cm}
+\centering
+\includegraphics[scale=0.3]{imagenes/Cross_section}
+\caption{Cross-section of the fusion reaction involving Deuterium ($D$). The X-axis is the projectile energy, ${}_1^2 \text{H}$, assuming the target nuclei at rest. The D-D cross-section is the sum of the cross-section of the two D-D fusion reactions. Source: \cite{Wesson}}
+\label{fig_Cross_section}
+\end{wrapfigure}
+
+For the most favourable reaction, a relative energy between the projectile and the target nuclei of about 100keV is needed. This energy would mean a temperature of about $10^8$K ($E=K_B T$), hotter than the Sun's core temperature, which is estimated as $10^7$K \footnote{\url{https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html}.}. The Sun and all the stars emit energy due to nuclear fusion, although different nuclear reactions take place in the stars. In the case of the Sun, the reactions that take place are the $p$-$p$ chain\footnote{A good review can be found in Wikipedia, \url{https://en.wikipedia.org/wiki/Proton\%E2\%80\%93proton\_chain\_reaction}.}.
+
+At this extremely high temperatures, the fuel is in the plasma state. \textit{A plasma is a quasineutral gas of charged and neutral particles which exhibits
+collective behavior} \cite{Chen}. Stars confine the fuel via gravitational forces. How could the nuclear fuel be confined on Earth's at such temperatures? Since an object as massive as an star can not be made, and taken into account that there is no material that can withstand such high temperatures, other approaches are needed. Nowadays, there are mainly two methods:
+%
+\begin{itemize}
+\item Inertial confinement. With the use of lasers a small region could be extremely heated and compressed so that a plasma can be formed. The National Ignition Facility (NIF)\footnote{\url{https://wci.llnl.gov/facilities/nif}.} is a USA's facility researching this way to obtain controlled nuclear fusion.
+\item Magnetic confinement. This the most advanced method to pursue nuclear fusion on Earth. It relies on the fact that nuclei are charged, so they could be confined in a closed space with the use of electromagnetic fields.
+\end{itemize}
+This thesis will be focused on magnetic confinement, in particular in a certain type of magnetic confinement devices, tokamaks.
+
+The ${}_1^2 \text{H}-{}_1^3 \text{H}$ reaction produced an $\alpha$ particle ($^4_2 \text{He}$ nuclei) carrying 3.52MeV and a neutron carrying 14.06MeV. The neutron, since it is neutral, leave the plasma without interaction but the $\alpha$ particles are confined by the magnetic fields, and it can transfer its energy to the plasma by collision with the plasma particles. This is called \textit{$\alpha$-heating}. The power balance requires that the power applied to the plasma to heat it $P_\text{app}$ plus the $\alpha$-heating power $P_\alpha$ have to balance the loss power $P_\text{l}$, $P_\text{app}+P_\alpha=P_\text{l}$. The $\alpha$-particles heating suggest a scenario in which there would not be neccesary to apply external heating could be achieved. This would mean $Q \rightarrow \infty$. This is called \textit{ignition}, and it would be crutial for commercial nuclear fusion power plants. Up to date, this is a long term goal, but nowadays the JET tokamak have achieved $Q>0$, i.e., has produced energy by nuclear fusion reactions, although the energy received was lower than the applied, and the under-construction ITER reactor\footnote{\url{https://www.iter.org/}.} seeks to prove that $Q>10$ is achievable, that is, that the enery produced can surpass the applied energy by a factor of 10 at least.
+
+
+
+%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Definition of a plasma}
+
+The definition of a plasma of \cite{Chen} has been previously said, \textit{a plasma is a quasineutral gas of charged and neutral particles which exhibits collective behavior}. The definitions of collective behaviour and quasineutrality are as follow:%\footnote{This is the approach I learned on the online course \textit{Plasma Physics: Introduction}, made by the EPFL, which I took in order to learns the fundamentals of Plasma Physics (link of the course: \url{https://www.edx.org/course/plasma-physics-introduction}).}
+%
+\begin{itemize}
+
+\item \textit{Quasineutrality}. A plasma is composed of neutral and charged particles, ions and electrons, such that the net charge is zero. A neutral plasma (in equilibrium) will have the same charged particle density, $n_0$. Assuming for both ions and electrons the same charge, $e$, if a point charge $q$ is inserted in the plasma, the electrostatic potential is, if the coordinate system is centered at the test charge
+%
+\begin{equation}
+\phi(r)=\dfrac{1}{4 \pi \epsilon_0}\dfrac{q}{r} \exp \Big[\frac{-r}{\lambda_{\text{Debye}}} \Big] \equiv \phi_0(r) \exp \Big[\frac{-r}{\lambda_{\text{Debye}}} \Big],
+\end{equation}
+%
+where $\phi_0(r)$ is the vacuum potential the  point charge, and $\lambda_{\text{Debye}}=\sqrt{\frac{\epsilon_0 k_B T_e}{e^2 n_0}}$ is the Debye length, with $T_e$ the plasma temperature. This means that the potential is shielded if $r> \lambda_{Debye}$. Therefore, if the size of the plasma $L$ is much greater than $\lambda_{\text{Debye}}$, any charge accumulation will be shielded, so that the plasma remains neutral. $L>>\lambda_{\text{Debye}}$ is the\textit{ quasineutrality condition}. 
+
+However, the shielding of local charge accumulations could only be done if the plasma has enough particles surrounding the charge accumulation to shield it, and this leads to another condition, $N_D>>1$, where $N_D=n_0 \frac{4}{3} \pi  \lambda_{Debye}^3$ is the number of particles in a sphere of radius $\lambda_{Debye}$ surrounding the charge, called the "Debye sphere". This two conditions have to be satisfied to achieve quasineutrality.
+
+\item \textit{Collective behaviour}. This means that the motion of the gas has to be governed mainly by electromagnetic forces rather than hydrodynamic forces, i.e. collisions between the particles. If $\omega$ is the frequency of typical plasma oscillations and $\tau$ is the mean time between collisions with neutral atoms, the condition for an ionized gas to behave like a plasma is $\omega \tau>1$.
+
+\end{itemize}
+%
+An ionized gas is considered a plasma if the three previous condition are satisfied (the two conditions of quasineutrality and the condition of collective behaviour).
+
+%%%%%%%%%%%%%%%
+
+
+\section[Confinement of charged particles]{Confinement of charged particles in electromagnetic fields}
+\label{sec_drifts}
+If a particle of charge $q$ is set in a magnetic field $\vec{B}$, the field exerts a force upon the charged particle given by Lorentz's law:
+%
+\begin{equation}
+\vec{F}_\text{mag}=q \vec{v} \wedge \vec{B},
+\end{equation}
+%
+where $\vec{v}$ it the velocity of the particle. Note that the force is perpendicular to the velocity; if $q$ moves an amount $d\vec{l}=\vec{v} dt$, the work done by the magnetic force is $dW=\vec{F}_\text{mag} \cdot d\vec{l}=q \vec{v} \wedge \vec{B} \cdot \vec{v} dt=0$. The Lorentz force, hence, can not speed up the particle, but it can modify the trajectory of the particle. 
+
+To explore the motion of the particle, the simpler case is the case of a constant magnetic field $\vec{B_0}$. The equation of motion in an inertial frame is, by Newton's second law
+%
+\begin{equation} \label{ec mov carga en B unif}
+m \dfrac{d \vec{v}}{dt}=\vec{F}_{\text{mag}}=q \vec{v} \wedge \vec{B_0},
+\end{equation}
+%
+where $m$ is the mass of the particle. If we assume $\vec{B_0}=B_0 \stackrel{\wedge}{z}$, \eqref{ec mov carga en B unif} leads to
+%
+\begin{equation}\label{ec sinnombre}
+\left.
+\begin{array}{c}
+m \dfrac{d v_x}{dt}=q B_0 v_y, \\
+m \dfrac{d v_y}{dt}=-q B_0 v_x, \\
+m \dfrac{d v_z}{dt}=0, \\
+\end{array}
+\right\} 
+\Rightarrow
+\left.
+\begin{array}{c}
+\dfrac{d^2 v_x}{dt^2}=-\omega_c^2 v_x, \\
+\dfrac{d^2 v_y}{dt^2}=-\omega_c^2 v_y, \\
+m \dfrac{d v_z}{dt}=0, \\
+\end{array}
+\right\} 
+\end{equation}
+%
+where $\omega_c \equiv qB_0/m$ is the \textit{Larmor frequency}. The solution of \eqref{ec sinnombre} can be written as
+%
+\begin{equation}
+\left.
+\begin{array}{c}
+v_x(t)=v_{\perp} \cos(\omega_ct), \\
+v_y(t)=v_{\perp} \sin(\omega_ct), \\
+v_z(t)=v_{\parallel}, \\
+\end{array}
+\right\}
+\Rightarrow
+\left.
+\begin{array}{c}
+x(t)=x(0)+ R_\text{L} \sin(\omega_c t),\\
+y(t)=y(0)- R_\text{L} \cos(\omega_c t),\\
+z(t)=z(0)+v_{\parallel}t, \\
+\end{array}
+\right\}
+\end{equation}
+%
+where $v_{\perp}$ and $v_{\parallel}$ are the modules of the component of the velocity perpendicular and parallel to the magnetic field respectively, $(x(0),y(0),z(0))$ is the initial position of the particle and $R_\text{L} \equiv v_{\perp}/\omega_c$ is the \textit{Larmor radius}. 
+
+%
+\begin{wrapfigure}{r}{10cm}
+\centering
+\includegraphics[scale=0.3]{imagenes/motion_particle_uniform_field}
+\caption{Motion of a charged particle in an uniform magnetic field. The particle follows an helical trajectory. Source: google images, 2019.}
+\label{fig_b_cte}
+\end{wrapfigure}
+The  particle describes a circular motion of radius $R_\text{L}$ in the plane perpendicular to the field, centered on $(x(0),y(0))$, and an uniform motion parallel to the field, due to its velocity along the magnetic field, that is, if follows an helical motion. The axis of this helix is called \textit{guiding centre}. Figure \ref{fig_b_cte} shows this motion.
+
+For more complex situations, like the presence of an electric field or non-uniform electromagnetic fields, one approach to understand the total motion of the particle is to treat separately the additional force that acts upon the particle, which results either on an acceleration parallel to the magnetic field or a drift of the guiding centre. The most common are going to be briefly mentioned:
+%
+\begin{itemize}
+
+\item Acceleration due to $E_{\parallel}$
+
+A parallel (to the magnetic field) electric field $E_{\parallel}$ provides an acceleration given by
+
+\begin{equation}
+m \dfrac{d v_{\parallel}}{dt}=q E_{\parallel}
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item Acceleration due to $(\nabla B)_{\parallel}$, magnetic mirror effect
+
+If the magnetic field has a gradient parallel to $\vec{B}$ ($B$ is the magnitude of the magnetic field, so $\nabla B$ is a vector), and the particle has a velocity perpendicular to $\vec{B}$, there is a force parallel to the magnetic field, which can be used to confine the particle. It is easier to understand by considering energy conservation, and treating the charged particle as a magnetic dipole of magnetic moment $\mu=m v_{\perp}^2/2 B$. The force upon the particles is then
+%
+\begin{equation}
+\vec{F}=-\mu (\nabla B)_{\parallel} \dfrac{\vec{B}}{B}
+\end{equation}
+%
+where $(\nabla B)_{\parallel}$ is the parallel component of $(\nabla B)$.
+%
+
+It can be shown \cite{Wesson} (section 2.7) that $\mu$ is an adiabatic invariant, which means it remains almost constant during the motion of the particle. Consider a non-uniform magnetic field displaying regions of low and high magnetic field intensity, like the one on figure \ref{fig mag bottle}, called \textit{magnetic bottle}. The conservation of the energy and the magnetic moment in two points i and f leads to
+%
+\begin{equation}\label{mirror conserv}
+\begin{array}{c}
+E_\text{i}=E_\text{f} \Rightarrow \dfrac{1}{2}m (v_{i \perp}^2+v_{i \parallel}^2)=\dfrac{1}{2}m (v_{f \perp}^2+v_{f \parallel}^2), \\
+\\
+\mu_\text{i}=\mu_\text{f} \Rightarrow \dfrac{mv_{\text{i} \perp}}{2B_\text{i}}=\dfrac{mv_{\text{f} \perp}}{2B_\text{f}}.
+\end{array}
+\end{equation}
+%
+If the field $B$ increases from point i to f, $v_{\perp}$ has to increase too, which means that $v_{\parallel}$ has to decrease. This suggests that if the field is large enough, a point f with $v_{f\parallel}=0$ can exist, and in this point the particle bounces (by the action of the force) and moves in the opposite direction.
+%
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.35]{imagenes/Fields_in_magnetic_bottles}
+\caption{Magnetic bottle. The conservation of the energy and the magnetic moments enables the confinement of particles with this set up. Source: google images, 2019.}
+\label{fig mag bottle}
+\end{figure}
+%WRAP DOES NOT WORK HERE!!!!!!!!!!!!
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item $\vec{E} \wedge \vec{B}$ drift
+
+The drift velocity of the guiding centre $\vec{v_d}$ due to a force $\vec{F}$ is 
+%
+\begin{equation}\label{ec drift gen}
+\vec{v}_d=\dfrac{1}{q}\dfrac{\vec{F} \wedge \vec{B}}{B^2}.
+\end{equation}
+%
+With an electric field perpendicular to the magnetic field, the particle undergoes the so-called $\vec{E} \wedge \vec{B}$ drift, which can be easily computed by using \eqref{ec drift gen} with $\vec{F}=q \vec{E}$, resulting in a motion independent on the charge. This motion is shown in figure  \ref{fig EB y gradB drift} (a).%Note this is a different effect from an acceleration due to an electric field parallel to the magnetic field in the sense that the last one accelerates the motion along the guiding centre, and this one perturbs the circular motion of the particle, creating an egg-shaped motion in the cited plane (see figure \ref{fig_e_B_drift}).
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[scale=0.3]{imagenes/grad_E_B}
+%\caption{$\vec{E} \wedge \vec{B}$ drift on ion and electron. The drift velocity points to the right, so both ions and electrons move to the right, since this drift do not depend on the charge, modifying the circular motion into an egg-shaped motion. Source: \cite{Wesson}.}
+%\label{fig_e_B_drift}
+%\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item $\nabla B$ drift
+
+If we have a $\nabla B$ perpendicular to $\vec{B}$, the Larmor radius will vary and a result, the total motion of the particle will be an egg-shaped motion (see figure \ref{fig EB y gradB drift} (b)). The drift velocity is given by
+%
+\begin{equation}\label{nablaB drift}
+\vec{v}_{\nabla B}=\dfrac{m v_{\perp}^2}{2q} \dfrac{\vec{B} \wedge \nabla B}{B^3}.
+\end{equation}
+
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[scale=0.45]{imagenes/grad_nablaB}
+%\caption{$\nabla B$ drift on ion and electron. The drift velocity point upward or downward, depending on the charge. Source: \cite{Wesson}.}
+%\label{fig_nabla_B_drift}
+%\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item Curvature drift
+
+If the guiding centre of a charged particle is following a curved field line, it undergoes a drift due to the centrifugal force. If the field lines have a constant radius of curvature $R_\text{c}$, the drift velocity is
+%
+\begin{equation}
+\vec{v}_\text{c}=\dfrac{m v_{\parallel}^2}{q B^2} \dfrac{\vec{R_\text{c}} \wedge \vec{B}}{B^2},
+\end{equation}
+
+where $\vec{R_\text{c}}$ points from the center of the radius of curvature towards the outside (See figure \ref{fig EB y gradB drift} (c)).
+
+\begin{figure}[htbp]
+\centering
+\subfigure[$\vec{E} \wedge \vec{B}$ drift on an ion and an electron. The drift velocity points to the right, so both ions and electrons move to the right, since this drift do not depend on the charge, modifying the circular motion into an egg-shaped motion. ]{\includegraphics[scale=0.3]{imagenes/grad_E_B}}
+\hfill
+\subfigure[$\nabla B$ drift on ion and electron. The drift velocity points upward or downward, depending on the charge.]{\includegraphics[scale=0.45]{imagenes/grad_nablaB}}
+\hfill
+\subfigure[Curvature drift of an ion due to a curved magnetic field. It is shown the direction of the drift velocity.]{\includegraphics[scale=0.4]{imagenes/grad_curvature}}
+\caption{$\vec{E} \wedge \vec{B}$, $\nabla B$ and curvature drifts. Source: \cite{Wesson}.}
+\label{fig EB y gradB drift}
+\end{figure}
+
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Tokamaks}
+\label{sec_tokamaks}
+Many devices have been created to achieve nuclear fusion by magnetic confinement. The basis of one of the first devices, magnetic mirrors, have been described. Here we are going to focus on toroidal devices, in particular in a certain type of devices called Tokamaks. If a toroidal solenoid is considered, it is a closed geometry with a magnetic field that is null at its outside and it goes as $1/R$ at its inside, according to Ampère's law, where $R$ is the radial coordinate (see figure \ref{coord y flux} (a)). However, this is not enough to confine particles inside the solenoid because of the drifts described previously. The non-uniformity of the magnetic field at its inside leads to a  $\nabla B$ drift, that drift the ions downward and the electrons upward, since \eqref{nablaB drift} depends on the charge $q$. This charge separation will create an electric field perpendicular to the magnetic field, so the particles will experience a $\vec{E} \wedge \vec{B}$ drift, that would drift outward both ions and electrons, provided that this drift does not depend on the charge. These drifts are shown in  figure \ref{fig drifts torus} (a).
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Drifts in a torus. Source: \cite{Chen}.]{\includegraphics[scale=0.4]{imagenes/drift_en_toro}}
+\hfill
+\subfigure[Toroidal (blue) and poloidal (red) directions of a torus. Source: google images, 2019.]{\includegraphics[scale=0.2]{imagenes/Toroidal_coord}}
+\caption{Drifts in a torus and definition of the poloidal and toroidal directions on a torus.}
+\label{fig drifts torus}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To overcome the drifts discussed above, \textit{Tokamaks} confine the particles by twisting the magnetic field lines. For doing that, in addition to the toroidal field of the torus, a poloidal field is added (field in the poloidal direction, see figure \ref{fig drifts torus} (b)). This poloidal magnetic field is created by the plasma itself \footnote{The standard tokamak book it is often recommended is \cite{Wesson}. However, I prefer other books such us \cite{Miyamoto}. For a more divulgative, yet formal and descriptive point of view, it is highly recommended to see the series of articles \cite{Sertok1, Sertok2, Sertok3, Sertok4}.}. Its name is a Russian acronym for toroidal chamber with an axial magnetic field. 
+
+Tokamaks need additional coils for controlling the plasma. The plasma itself tend to move radially outward due to poloidal field created by the plasma, which is greater in the inboard region than in the outward, and due to the toroidal shape of the plasma, the plasma pressure also creates an outward force. This outward force is called \textit{hoop force} (see \cite{Linjin} for an illustrative explanation, and \cite{Miyamoto} for a rigurous treatment). This coils are called poloidal magnetic field coils (PF coils) since its role is to create poloidal field whose $\vec{J} \wedge \vec{B}$ force balance the hoop force. For doing that, the current flowing in this PF coils need to flow in the opposite direction to the plasma current. In addition, this coils also help create the elongated shape of tokamak plasmas. An additional set of coils called divertor coils are often used to created a \textit{diverted} shape in the plasma, which will be explain later. 
+
+Figure \ref{esq tokamak} shows a sketch of a tokamak with its basics elements. The plasma is contained in the vacuum vessel (VV) (grey coloured in the figure). The toroidal field (green arrows) is created by the toroidal magnetic field coils, and the poloidal field is created mainly by the plasma itself, and by the PF coils (plasma shaping). In the center of the device there is a transformer coil that induces a toroidal current in the plasma (red arrows) that creates the poloidal magnetic field. 
+\begin{wrapfigure}{r}{10cm}
+\centering
+\includegraphics[scale=0.4]{imagenes/esquema_tokamak}
+\caption{Sketch of a tokamak, showing its basic elements, the field lines and the plasma current. Source: google images, 2019.}
+\label{esq tokamak}
+\end{wrapfigure} 
+%
+The resulting field lines are helical lines (yellow arrows), which confine most of the particles of the plasma. Since the plasma current is inductive, tokamaks operate in a pulsed regime. One the challenges of this device is the control of the plasma, and the electromagnetic instabilities within itself, that could lead to the loss of the plasma energy. This events are called \textit{Disruptions}.
+
+For the initialization of a tokamak discharge, called \textit{tokamak start-up}, the toroidal magnetic field must be previously stablished and the VV is filled with a gas. After the inductor coil induced the electric field by changing its current, the gas will be ionized creating a plasma (this is called \textit{break-down}). This plasma will start to create the poloidal field that confines the particles. In the meantime, the plasma needs to be heated and the PF coils will be controlling its shape. There are several methods of heating the plasma; to begin with, the plasma current will heat the plasma due to Joule's effect, which is called ohmic heating. External methods of heating could be the use of electromagnetic waves (the electromagnetic waves will create oscillations of the plasma particles, increasing their energy), injection of neutral particles (the injected particles will accelerate the plasma particles by collisions with them, increasing their temperature), and many more (See chapter 5 of \cite{Wesson} for a description of heating methods)\footnote{The websites of currently operating tokamaks also provide information about the way they heat their plasmas.}. Finally, the plasma will arrive at the desired configuration with the desired plasma current and shape, ending the start-up phase.
+
+
+
+\section[Motivation: SMART]{Motivation: SMART, a future tokamak at Seville}
+\label{sec_SMART_intro}
+The Plasma Physics and Fusion Technology Group of the University of Seville is designing a tokamak that will be operating the next year\footnote{\url{http://www.psft.eu/}.}. Its name will be SMall Aspect Ratio Tokamak (SMART), which reveal the main characteristic of the device, it will be a spherical tokamak  rather than a standard tokamak. This reactor will not make fusion reactions; instead, as well as all the existing small and medium size reactors, it will focus on doing tokamak physics research such as plasma confinement, shape, instabilities, etc. This information will be used by large international facilities such as JET or ITER, which will make fusion reactions.
+
+
+The main difference between a spherical tokamak and a tokamak is the aspect ratio of the device, which is the ratio of the major radius and the minor radius of the device. If the aspect ratio of the tokamak is $< 2$, the device is called \textit{spherical tokamak}. Figure \ref{fig_ST_T} shows a standard tokamak and a spherical tokamak.
+
+\begin{wrapfigure}{r}{8cm}
+%\begin{figure}[htbp]
+\includegraphics[scale=0.3]{imagenes/tokamaks_vs_st}
+\caption{Tokamaks and spherical tokamaks. Source: \cite{ST_vs_T}.}
+\label{fig_ST_T}
+%\end{figure}
+\end{wrapfigure}
+
+Spherical tokamaks are a desirable approach to controlled nuclear fusion because they are more compact than regular tokamaks, which means lower costs, and spherical tokamak's plasmas displays better plasma propoerties such as the so called  \textit{safety factor} $q$ and the $\beta$, which will be explained later (reviews of spherical tokamaks features vs regular tokamaks features can be found on \cite{ST_vs_T,Peng_1986}).
+
+
+Two operational phases for SMART has been designed, a first operational phase, and a second one with enhanced parameters and features such as a new way of heating, Neutral Beam Injection (NBI). The main parameters of this two phases are shown in table \ref{table_SMART_parameters}. This parameters will be explained in the following sections. A 3D model of the SMART tokamak is shown on figure \ref{fig_SMART_3D_Alessio}.
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Reactor.]{\includegraphics[scale=0.35]{imagenes/SMART_3D_fancy_NBI}}
+\hfill
+\subfigure[Coilset.]{\includegraphics[scale=0.35]{imagenes/coilset_3D}}
+\caption{3D plots of the SMART reactor, made by Alessio Mancini, a PhD student of the PSFT group. The coilset is symmetric with respect to the $Z=0$ plane, and several coils are inside the vacuum vessel (VV). The ports in the VV are for plasma diagnosis and for plasma heating methods such as NBI and ECRH, which will be explained later.}
+\label{fig_SMART_3D_Alessio}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+	%\begin{minipage}{0.45\textwidth}
+	%
+	\begin{tabular}{|c|c|c|} \hline
+		\multicolumn{3}{|c|}{SMART}\\ \hline
+		& Phase 1 & Phase 2 \\ \hline
+		VV radius(m) & \multicolumn{2}{|c|}{0.8} \\ \hline
+		VV height(m) & \multicolumn{2}{|c|}{1.6} \\ \hline
+		Major plasma radius(m) & \multicolumn{2}{|c|}{0.4} \\ \hline
+		Minor plasma radius(m) & \multicolumn{2}{|c|}{0.25} \\ \hline
+		Aspect ratio & \multicolumn{2}{|c|}{$>1.6$} \\ \hline	
+		Elongation & \multicolumn{2}{|c|}{$>2$} \\ \hline
+		Plasma current(kA) & 30 & 100  \\ \hline
+		Toroidal field(T) & 0.1 & 0.3  \\ \hline
+		Flat-top time(ms) & 20 & 100 \\ \hline
+	\end{tabular}
+	\caption{Parameters of the two phases of SMART. Toroidal field is the toroidal field value at the plasma major radius.}
+	\label{table_SMART_parameters}
+		%\end{minipage}
+\end{table}
+%
+
+\section{Objetives and outline of the thesis}
+
+The goal of this work has been to model the initial phase of the tokamak start-up, the break-down of the gas, of the SMART reactor, optimizing the reactor so that the gas breaks-down and turns into a plasma for both operational phases without any additional heating method. Hydrogen have been used as the gas.
+
+This thesis is organized as follows: in the second chapter, the tokamak start-up is reviewed, focusing on the break-down phase, introducing the basic physics of this phase, as well as several criteria to ensure a proper break-down of the gas.
+The third chapter presents the basics of tokamak physics, the simplest model of the plasma, and the fundamental equation to describe the tokamak equilibrium, the Grad-Shafranov equation, as well as the characterization of a tokamak plasma. 
+The fourth chapter reviews the Fiesta toolbox used for computing the plasma equilibrium and the dynamic behaviour of the plasma using the RZIp model.
+The fifth chapter summarizes the simulation procedure followed in this work.
+Chapter sixth contains the simulation results, as well as the discussion of the results with other operating tokamaks.
+Finally, the chapter seventh summarized the work carried out in this thesis, and discuss future work.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\chapter{Tokamak start-up}
+
+The words \textit{Tokamak start-up} refer to the processes that take place from the induction of the toroidal electric field by the inductor coil to the achievement of the target equilibrium configuration of the plasma, with the desired current and shape\footnote{A general review of the tokamak start-up can be found on \cite{MuellerStartup}. As stated in the cited document, tokamak start-up receives attention only when there is a failure on it, so there is no extensive theory about it. However, to have commercial nuclear fusion power plants based on tokamaks this needs to change. One of the first theoretical reviews I have ever seen on this topic can be found on \cite{ITER_2019}.}. This processes can be divided into three phases:
+%
+%
+\begin{enumerate}
+	\item Plasma break-down
+	\item Plasma burn-through
+	\item Plasma current ramp-up
+\end{enumerate}
+
+This thesis is focused on the first phase, the break-down on the gas that is pre-filled into the vacuum vessel (VV). A review of all the phases will be given here. A plot displaying the variation of several variables during the start-up is showed on figure \ref{fig_startup}, which will be explained as the phases of the start-up are reviewed.
+
+As previous conditions, the VV is pre-filled with a gas, and the toroidal field coils are turned on creating the toroidal magnetic field.  In the first phase (blue coloured on figure \ref{fig_startup}), the toroidal electric field induced by the inductor coil accelerates the free electrons in the VV, and if they acquire enough energy, they could ionize the neutral atoms in the gas when colliding with them. The extracted electrons will also be accelerated, creating an avalanche of free electrons, called \textit{Townsend avalanche}. As a result of this avalanche, the ionized gas start to develop a current, as can be seen on figure \ref{fig_startup}. The electron temperature $T_e$ starts to increase as well. When Coulomb collisions (collisions between charged particles) dominate along neutral atom-electron collisions, the break-down phase ends ant the burn-through phase begins.
+
+\begin{wrapfigure}{r}{10cm}
+%\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.4]{imagenes/esquema_startup}
+\caption{Time evolution of the plasma current (a), the line radiation of Deuterium (b), line-radiation losses ($\alpha$ line of Deuterium) (c) and electron temperature (d) during a tokamak start-up. Source: \cite{TCV_thesis}. Deuterium is used as a prefilled gas here, since its line-radiation is showed. This plot assumes the beginning of the burn-through phase to be when the maximum of line radiation occurs.}
+\label{fig_startup}
+%\end{figure}
+\end{wrapfigure}
+
+In the \textit{burn-through} phase, the plasma will ionize itself completely. In this phase, radiation losses starts to be relevant. This losses are caused by several factors such as Breemstrahlung radiation due to the deceleration of the electron in the collision with another atom, line-radiation of neutral atoms (neutrals) due to the excitation of the electronic shell of the neutrals followed by a de-excitation by emitting electromagnetic radiation, recombination of ions and electrons, and radiation from impurities from the non-perfect vacuum of the VV or impurities sputtered from the wall by the collisions of electrons with the VV (An extensive review of the power losses mechanisms and the burn-through phase can be found on \cite{KimThesis}, and a simpler approach can be found on \cite{Lloyd_1996}). Power losses starts to increase rapidly until a maximum is reached in the line radiation, as can be seen on fig \ref{fig_startup}\footnote{Note that the end of the avalanche phase and the beginning of the burn-through phase differs along the bibliography. For example, the source of fig \ref{fig_startup}, \cite{TCV_thesis} defines the beginning of burn-through phase when the maximum in the line radiation is reached, while other articles suggest the beginning on the burn-through at an earlier stage, such as \cite{ITER_2019}. I will follow the approach of \cite{ITER_2019}.}.
+
+This maximum can be easily understood. The line-radiation emissions should be proportional to the neutral atoms, since they are the ones whose electrons can be excited in collisions, decaying emitting electromagnetic radiation. Furthermore, it should be proportional to the electron density, since increasing the electron density means that more electrons could collide with neutral atoms, ionizing them. Provided that as the ionization proceed the electron density increases while the neutral density decreases, there must be a maximum point of line-radiation emissions.
+
+In the meantime, at some point over this two phases, the poloidal field created by the plasma will start to be relevant, confining most of the particles. Once the plasma is completely ionized, the final phase, the \textit{ramp-up phase} begins. In this phase the plasma current is increased by plasma heating, increasing the electron temperature (previously the increase in plasma current was mainly due to the increase of the electorn density). Electromagnetic instabilities have to be avoided, since they could lead to an abrupt decrease of the plasma current.
+%
+%
+\section{Plasma break-down}
+\label{sec_breakdown}
+The plasma break-down phase is the first phase on the tokamak start-up, and in this phase the pre-fill gas is ionized or \textit{broken-down} into a plasma\footnote{The most cited article for this phase is \cite{Lloyd_1991}. However, I prefer the ITER articles since they also review the existing bibliography, \cite{ITER_1999}, \cite{ITER_2007}, and for a theoretical approach \cite{ITER_2019}.}.
+
+Plasma break-down is modelled using a \textit{Townsend model}. In this model, the ions are considered at rest due to its enormous mass relative to the electron mass. When you apply an electric field in the toroidal direction $E_\varphi$ to the gas in the VV, the electrons that are free in the tokamaks (there are always some) will be accelerated by the electric field, so if they acquire a determine amount of energy before a collision with a neutral atom, the neutral atom can be ionized. In the case of H$_2$, the energy to ionize it is about 15eV \cite{ITER_2019}, leaving 2 electrons, which will be accelerated, and could produce more electrons, creating an electron avalanche called \textit{Townsend avalanche}. However, not all the electrons are ionizing constantly, they end up colliding with the wall of the tokamak due to looses. The ionization and looses rate will be explored.
+%
+\begin{itemize}
+
+	\item Ionization rate $\nu_{ion}$. If an electron produces $\alpha$ electrons per meter in the direction of the electric field, and there are $N$ electrons, when traveling an infinitesimal distance $dx$, those $N$ elecrons will produce an infinitesimal increase in the number of electrons $dN=\alpha N dx$. Dividing by the volume of the tokamak, we get the increase in the electron density, $dn_e=\alpha n_e dx$. 
+
+The electrons are accelerated by the electric field, but due to of the collision with the neutral atoms that slow them down, they end up achieving a constant speed along the electric field direction $v_{\parallel}$. In that case, the differential distance traveled in a differential time $dt$ is $dx=v_{\parallel} dt$, so the rate of creation of electrons or ionization rate $\nu_{ion}$ is 
+%
+	\begin{equation}\label{nu ion}
+dn_e=\alpha n_e v_{\parallel} dt \Rightarrow \dfrac{dn_e}{dt}=\alpha n_e v_{\parallel} \equiv n_e \nu_{ion},
+	\end{equation}
+where $\nu_{ion} \equiv \alpha v_{\parallel}$. $\alpha$ is called the \textit{first Townsend coefficient}, which can be expressed as \cite{KimThesis} (section 2)
+%
+	\begin{equation}\label{ec_def_alfa}
+\alpha = C_1 p \exp \Big(-\dfrac{C_2 p}{E_\varphi} \Big),
+	\end{equation}
+where $p$ is the pre-fill gas pressure, $E_\varphi$ is the toroidal electric field induced, and $C_1,C_2$ are experimentally determined constants (they are not absolute constants, they are constant for a certain range of $Eº_\varphi/p$, but for our case, they have a single value). 
+
+The constant parallel speed is proportional to $E$ and $p$:
+%
+\begin{equation}
+v_\parallel \propto \dfrac{E_\varphi}{p} \Rightarrow v_\parallel = C_3 \dfrac{E_\varphi}{p}.
+\end{equation}
+$C_3$ is taken as 43 in \cite{Lloyd_1991}. However, for large $\dfrac{E_\varphi}{p}$ values, the previous formula is not valid, the electrons do not achieve a terminal velocity, which also means they do not create new electrons since they do not collide enough with the neutral atoms. This electrons are called \textit{runaway electrons}. \cite{Lloyd_1991} proposed that they appears when $\dfrac{E_\varphi}{p}>2 \cdot 10^4 $V m$^{-1}$Torr$^{-1}$. Torr is a pressure unit widely used in this context; 1Torr $\equiv 1/760 \text{atm}=101325/760 \text{Pa} \simeq 133.32 \text{Pa}$. As a consequence, the production of runaway electrons have to be avoided\footnote{Actually, this is more complicated because there are more fluid forces (drag forces) that can avoid the electron velocity to increase endlessly. See \cite{ITER_2019} for an extensive review of this.}.
+
+	\item Loss rate $\nu_{loss}$. There are several sources of electron looses. The first source is due to the magnetic drifts discusses on section \ref{sec_tokamaks}. Another source is the \textit{stray} poloidal field $B_\theta$ present in the VV due to several factors, such as eddy currents in the VV, the inductor coil itself, which created poloidal field (border effects) or any magnetic material surrounding the VV. Due to this stray field, most of the magnetic field lines end up colliding with the VV, so electrons following them will eventually collide with the vessel. The dominant source is the stray field. If the length of the line parallel to the electric field is $L$, called the \textit{connection length}, the loss rate due to the stray field can be expressed as
+%
+	\begin{equation}\label{nu loss}
+\nu_{loss} = \dfrac{v_{\parallel}}{L}.
+	\end{equation}
+
+Since the length of the magnetic field lines in a tokamak is mostly in the parallel direction (the toroidal direction) usually the total connection length (considering both poloidal and toroidal lengths) is taken as the parallel connection length. To decrease the effect of the stray field, it is common in tokamaks to create with the PF coils a region where the poloidal field is as low as possible, called \textit{poloidal field null region}, so that there the field lines goes in the toroidal direction mostly, and electrons following them will collide with each other. The connection length can be calculated numerically by integrating the magnetic field lines equation, but also an empirical formula is used to estimate it in the poloidal field null region \cite{ITER_2007}:
+%
+	\begin{equation}\label{ec L}
+L \simeq 0.25 a_\text{eff}\dfrac{B_\varphi(R_{\text{null}})}{<B_\theta>},
+	\end{equation}
+where $B_\varphi(R_{\text{null}})$ is the toroidal magnetic field at the center of this region $R_{\text{null}}$ and $<B_\theta>$ is the average poloidal field in the surface of this region. Regarding $a_\text{eff}$, there are two visions in the bibliography:
+%
+	\begin{itemize}
+		\item[i)] $a_\text{eff}$ is the linear distance to the closest wall. Sometimes this is estimated as the minor radius of the plasma target equilibrium configuration \cite{KimThesis}, \cite{Lloyd_1991}.
+		\item[ii)] $a_\text{eff}$ is the minor radius of the field null region \cite{TCV_thesis}, \cite{ITER_2007}, \cite{ITER_2019}.
+	\end{itemize}
+
+\end{itemize}
+
+The variation in the electron density considering both ionization and losses is
+%
+\begin{equation}\label{ec dne/dt}
+\dfrac{d n_e}{dt}=n_e (\nu_{ion}-\nu_{loss}).
+\end{equation}
+The ionization rate can be assumed constant since electrons will acquire a constant speed quickly after the start of the ionization process. About the loss rate, the connection length may vary since as the toroidal electric field is induced inside the VV, eddy currents are also induced in the VV, which will affect the field, and hence alter the connection length $L$. However, as a first approximation, we could assume $L$ to be constant. In that case the electron density as a function of time will be
+%
+\begin{equation}\label{ec ne}
+n_e(t)=n_e(0)\exp{ [(\nu_{ion}-\nu_{loss})t]},
+\end{equation}
+where $n_e(0)$ is the electron density at $t=0$, the time at which the toroidal electric field is induced. For a proper ionization of the gas, the ionization rate must be greater than the loss rate, so that the electron density increases. Imposing this, and introducing \eqref{nu ion} and \eqref{nu loss} in \eqref{ec dne/dt} gives
+%
+\begin{equation}
+\dfrac{d n_e}{dt}=n_e v_{\parallel}(\alpha-1/L)>0 \Rightarrow (\alpha-1/L)>0 \Rightarrow \alpha L>1,
+\end{equation}
+taking into account v$_{\parallel}$ is the module of the speed, ergo, positive. For Townsend avalanche to proceed, $\alpha L>1$ is needed. Setting $\alpha L=1$  will give the limit condition so that the avalanche nor increase nor decrease. Introducing this condition on \eqref{ec_def_alfa} gives
+%
+\begin{equation}\label{ec Paschen}
+{E_\varphi}_{min}=\dfrac{C_2 p}{\ln(C_1 p L)},
+\end{equation}
+where ${E_\varphi}_{min}$ is the electric field needed for this condition. Since this condition do not ensures avalanche, \cite{ITER_2007} states that $E_\varphi>2{E_\varphi}_{min}$ for a reliable start-up, so that the avalanche increases. 
+
+\begin{wrapfigure}{r}{10cm}
+%\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.6]{imagenes/simulaciones/S2-000016Paschen_TFM}
+\caption{Paschen's curve for for H$_2$ as pre-fill gas, showing different connection lengths.}
+\label{fig_Paschen_ejemplo}
+%\end{figure}
+\end{wrapfigure}
+
+The plot of ${E_\varphi}_{min}$ as a function of $p$ for a given $L$ is called the Paschen's curve. An example is shown on figure \ref{fig_Paschen_ejemplo}, for H$_2$ as pre-fill gas. The constant are $C_1=510 \text{m}^{-1} \text{Torr}^{-1}$, $C_2=1.25 \cdot 10^4 \text{V} \text{m}^{-1} \text{Torr}^{-1}$. It can be seen from the figure that all the lines displays a minimum electric field needed for a certain pressure. This can be easily understood: for high pressures, the mean free-path will be too short (the mean free path $\lambda$ is given by $\lambda=1/(C_1 p)$ \cite{KimThesis}), so for the electrons to gain enough energy to ionize, the electric field needs to be high. For low pressures, the mean free-path will be too long meaning that there would be too little collisions before the electrons are lost, although all the collisions will be ionizing collisions because the electron will have gained enough energy. This results in a vertical asymptote, so that to the left of that asymptote the loss rate is greater than the ionization rate, regardless of the field, because there is not enough molecules to create avalanches.
+
+A widely used empirical criteria for a reliable startup is the so-called Lloyd's criteria \cite{ITER_1999}
+%
+\begin{equation}
+E_\varphi \dfrac{B_\varphi}{B_\theta} >1000 \text{V}\text{m}^{-1}.
+\end{equation}
+In the case of plasma break-down assisted by Electron Ciclotron Resonance Heating (ECRH), which is a heating method based on the irradiation of electromagnetic waves of certain frequencies to the ionized gas so that it absorbs them helping ionize the gas (See \cite{ITER_2019} for an overview of this heating method), the minimum value is 100$\text{V}\text{m}^{-1}$ instead of 1000$\text{V}\text{m}^{-1}$ \cite{VEST_2015}.
+
+In the DIII-D tokamak\footnote{\url{https://www.ga.com/magnetic-fusion/diii-d}.} it has been shown \cite{Lazarus_1998} that the break-down of the pre-fill gas did not occur where the stray poloidal field was minimum; instead, it took place where the potential gained by the electrons along their path $\int_\text{field line} \vec{E} \cdot \vec{dl}$ was greatest. This potential is not the electrostatic potential (the electrostatic potential between two points $A$ and $B$ is $V_B-V_A=- \int_A^B \vec{E} \cdot \vec{dl}$) because the electric field has been created by a changing magnetic field. The main difference is that this potential function depends on the path of the integral, while the electrostatic potential only depends on the starting and ending positions, so that, an electron after doing a revolution inside the tokamak returning to the starting point have gained energy\footnote{An electrostatic field $\vec{E}$ can be written as  $\vec{E}=-\nabla V$, where $V$ is the electrostatic potential. In the presence of transient magnetic fields, the electric field is given by $\vec{E}=-\nabla V- \p \vec{A}/ \p t$, where $\vec{A}$ is the vector potential. The line integral between two points $A$ and $B$ of this electric field is
+$\int_A^B \vec{E} \cdot \vec{dl}=\int_A^B -\nabla V \cdot \vec{dl} -\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$= $-V(B)+V(A)-\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$. To compute the last integral, the path followed from $A$ to $B$ needs to be known, and hence, the final result will depend on the path followed.}. \cite{NSTX_2017} also confirms this empirical results. This seems understandable since to create avalanches, the electrons have to gained enough energy to ionize, so it is not only relevant that they follow a path with the minimum deviation to collide as much as possible, but that they gain as much energy as possible in its path so that most of the collisions are ionizing collisions.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Avalanche or break-down time}
+
+When Coulomb collisions dominate over neutral-electron collisions, the fuel starts to behave like a plasma, entering the \textit{burn-through} phase. This phase is reached usually when the ionization fraction of the gas is about 5\% \cite{ITER_2019}. At this stage, the avalanche as described above, with a gas being ionized by a toroidal electric field stops being valid, and the further ionization is made by the plasma itself, if the power losses are counterbalanced. 
+
+The time when the this phase starts (or when the break-down phase ends) can be estimated using eq \eqref{ec ne}. Introducing the concept of ionization fraction $f_i$, which is the ratio between the electron density created by ionization and the neutral pre-fill gas density $n_\text{pre}$, which is
+%
+\begin{equation}
+f_i \equiv \dfrac{n_e/2}{n_\text{pre}},
+\end{equation} 
+where the 2 accounts for the 2 electrons that H$_2$ (and also He) gives. The pre-fill gas density is related to the gas pressure by the ideal gas law, $p=n_\text{pre} K_\text{B} T_\text{pre}$. Substituting this into \eqref{ec ne} yields, assuming $n_e(0)$=1 which is an standard assumption \cite{ITER_2019}, \cite{Lloyd_1991},
+%
+\begin{equation}\label{ec fi}
+f_i(t)=\dfrac{1}{2 n_\text{pre}} \exp{ [(\nu_{ion}-\nu_{loss})t]}= \dfrac{1}{2} \dfrac{K_\text{B} T_\text{pre}}{p} \exp \Big[v_\parallel (\alpha-\dfrac{1}{L})t \Big].
+\end{equation}
+Setting $f_i=5\%$ on \eqref{ec fi} will give an estimation for the time needed for the avalanche or break-down phase to end, the \textit{avalanche time} $t_\text{ava}$:
+%
+\begin{equation}\label{ec t_ava}
+t_\text{ava}= \dfrac{\ln \Big(2\cdot 0.05 \cdot \dfrac{p}{K_\text{B} T_\text{pre}} \Big) }{v_\parallel (\alpha-\dfrac{1}{L})}=\dfrac{\ln \Big(2\cdot 0.05 \cdot \dfrac{p}{K_\text{B} T_\text{pre}} \Big) }{43 \dfrac{E_\varphi}{p}\Big[ C_1 p \exp \Big(-\dfrac{C_2 p}{E_\varphi} \Big)-\dfrac{1}{L} \Big]}.
+\end{equation}\footnote{This formula is sometimes simplified by setting the dividend to 41, as in \cite{Lloyd_1991}. However, \cite{Lloyd_1991} states a similar formula estimates the time need to reach the maximum in the line-radiation emissions. I trust more the vision on \cite{ITER_2019} since this formula has been derived using a model of a gas being ionized, which is not valid once the gas turned into a plasma, and the plasma is formed prior to the maximum in the line-radiation emissions.}
+Note that it is positive since $\alpha-1/L>0$ which is the condition for the avalanche to occur.
+
+
+
+\subsection{Voltage and electric field induced by the inductor solenoid}
+\label{sec_loop_voltage_field_Sol_theory}
+
+To start the break-down phase, the inductor solenoid (Sol) is pre-charged with a certain current, and then its current its ramped down rapidly to induce the electric field. In this subsection the electric field and the voltage induced will be derived.
+
+
+The voltage induced by the ramp down of the Sol, called \textit{loop voltage}, can be easily computed using Faraday's law in its integral form:
+%
+\begin{equation}\label{ec_Faraday_loop}
+\varepsilon \equiv V_\text{loop} = -\dfrac{d}{dt} \int_S \vec{B} \cdot \vec{n} dS,
+\end{equation}
+where $S$ is the surface enclosed by the loop, which is a circle of an arbitrary radius, and $\vec{n}$ its unit vector, which will go in the $Z$ direction. The magnetic field $\vec{B}$ of a solenoid also goes in the $Z$ direction, so the loop voltage is, choosing $\vec{n}=\stackrel{\wedge}{Z}$:
+%
+\begin{equation}\label{ec_Vloop_Sol}
+V_\text{loop} = - \dfrac{d}{dt} \int_S B_\text{Sol} dS= - \int_S \dfrac{d B_\text{Sol}}{dt} dS.
+\end{equation}
+The derivative can be introduced into the integral since the integration variables do not vary over time. The only thing that vary with time is the Sol current. Its derivative can be computed easily since the Sol current is decreased linearly, so it satisfies
+%
+\begin{equation}
+I_\text{Sol}(t)=m t +n
+\end{equation}
+At $t=0$, $I_\text{Sol} \equiv I_0$, and the ramp goes down until $I_\text{Sol}(t_1) \equiv  I_1$ ($I_0>I_1$), so the Sol current is
+%
+\begin{equation}
+I_\text{Sol}(t)=\dfrac{I_1-I_0}{t_1} t +I_0.
+\end{equation}
+Solving \eqref{ec_Vloop_Sol} for the magnetic field of a solenoid of inner radius $R_\text{in}$ and outer radius $R_\text{out}>R_\text{in}$ with $N/l$ turns per unit length, ignoring border effects (i.e., considering infinite length), gives (see appendix \ref{appendix_loop voltage})
+\begin{equation}
+V_\text{loop}= - \mu_0 \dfrac{N}{l} \dfrac{I_1-I_0}{t} \Big[ \pi R_\text{in}^2  + \pi (R_\text{out}^2-R_\text{in}^2) - \dfrac{2 \pi}{R_\text{out}-R_\text{in}} \Big( \dfrac{1}{3} (R_\text{out}^3-R_\text{in}^3) - \dfrac{R_\text{in}}{2} (R_\text{out}^2-R_\text{in}^2) \Big) \Big].
+\end{equation}
+Since the slope of the Sol current is negative, loop voltage induced is positive.
+
+Once the loop voltage has been computed, the electric field can also be computed. For computing it, the integral form of Faraday's law will be used:
+%
+\begin{equation} \label{ec Faraday E}
+V_\text{loop}=\varepsilon \equiv \oint_\Gamma \vec{E} \cdot \vec{dl}= -\dfrac{d}{dt} \int_S \vec{B} \cdot \vec{n} dS,
+\end{equation}
+where $\Gamma$ is the loop's perimeter. To compute the electric field $\vec{E}$ from this equation we must know its symmetry. To do so, let's take into account that \eqref{ec Faraday E} is very similar to Ampère's law
+%
+\begin{equation}\label{ec Ampere}
+\oint_\Gamma \vec{B} \cdot \vec{dl}=\mu_0 \int_S \vec{J} \cdot \vec{n} dS=\mu_0 I_\text{enclosed}.
+\end{equation}
+It is widely known that the magnetic field of a infinite cilindral conductor carrying a current density $\vec{J}=J \stackrel{\wedge}{Z}$ is $\vec{B}=B \stackrel{\wedge}{\varphi}$ (see any book of classic electromagnetism, like \cite{Griffiths}). And, since the roles of $\vec{B}$ and $\vec{J}$ in Ampère's law are the same as the roles of $\vec{E}$ and $\vec{B}$ respectively in Faraday's law, provided that $\vec{B}=B \stackrel{\wedge}{Z}$ in Faraday's law, the electric field must be $\vec{E}=E \stackrel{\wedge}{\varphi}$. Furthermore, taking into account the axysymmetry and the assumption of no border effects (infinite length), the electric field can only depend on the radial coordinate $R$, so $\vec{E}=E(R) \stackrel{\wedge}{\varphi}$. Considering this, the field can be computed, since $\vec{dl}=R d\varphi \stackrel{\wedge}{\varphi}$:
+%
+\begin{equation}\label{ec_E_sol}
+V_\text{loop} = \oint_\Gamma \vec{E} \cdot \vec{dl}= 2 \pi R E(R) \Rightarrow E(R)= \dfrac{V_\text{loop}}{2 \pi R}.
+\end{equation}
+%
+The electric field will be more intense near the inner wall of the VV. The same applies to the toroidal magnetic field, which also goes as $1/R$. The potential gained in that region will be the greatest, enhancing the ionization processes, and the magnetic field lines will be mostly toroidal lines in that region (since the toroidal field will be greater in that region, the effect of the poloidal field will be reduced as a consequence), reducing the electron losses. This two factors explain why the pre-fill gas breaks-down near the inner side of the VV in general.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Fundamentals of tokamak physics}
+
+In this chapter, the fundamentals of tokamak physics will be reviewed, since they are crucial to understand tokamaks and this master's thesis.
+
+
+\section{Magnetohydrodynamic model of a plasma}
+The Magnetohydrodynamic (MHD) model is a single fluid description of a plasma, i.e., it is a model that treats a plasma like a continuum matter, rather than as a set of particles. This is one of the simplest models to study a plasma, and it assumes several hypothesis, like quasineutrality or negligible electron inertia (See any book about plasma physics for further details, like \cite{Chen}). The set of equations are
+%
+\begin{equation}
+\dfrac{\p \rho}{\p t}+\nabla \cdot (\rho \vec{v})=0, \ [\text{Mass conservation}] 
+\end{equation}
+\begin{equation} \label{momentum cons}
+\rho \Big[\dfrac{\p \vec{v}}{\p t}+(\vec{v} \cdot \nabla)\vec{v} \Big]=\vec{j} \wedge \vec{B} -\nabla p, \ [\text{Momentum  conservation}] 
+\end{equation}
+\begin{equation}
+\vec{E} +\vec{v} \wedge \vec{B}=\eta \vec{j}, \  [\text{Ohm's  law}] 
+ \end{equation}
+ \begin{equation}
+\dfrac{\p}{\p t}(p \rho^{-\gamma})+(\vec{v} \cdot \nabla) (p \rho^{-\gamma})=0, \ [\text{Adiabatic  behaviour}] 
+\end{equation}
+\begin{equation} \label{faraday}
+\nabla \wedge \vec{E}=- \dfrac{\p \vec{B}}{\p t},  
+\end{equation}
+\begin{equation}\label{ampere}
+\nabla \wedge \vec{B}=\mu_0 \vec{j}, 
+\end{equation}
+\begin{equation} \label{nablaBnulo}
+\nabla \cdot \vec{B}=0, 
+\end{equation}
+%
+where $\rho$ is the plasma density, $\vec{v}$ its velocity, $\eta$ its resistivity, $p$ its pressure (in general the pressure is a tensor, but for this simplified model, it is considered an scalar magnitude), $\vec{j}$ its current density, $\gamma$ is the adiabatic index, and $\vec{E}$ and $\vec{B}$ the electric and magnetic field the generated by the plasma. Note that the last three equations are a quasi-static limit of Maxwell's equations.
+
+\section[G-S equation]{Grad-Shafranov equation}
+\label{sec grad}
+
+Figure \ref{coord y flux}(a) displays the coordinate system of toroidal devices. In an equilibrium situation, the magnetic field of a Tokamak produces an infinite set of nested toroidal magnetic flux surfaces\footnote{A given surface is a magnetic flux surface if it satisfies $\vec{B} \cdot \vec{n}=0$, where $\vec{n}$ is the normal vector of the surface. That is, the magnetic field do not cross the surface. This is only a visual way to understand the magnetic field, since there would be an infinite number of magnetic flux surfaces inside a tokamak.} as shown in figure \ref{nested and sol grad}, and the magnetic field lines follow an helical path on them as they wind round the torus. The poloidal flux $\Psi$ and the toroidal flux $\Phi$ between two magnetic surfaces are defined by
+%
+\begin{equation}
+\begin{array}{cc}
+
+d\Psi \equiv \vec{B} \cdot \vec{dS_\theta}, & d\Phi \equiv \vec{B} \cdot \vec{dS_\phi},\\
+
+\end{array}
+\end{equation}
+%
+where $dS_\theta$, $dS_\phi$ are the poloidal and toroidal surface elements, whose magnitude are defined in Figure \ref{coord y flux}(b) (its unitary vector is perpendicular to the surface, and the sign is arbitrary, as usually in the magnetic fluxes), and $\vec{B}$ is the magnetic field.
+%
+\begin{figure}[htbp]
+\centering
+\subfigure[Cylindrical coordinate system used in devices with torodial symmetry, $(R,\phi,Z)$. $R_0$ is called the major radius of the torus, $r$ is called the minor radius. The circumference $R=R_0$ defines the toroidal or magnetic axis. Source: \url{http://fusionwiki.ciemat.es/wiki/Toroidal_coordinates}.]{\includegraphics[scale=0.3]{imagenes/Coordinate_system}}
+\hspace{3cm}
+\subfigure[Toroidal (T) and poloidal (P) surface elements between two magnetic flux surfaces. Source: \cite{Freidberg}.]{\includegraphics[scale=0.45]{imagenes/Flux_definition_libro}}
+\caption{Cylindrical coordinate system for toroidal devices, and definition of the poloidal flux in a torus.}
+\label{coord y flux}
+\end{figure}
+%
+%%%%
+The basic condition for the equilibrium is that the force on the plasma be zero at all points, so the momentum conservation equation \eqref{momentum cons} leads to
+%
+\begin{equation} \label{Force balance}
+\vec{j} \wedge \vec{B} = \nabla p .
+\end{equation}
+%
+This implies $\vec{B} \cdot \nabla p=0$, so there is no presure gradient along the magnetic field lines, which means the magnetic surfaces are also pressure surfaces. \eqref{Force balance} also implies $\vec{j} \cdot \nabla p=0$, and as a consequence the current lie in the magnetic surfaces. 
+
+In what follows the Grad-Shafranov equation, one of the most fundamental equations of MHD equilibrium will be derived. The idea for this equations is to rewrite \eqref{Force balance} to have a scalar equation instead of a vector equation. From \eqref{nablaBnulo}, taking into account the axysymmetry, and using the coordinate system of figure \ref{coord y flux}(a), setting $R_0 \equiv 0$,
+%
+\begin{equation}
+\dfrac{1}{R} \dfrac{\p (RB_\text{R})}{\p R}+ \dfrac{\p B_\text{Z}}{\p Z}=0.
+\end{equation}
+
+The function of that scalar equation will be the function $\psi$, called the \textit{stream function}, which is defined as $\psi \equiv R A_\phi$, where $A_\phi$ is the toroidal component of the vector potential $\vec{A}$. With this function, the poloidal magnetic field can be written as
+%
+\begin{equation}\label{ec 1}
+\left.
+\begin{array}{c}
+B_\text{R}=\dfrac{-1}{R} \dfrac{\p \psi}{\p Z}, \\
+\\
+ B_\text{Z}=\dfrac{1}{R} \dfrac{\p \psi}{\p R},
+\end{array}
+\right\}
+\Leftrightarrow \vec{B}_\theta=\dfrac{1}{R} \nabla \psi \wedge \stackrel{\wedge}{\phi},
+\end{equation}
+%
+where $\stackrel{\wedge}{\phi}$ is the toroidal unit vector (the magnetic field can be expressed as $\vec{B}=\vec{B_\theta} +\vec{B_\phi}$). It can be shown that $\Psi=2 \pi \psi$ \cite{Freidberg} (section 6.2). It is usual to label the magnetic surfaces with $\psi$, also called the magnetic flux. This means that $p=p(\psi)$, since magnetic surfaces are also pressure surfaces.  From the symmetry of $\vec{j}$, it can be introduced a function $f$ that verifies
+%
+\begin{equation} \label{ec casi amp}
+\left.
+\begin{array}{c}
+j_\text{R}=\dfrac{1}{R} \dfrac{\p f}{\p Z}, \\
+\\
+ j_\text{Z}=\dfrac{1}{R} \dfrac{\p f}{\p R},
+\end{array}
+\right\}
+\Leftrightarrow \vec{j}_\theta=\dfrac{1}{R}\nabla f \wedge \stackrel{\wedge}{\phi}.
+\end{equation}
+%
+Comparing \eqref{ec casi amp} with \eqref{ampere} leads to
+%
+\begin{equation}\label{ec_B_f}
+f=\dfrac{R B_\phi}{\mu_0},
+\end{equation}
+%
+where $\mu_0$ is the vacuum magnetic permeability and the subscript $\phi$ indicates the toroidal component. It can be shown that $f$ is a function of $\psi$ \cite{Wesson} (section 2.3). Equation \eqref{Force balance} can be expanded as
+%
+\begin{equation}\label{casi}
+\vec{j}_\theta \wedge \stackrel{\wedge}{\phi} B_\phi+j_\phi \stackrel{\wedge}{\phi} \wedge \vec{B}_\theta=\nabla p,
+\end{equation}
+%
+where $j_\phi$, $\vec{j}_\theta$ are the magnitude of the toroidal current, and the poloidal current density vector respectively. Substituting \eqref{ec casi amp} and \eqref{ec 1} into \eqref{casi}, we get, using that $\stackrel{\wedge}{\phi} \cdot \nabla \psi=\stackrel{\wedge}{\phi} \cdot \nabla p=0$ (consequence of the toroidal symmetry)
+%
+\begin{equation}\label{casicasi}
+\dfrac{B_\phi}{R} \nabla f + \dfrac{j_\phi}{R} \nabla \psi= \nabla p.
+\end{equation}
+Now, applying the chain rule on $\nabla f$ and $\nabla p$,
+%
+\begin{equation}\label{ec_chain_rule}
+\left.
+\begin{array}{c}
+\nabla f=\dfrac{d f}{d \psi} \nabla \psi, \\
+\nabla p=\dfrac{d p}{d \psi} \nabla \psi, \\
+\end{array}
+\right\}
+\end{equation}
+Introducing \eqref{ec_B_f} and \eqref{ec_chain_rule} into \eqref{casicasi} lead to:
+%
+\begin{equation}\label{casicasicasi}
+-\dfrac{\mu_0 f}{R^2} \dfrac{d f}{d \psi} \nabla \psi + \dfrac{j_\phi}{R} \nabla \psi =  \dfrac{d p}{d \psi} \nabla \psi \Rightarrow j_\phi= \dfrac{\mu_0 f}{R} \dfrac{d f}{d \psi} +R\dfrac{d p}{d \psi}.
+\end{equation}
+$\nabla \psi$ can be removed from \eqref{casicasicasi} since if it is zero we have no equation.
+%%%%%%%%5
+To get $j_\phi$ as a function of $\psi$, we substitute \eqref{ec 1} on \eqref{ampere}, obtaining
+%
+\begin{equation}\label{ec jphi}
+\begin{array}{c}
+\mu_0 \vec{j}=\mu_0 j_\phi \stackrel{\wedge}{\phi}+\dfrac{1}{R} \nabla(R B_\phi) \wedge \stackrel{\wedge}{\phi} \Rightarrow
+-\mu_0 R j_\phi=R \dfrac{\p }{\p R} \Big( \dfrac{1}{R} \dfrac{\p \psi}{\p R} \Big) +\dfrac{\p^2 \psi}{\p Z^2},
+\end{array}
+\end{equation}
+%
+Finally, if we substitute \eqref{ec jphi} on \eqref{casicasicasi}, we get the Grad-Shafranov equation,
+%
+\begin{equation} \label{ec Grad Shaf}
+R \dfrac{\p }{\p R} \Big( \dfrac{1}{R} \dfrac{\p \psi}{\p R} \Big) +\dfrac{\p^2 \psi}{\p Z^2}=-\mu_0 R^2 \dfrac{d p(\psi)}{d \psi} -\mu_0^2 f( \psi) \dfrac{d f(\psi)}{d \psi}.
+\end{equation}
+%
+This one of the fundamental equation of MHD equilibrium. It is a second order partial differential equation that calculates the equilibrium in toroidal devices, given the functions $p(\psi)$ and $f(\psi)$. In figure \ref{nested and sol grad} (b), we can see a typical solution of this equation, showing that the surfaces are shifted with respect to the magnetic axis, which is the major radius of the innermost surface.
+
+\begin{figure}
+\centering
+\subfigure[Magnetic flux surfaces of a tokamak equilibrium, forming a set of nested cylindrical surfaces. Source: \cite{Wesson}.]{\includegraphics[scale=0.4]{imagenes/magnetic_surfaces}}
+\hspace{5cm}
+\subfigure[Typical solution of the Grad-Shafranov equation. Source: \cite{Wesson}.]{\includegraphics[scale=0.4]{imagenes/solution_of_grad_shafranov}}
+
+\caption{Magnetic flux surfaces of a tokamak equilibrium, and typical solution of the Grad-Shafranov equation.}
+\label{nested and sol grad}
+\end{figure}
+
+%REMEMBER THAT SINCE THE SURFACES ARE FLUX SURFACES, THE FIELD DO NOT CROSSED IT. PSI IS POLOIDAL FLUX, SO IS THE POLOIDAL FIELD THE ONE THAT DO NOT CROSSES ANY FLUX SURFACE.
+
+%*MAKE PLOT OF A FLUX SURFACE WITH THE POLOIDAL FIELD INSIDE IT!!!!!!!!!!!!!
+
+
+
+\section[Parameters]{Tokamaks parameters}
+\label{sec Parameters}
+It is also needed to introduce the most important parameters of a tokamak equilibrium, as well as about plasma shape and control to understand this work.
+
+\subsection{Plasma shape and control in tokamaks}
+\label{section_shape}
+
+The first concept that must be introduced is the plasma boundary. The boundary of the plasma is the outermost closed magnetic surface contained in the VV, called \textit{Last Closed magnetic Flux Surface}, LCFS. The particles inside this outermost surface follow the field lines that remain in the plasma, but particles that follow the external field lines will end up escaping from the plasma and colliding with the VV (the particles follow the magnetic field lines, but if the magnetic field lines are not closed inside the VV, particles will collide with the VV as they follow them). The boundary can be created by a set of coils or by a limiting material that will touch the plasma (either the vacuum vessel or another element). The first method is to create the LCFS displaying one or more \textit{X-points} by using a set of coils. X-points are saddle points where $\frac{\p \psi}{\p Z}=\frac{\p \psi}{\p R}=0$, so the poloidal magnetic field is zero (see \eqref{ec 1}). The outermost closed surface is called \textit{separatrix}, and a plasma confined this way is called a \textit{diverted plasma}, and the coils used to create it are called \textit{divertor coils}. The second method is to limit the plasma by the VV or an specific material, so that the plasma is touching that material. The plasma is then called a \textit{limited plasma}. In figure \ref{plasma geom} (a) a limited plasma and a diverted plasma with one X-point is showed. The future SMART tokamak will contain a diverted plasma with two X-points, as will be seen later.
+
+For shape control of the plasma, the following parameters are introduced to describe the shape of the separatrix, with the points defined in figure \ref{plasma geom} (b) \cite{Luce_2013}:
+%
+\begin{equation}\label{ec shape}
+\begin{array}{cc}
+\text{Major radius} & R_\text{geo} \equiv (R_\text{max}+R_\text{min})/2, 
+\\
+\text{Minor radius} & a \equiv (R_\text{max}-R_\text{min})/2,
+\\
+\text{Aspect ratio} & A \equiv R_\text{geo}/a,
+\\
+\text{Elongation} & \kappa \equiv (Z_\text{max}-Z_\text{min})/(2a),
+\\
+\text{Upper triangularity} & \delta_\text{u} \equiv (R_\text{geo}-R_{\text{z}_\text{max}})/a,
+\\
+\text{Lower triangularity} & \delta_\text{l} \equiv (R_\text{geo}-R_{\text{z}_\text{min}})/a.
+\end{array}
+\end{equation}
+
+%%%%%%%%%%%
+%a plasma configuration with two X-points, showing also another parameters of the plasma geometry, like the geometrical axis and the magnetic or toroidal axis.
+
+%Tokamaks's cross-section displays D-shaped form, instead of circular form. The reason to this fact is to reduce instabilities and reduces particle losses.
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[scale=0.5]{imagenes/plasma_geometry}
+%\caption{Plasma geometry for a diverted plasma, a plasma whose boundary (tha last closed magnetic surface) is made by a set of coils, creating the last closed surface with is characterized by X-points, which are points where the poloidal magnetic field is zero. The boundary is then called separatrix.  Source: \url{http://fusionwiki.ciemat.es/wiki/Ellipticity}.}
+%\label{plasma geom}
+%\end{figure}
+%%%%%%%%%%%%%%%%%%5
+
+\begin{figure}[t]
+	\centering
+	\subfigure[Cross-section of a tokamak, showing its coils, and the boundaries (in dark blue) of a diverted plasma with one X-point and a limited plasma. Source: \cite{Sertok2}.]{\includegraphics[scale=0.5]{imagenes/plasma_boundary}}
+	\hfill
+	\subfigure[Contour of the last close surface of a limited plasma (left) and a diverted plasma (right), showing the points used to describe the plasma shape. Source: \cite{Luce_2013}.]{\includegraphics[scale=0.5]{imagenes/plasma_geometry_general}}
+	\caption{Plasma geometry and plasma boundaries in tokamaks.}
+\label{plasma geom}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{$q$ and $\beta$ factors}
+\label{section q beta}
+The confinement efficiency of the plasma in a tokamak is represented by $\beta$, which is the ratio between the volume averaged plasma pressure $p$ and the energy density stored in the magnetic field, or magnetic pressure,
+%
+\begin{equation} \label{def beta}
+\beta \equiv \dfrac{p}{\dfrac{B^2}{2 \mu_{0}}}.
+\end{equation}
+%
+Note it is a dimension-less magnitude. $\beta$ defines the confinement efficiency because given a plasma with a certain average pressure, it determines the magnetic field necessary to confine it. As a consequence, a high value of $\beta$ is attempted. This also leads to the definition of poloidal $\beta$, $\beta_{\theta}$,
+%
+\begin{equation}
+\begin{array}{cc}
+
+\beta_{\theta} \equiv \dfrac{\int_{S_\text{pol}} p dS_\theta / \int_{S_\theta} dS_\theta}{B_\text{a}^2/2 \mu_0}, &
+\end{array}
+\end{equation}
+%
+where $B_\text{a} \equiv \mu_0 I/l$, $I$ is the plasma current and $l$ its the poloidal perimeter. The toroidal beta $\beta_\varphi$ is defined in a similar way. It is also define the so-called \textit{normalized beta} $\beta_\text{N}$, which is also a dimension-less magnitude, as
+%
+\begin{equation}
+\beta_\text{N} \equiv \dfrac{\beta_\varphi B_{\text{T}0} a}{I_\text{p} \mu_0},
+\end{equation}
+%
+where $B_{\text{T}0}$ is the toroidal field at the plasma geometric centre, commonly label simply as $B_\text{T}$ (or $B_\varphi)$ and $I_\text{p}$ the plasma current. One of the advantages of spherical tokamaks relative to standard tokamaks is that spherical tokamaks achieve higher $\beta$, which mean higher confinement efficiency \cite{ST_vs_T}.
+
+Another relevant parameter is the \textit{safety factor} $q$, which determines the stability of the plasma, higher values of $q$ leads to greater stability. Each magnetic flux surface has its value, and its value is related to the helical paths of the field lines. If at a certain toroidal angle $\phi$ the field line has a certain position in the poloidal plane, and it returns to the same position in the poloidal plane after a change of the toroidal angle $\Delta \phi$, the q factor is
+%
+\begin{equation} \label{def q}
+q \equiv \dfrac{\Delta \phi}{2 \pi}.
+\end{equation}
+%
+As a consequence of this definition, higher values of $q$ leads to more twisted helical magnetic field lines, which result in better confinement. $q=1$ means that the magnetic field line returns to its initial position after one rotation around the torus. If $q=\frac{m}{n}$, where $m$ and $n$ are integers, it means that the field line returns to its initial position after $m$ toroidal rotations and $n$ poloidal rotations round the torus. The differential expression of the safety factor is
+\begin{equation}\label{def q con flujos}
+q \equiv \dfrac{d \Phi}{d \Psi}.
+\end{equation}
+
+Making use of the parameters defined above, the fusion or thermonuclear power can be written as \cite{FusionPower}
+
+\begin{equation}
+P_\text{fus} \propto \beta_\text{N}^2 \kappa (1+\kappa)^2 \dfrac{R_\text{geo}^3 B_{\varphi_\text{max}}^4}{q(a)^2} \dfrac{f(A)^2}{(A+1)^4 A^2},
+\end{equation}
+where $B_{\varphi_\text{max}}$ is the maximum toroidal magnetic field, $f(A) \equiv 1.22 A-0.68$, and $q(a)$ is the safety factor at the plasma boundary. From this formula, increasing $\kappa$ leads to greater fusion powers, which is another advantage of spherical tokamaks, their plasmas are more elongated than standard tokamaks plasmas.
+
+
+\chapter{Fiesta toolbox}
+
+The Fiesta toolbox is a object-oriented toolbox programmed in MATLAB by G. Cunningham at the Culham Centre for Fusion Energy \cite{Pangione_Fiesta}, \cite{Windridge_Fiesta}. It was created for equilibrium calculations such as solving Grad-Shafranov equation and plasma shape control. However, dynamic calculations are also included, using the RZIp model, which will be reviewed later. The reactor geometry is introduced using its object architecture.
+
+\section{Grad-Shafranov solver, EFIT}
+
+Fiesta contains what is called \textit{free boundary equilibrium solvers}. The main characteristic of this type of solvers is that the plasma boundary is not known (on the contrary as fixed boundary problems) and hence will also be part of the solution. The poloidal magnetic flux $\psi$ is divided into two components, the  created by the plasma and the created by the external current carrying elements, i.e., the coils and the VV, which will carry eddy currents. This external elements will be called \textit{structrure}.
+
+The Grad-Shafranov equation is solved by an iterative method, according to a given tolerance. In particular, we have used the EFIT solver \cite{Lao_1985}, which is a free-boundary equilibrium solver that can obtain the external currents needed to achieve a plasma equilibrium with plasma parameters closer to the desired plasma parameters. The plasma current profile used is defined by the so-called Topeol2 model,
+%
+\begin{equation}\label{ec_topeol2}
+\left\{
+\begin{array}{c}
+\dfrac{d p}{d \psi}=\dfrac{j_0}{r_0}\beta_\theta (1-\psi_\text{N}), \\
+f \dfrac{d f}{d \psi}=\mu_0 r_0 j_0(1-\beta_\theta)(1-\psi_\text{N}), \\
+
+\end{array}
+\right.
+\end{equation}
+where  %$\psi_{max}$ and $\psi_{min}$ are the maximum and minimum values of $\psi$, 
+ $r_0$ is the X-point radial coordinate, $j_0$ the plasma current and $\psi_\text{N}$ the normalized flux, defined as
+ %
+ \begin{equation}\label{ec_psiN}
+\psi_\text{N} \equiv \dfrac{\psi - \psi_\text{axis}}{\psi_\text{boundary}-\psi_\text{axis}}, 
+\end{equation}
+%
+where $\psi_\text{axis}$ and $\psi_\text{boundary}$ are the values of the poloidal flux at the center of the magnetic flux surface and at its boundary respectively. $r_0$ and $j_0$ are adjusted at each step of the iterative process. The field and the flux at the computational grid are calculated using Green's functions (see \cite{TokamakControl} for a review of the Green's function formalism applied to tokamaks).
+ 
+ 
+ 
+ 
+ 
+\section{RZIp model}
+\label{RZIP, teoria}
+
+
+The rigid current displacement model, or RZIp ($R$, $Z$ and $I_\text{p}$), is a model used to describe the dynamic behaviour of a tokamak equilibrium. The plasma is modelled as a rigid conductor so that the plasma can move radially and vertically, but the plasma shape and current distribution remain constant. Hence, the plasma can be identified by its radial and vertical position, $R_{geo}$ and $Z_{geo}$, and its current, $I_\text{p}$ (the main bilbiography at the moment for RZIp is \cite{AtiSharmaTesis} along with \cite{Lister_RZIp}. A general review of RZIp and other tokamaks codes can be seen on \cite{Sevillano}). The RZIp model is a linearised model based on the assumption that small perturbations leads to small changes of the target equilibrium. Its equations are the circuit equation and the radial and vertical force balance equations.  %To avoid confussion, the plasma major coordinates will be name as $R_{geo}$ and $Z_{geo}$ ($R$ and $Z$ are refered to general $R$ and $Z$ positions in the equilibrium calculation).
+
+This model considers that a tokamak is made of active and passive elements. An element is considered an active element if is subjected to a external excitation such as current or voltage supplies and passive in any other case. The active structure will then be the coilset, and the passive structure the vacuum vessel. 
+
+There are several ways of calculate the plasma self-inductance.  Fiesta's RZIp uses this approximate formula \cite{Lister_RZIp}
+%
+\begin{equation}
+L_\text{p}=\mu_0 R_\text{Geo} \Big( 4 \pi R_\text{Geo} \dfrac{|<B_{Z_\text{p}}>|}{\mu_0 I_\text{p}-\beta_\theta}-\beta_\theta -\dfrac{1}{2} \Big),
+\end{equation}
+where $B_{Z_\text{p}}$ is the $B_Z$ created by the plasma (in our case, the plasma current flows in the positive toroidal direction, resulting in a negative $<B_{Z_\text{p}}>$).
+
+
+The four equations of the RZIp model are, indicating matrices with bold letters \cite{AtiSharmaTesis}
+%
+\begin{equation}\label{ec RZIP 1}
+\dfrac{d(L_\text{p} I_\text{p} + \boldsymbol{M_{ps}I_\text{s}}+ R_\text{Geo}\boldsymbol{E} I_p)}{dt}+I_\text{p} \rho_\text{p}=V_\text{p} \ [I_\text{p} \ \text{equation}],
+\end{equation}
+%
+\begin{equation}\label{ec RZIP 2}
+\dfrac{d(\boldsymbol{L_\text{s} I_\text{s}+M_\text{sp}}I_\text{p})}{dt}+ \boldsymbol{ \Omega_\text{s} I_\text{s}}=\boldsymbol{V_\text{s}} \ [\boldsymbol{I_\text{s}} \  \text{equation}],
+\end{equation}
+%
+\begin{equation}\label{ec RZIP 3}
+\dfrac{d(m_\text{p} \dot{R}_\text{Geo})}{dt}=\dfrac{1}{2}I_\text{p}^2 \dfrac{\p L_\text{p}}{\p R_\text{Geo}}+ \boldsymbol{I_\text{s}} \dfrac{\p \boldsymbol{M_\text{sp}}}{\p R_\text{Geo}}I_\text{p}+ \dfrac{\boldsymbol{E} I_\text{p}^2}{2} \ [R_\text{Geo} \  \text{equation}],
+\end{equation}
+%
+\begin{equation}\label{ec RZIP 4}
+\dfrac{d(m_\text{p} \dot{Z}_\text{Geo})}{dt}=\boldsymbol{I_\text{s}} \dfrac{\p \boldsymbol{M_\text{sp}}}{\p Z_\text{Geo}}I_\text{p} \ [Z_\text{Geo} \ \text{equation}],
+\end{equation}
+%
+where $ \boldsymbol{E}$ is a constant matrix, $\boldsymbol{M_\text{ps}}$ is the inductance between the plasma and the structure (both active and passive), $\boldsymbol{I_\text{s}}$ the current of the structure, $\boldsymbol{V_\text{s}}$ and $V_\text{p}$ the voltage of the structure and the plasma respectively, and $\boldsymbol{\Omega_\text{s}}$ the resistance matrix of the structure. Is is common to neglect the plasma mass $m_p$, which is also what Fiesta's RZIp does. This set of equations are linearized and cast in the state space form to solve it, whose general structure is (See appendix \ref{app_state_space})
+%
+\begin{equation}\label{ec stat spa, general}
+\left\{
+\begin{array}{c}
+\dfrac{d\boldsymbol{x}}{dt}=\boldsymbol{A} \boldsymbol{x} +\boldsymbol{B} \boldsymbol{u}, \\
+\boldsymbol{y}=\boldsymbol{C}\boldsymbol{x} +\boldsymbol{D} \boldsymbol{u}.
+\end{array}
+\right.
+\end{equation}
+%
+The linearizations of eq \eqref{ec RZIP 1}, \eqref{ec RZIP 2}, \eqref{ec RZIP 3} and \eqref{ec RZIP 4} result in:
+%
+\begin{equation}\label{RZIP eq, linear} %Hago un array para cortar la ecuacion, pues e muy larga, y dentro de ese array van las matrices, q son arrays
+\small
+\left.
+\begin{array}{c}
+	\left[
+	\begin{array}{cc}
+	\boldsymbol{L_\text{s}} & \dfrac{\p 								\boldsymbol{M_{\text{ps}}}}{\p Z_{geo}} \Big|_0 \\
+	\\ 
+	\dfrac{\p \boldsymbol{M_{\text{ps}}}}{\p Z_{geo}}\Big|_0 & \dfrac{\p^2 \boldsymbol{M_{\text{ps}}}}{\p Z_{geo}^2} \Big|_0  	\dfrac{\boldsymbol{I_\text{s}}^0}{I_\text{p}^0} \\
+	\\
+	\dfrac{\p \boldsymbol{M_{\text{ps}}}}{\p R_{geo}}\Big|_0 & \dfrac{\p^2 \boldsymbol{M_{\text{ps}}}}{\p Z_{geo} \p R_{geo}} \Big|_0 \dfrac{\boldsymbol{I_\text{s}}^0}{I_\text{p}^0} \\
+	\\
+	\boldsymbol{M_{\text{ps}}} & 0 
+	\end{array}
+	\right. 
+	\\
+	\\
+	\left.	
+	\begin{array}{cc}
+	\dfrac{\p \boldsymbol{M_{\text{sp}}}}{\p R_{geo}} \Big|_0 & \boldsymbol{M_{\text{ps}}}^0  \\
+	\\
+	\dfrac{\p^2 \boldsymbol{M_{\text{ps}}}} {\p R_{geo} \p Z_{geo}} 	\Big|_0 \dfrac{\boldsymbol{I_\text{s}}^0}{I_\text{p}^0} & 0 \\
+	\\
+	 \dfrac{1}{2} \dfrac{\p^2 L_\text{p}}{\p R_{geo}^2}\Big|_0+\dfrac{\p^2 \boldsymbol{M_{\text{ps}}}}{\p R_{geo}^2} \Big|_0 						\dfrac{\boldsymbol{I_\text{s}}^0}{I_\text{p}^0} & \dfrac{\p 		L_\text{p}}{\p R_{geo}}\Big|_0+\dfrac{\p 								\boldsymbol{M_{\text{ps}}}}{\p R_{geo}} \Big|_0 						\dfrac{\boldsymbol{I_\text{s}}^0}{I_\text{p}^0}+	\mu_0 			\dfrac{2 \pi S}{l^2}\beta_{p} R_{geo}^0\\
+	 \\
+	 \dfrac{\p L_\text{p}}{\p R_{geo}}	 \Big|_0	+\dfrac{\p \boldsymbol{M_{\text{ps}}}}{\p R_{geo}} \Big|_0 	\dfrac{\boldsymbol{I_\text{s}}^0}{I_\text{p}^0}+\mu_0 			\dfrac{2 \pi S}{l^2}\beta_{p} R_{geo}^0 & 	L_\text{p}^0 + \mu_0 		\dfrac{2 \pi S}{l^2} \beta_{p}R_{geo}^0
+	\end{array}
+	\right]	
+	* \dfrac{d \boldsymbol{x}}{dt} +
+	\\
+	\\
+	+
+ 	\left[
+	\begin{array}{cccc}
+	\boldsymbol{\Omega_\text{s}^0} & 0 & 0 & 0\\\\
+	0 & 0 & 0 & 0\\\\
+	0 & 0 & 0 & 0\\\		\
+	0 & 0 & 0 & 	\Omega_\text{p}^0 \\
+	\end{array} 
+ 	\right]
+ \boldsymbol{x}
+ =
+ 	\left[
+ 	\begin{array}{cc}
+ 		\boldsymbol{I} & 0\\
+	 	\boldsymbol{0} & 0\\
+	 	\boldsymbol{0} & 0\\
+	 	\boldsymbol{0} & 1\\
+	 \end{array} 
+	 \right]
+	 
+	  	\left[
+ 	\begin{array}{c}
+ 		\delta \boldsymbol{V_\text{s}} \\ \\
+	 	\delta V_\text{p}\\
+	 \end{array} 
+	 \right],
+\end{array}
+\right.
+\end{equation}
+where $^0$ indicates equilibrium value, so $R_{geo}^0$ indicates the value at the target equilibrium, $S$ is the plasma cross section of the equilibrium configuration, and $l$ the perimeter of this cross-section. The state vector $\boldsymbol{x}$ is
+%
+\begin{equation}
+\boldsymbol{x}=
+	\left[
+	\begin{array}{c}
+	\boldsymbol{I_\text{s}}-\boldsymbol{I_\text{s}}^0 \\
+	(Z_{geo}-Z_{geo}^0) I_\text{p}^0 \\
+	(R_{geo}-R_{geo}^0) I_\text{p}^0 \\
+	I_\text{p}-I_\text{p}^0 \\
+	\end{array}\right]
+	=
+	\left[
+	\begin{array}{c}
+	\delta(\boldsymbol{I_\text{s}}) \\
+	\delta(Z_{geo}) I_\text{p}^0 \\
+	\delta(R_{geo}) I_\text{p}^0 \\
+	\delta(I_\text{p}) \\
+	\end{array}\right].	
+\end{equation}
+%
+and the input vector $\boldsymbol{u}$ is
+%
+\begin{equation}
+	\boldsymbol{u}=
+	\left[
+	\begin{array}{c}
+	\delta\boldsymbol{V_\text{s}} \\
+	\delta V_\text{p} \\
+	\end{array}\right]	.
+\end{equation}
+
+However, Fiesta's RZIp do not uses the voltages as inputs, it uses the coilset currents as inputs, so \eqref{RZIP eq, linear} is inverted to have currents as inputs.
+%
+%(I GUESS THAT THIS IS WAS IS HAPPENING, SINCE THE CHANGE FROM V TO I IS NOT AS EASY ASA ACAHNGE IN THE NAME, HAVE TO INVERT THINGS (V=IR $==>$ I=V/R )). HOWEVER, THE STATE VECTOR AND OUTUT APPEARS TO BE THE SAME (OUTPUT VOLTAGES ARE COMPUTED FROM GRADIENTS OF SOMETHING CALLED ALFA) 
+%
+%-The M23 issue have been checked. The problem was that the derivative order was wrong, was  Z R, and is R,Z , with the right order you can derive the expressions used in the codes. However, the real issue that this has revealed is that M23 is not equal M32 (-7.1490e-24H/m$^2$  vs -8.5998e-24H/m$^2$ in phase1 of 4-5-2020), and it should be, since $\nabla \vec{B}=0$ implies it (this implies changeing the order of the derivatives to don alter anything, but to have M23 distint from M32, changing the order has to alter things. ?¿¿??¿?¿?¿¿?¿??¿?¿
+%
+%-RESISTANCE MATRIZ CHEQUED!!!!
+%
+%-The matriz with I and zeros at the righ handed size of  \eqref{RZIP eq, linear}, in the bottom right, it has I on Sharma thesis, but both FIESTa and Ati codes display the same nomenclatur of theis amtrix (volt), and on FIESTA the bootom right element is 0, so this do not match with an eyes matrix??¿¿?¿?¿?¿?¿?
+%
+%
+The system \eqref{RZIP eq, linear} has the form $\boldsymbol{M} \frac{d\boldsymbol{x}}{dt}+\boldsymbol{P x}=\boldsymbol{Q u}$, and comparing it with the state space system \eqref{ec stat spa, general}, we conclude
+%
+\begin{equation}
+\left.
+\begin{array}{c}
+\boldsymbol{A}=-\boldsymbol{M}^{-1}\boldsymbol{P}, \\
+\boldsymbol{B}=\boldsymbol{M}^{-1}\boldsymbol{Q}.
+\end{array}
+\right.
+\end{equation}
+
+The self and mutual inductances on \eqref{RZIP eq, linear} are computed with the Green's functions of the magnetic field by relating them to the field created by the structure and by the plasma. Using \eqref{ec 1} and the division of the flux into the created by the plasma and the created by the structure:
+%
+\begin{equation}
+	\left.
+	\begin{array}{cc}
+	\multicolumn{2}{c}{\psi=\psi_\text{p}+ \psi_\text{s}}, \\
+	
+B_R=B_{R_\text{p}}+ B_{R_s}, & B_Z=B_{Z_\text{p}}+ B_{Z_s}, \\
+
+	B_{R_\text{p}}= \dfrac{-1}{R} \dfrac{\p \psi_\text{p}}{\p Z}, & 	B_{R_s}= \dfrac{-1}{R} \dfrac{\p \psi_\text{s}}{\p Z}, \\ \\	
+	
+	B_{Z_\text{p}}= \dfrac{1}{R} \dfrac{\p \psi_\text{p}}{\p R}, & 	B_{Z_\text{s}}= \dfrac{1}{R} \dfrac{\p \psi_\text{s}}{\p R}. \\
+	\end{array}
+	\right.
+\end{equation}
+%Equation of psi=auto psiinduced psi removed: \psi_\text{p}=L_\text{p} I_\text{p}+ \boldsymbol{M_\text{ps}} \boldsymbol{I_\text{s}}^t , & 	\boldsymbol{\psi_\text{s}}=\boldsymbol{L_\text{s}} \boldsymbol{I_\text{s}}+ \boldsymbol{M_\text{sp}} I_\text{p} \\
+
+
+
+The output vector $\boldsymbol{y}$ contains the state vector variables and diagnostic measurements such as the poloidal field or flux measurements. In our case, we only use poloidal field measures so the output vector is
+%
+\begin{equation}\label{ec RZIP y}
+	\left.
+	\begin{array}{c}
+		\boldsymbol{y}=\boldsymbol{C} \boldsymbol{x} \Rightarrow
+		\left[
+		\begin{array}{c}
+		\delta(\boldsymbol{I_\text{s}}) \\
+		\delta(Z_{geo}) I_\text{p}^0 \\
+		\delta(R_{geo}) I_\text{p}^0 \\
+		\delta(I_\text{p}) \\
+		B_{pol_n} \\
+		\end{array}
+		\right]
+		=
+		\\
+		=
+		\left[
+		\begin{array}{cccc}
+		\boldsymbol{I} & 0 & 0 & 0\\
+		\boldsymbol{0} & 1 & 0 & 0\\
+		\boldsymbol{0} & 0 & 1 & 0\\	
+		\boldsymbol{0} & 0 & 0 & 1\\	
+		\dfrac{\p (\vec{B} \cdot \vec{n})_n}{\p \boldsymbol{I_				\text{s}}} & \dfrac{\p (\vec{B} \cdot \vec{n})_n}{\p (\delta(Z_\text{Geo})I_\text{p}^0)} & \dfrac{\p (\vec{B} \cdot \vec{n})_n}{\p (\delta(R_\text{Geo})I_\text{p}^0)} & \dfrac{\p (\vec{B} \cdot \vec{n})_n}{\p I_\text{p}}
+		\end{array}
+		\right]
+		\left[
+		\begin{array}{c}
+		\delta(\boldsymbol{I_\text{s}}) \\
+		\delta(Z_{geo}) I_\text{p}^0 \\
+		\delta(R_{geo}) I_\text{p}^0 \\
+		\delta(I_\text{p}) \\
+		\end{array}\right],
+	\end{array} \right.
+\end{equation}
+where the subscript $n$ in the poloidal field indicates the measure $n$, and $\vec{n}$ is the normal vector of the loop that measures the poloidal field\cite{AtiSharmaTesis} (section 3.3). The feed-forward matrix $\boldsymbol{D}$ is zero provided that there is no direct relation between the inputs and the outputs. 
+
+Using \eqref{ec RZIP y}, the coil currents needed to obtain poloidal field null in the region where the sensors are placed (null currents) can be computed by simply setting to zero the elements of $\boldsymbol{y}$ related to the field, and computing the coil currents needed, using only the coil currents in $\boldsymbol{x}$, and the corresponding elements of the $\boldsymbol{C}$ matrix.  This is crucial for the breakdown phase, since the poloidal field has to be null out as much as possible to ensure the Townsend avalanche.
+
+The system \eqref{RZIP eq, linear} is solved by a Runge-Kutta adaptive method (function ode45 from MATLAB), obtaining the time evolution of the plasma current, the eddy currents in the vacuum vessel and the coilset and plasma voltages, given the current profile of the coilset. As stated previously, RZIp is a perturbative model on an equilibrium state. This equilibrium configuration have been obtained with the Grad-Shafranov solver of Fiesta, so RZIp is applied after the equilibrium configuration is obtained.
+
+To end this Fiesta description, Fiesta is a complex toolbox, of the order of thousands of code lines, and it is scarcely documented, so direct code reading is imperative to understand it. However, I think the basis of Fiesta are understood. Figure \ref{fig_diagram_Fiesta} shows a flow diagram of the Fiesta toolbox as we have used it.
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.8]{imagenes/HPEMFlowDiagram_DLA}
+\caption{Flow diagram of the Fiesta toolbox, made by Scott J. Doyle, a post-doc researcher of the PSFT group.}
+\label{fig_diagram_Fiesta}
+\end{figure}
+
+
+
+\chapter{Simulation procedure}
+\label{chapter_simu}
+
+To study the break-down conditions for the SMART reactor, the Paschen's curve and the estimation avalanche time have been done, as well as an study of the electromagnetic fields and derived variables such as the connection length, the potential gained by the electrons and the empirical Lloyd's criteria. The Fiesta toolbox have been used to compute the magnetic fields.
+
+% 
+ This thesis have been developed during the design phase of the SMART reactor, maturing through discussions within the team. Both physics and engineering points of view have contributed to the most recent SMART concept. Additionally, intense relationship with other teams have taken place, specially the korean VEST team and the company Tokamak Energy (Culham, UK).
+%
+%Since the SMART reactor was in design phase when I began this work, the SMART reactor have suffered many changes, product of discussions with the team (both physics and engineering points of view), and based on advices from other teams such as the VEST team\footnote{The VEST tokamak is an spherical tokamak located at South-Korea, which have been used as a first reference toward the design phase of the SMART reactor. Several meeting with the VEST team have been arranged since I first began the work with the PSFT group.} and the enterprise Tokamak Energy\footnote{\url{https://www.tokamakenergy.co.uk/}}. 
+The main changes along this months have been
+%
+\begin{itemize}
+\item Change in the vacuum vessel's (VV) height, shortening it from 2.0m to 1.6m
+\item Change in the VV's width, setting different width in the  different walls
+\item Changes in the coilset size, position and currents
+\end{itemize}
+The changes in the coilset were specially delicate since the same plasma equilibrium configuration had to be achieved. This work was mostly done by Scott J. Doyle, a post-doc researcher at the PSFT group. Part of the work carried out also contributed to this changes, but the main focus was the study of the break-down conditions for each configuration. The work included here are the most updated configurations for both the first operational phase, phase 1, and a future update, phase 2\footnote{Note for the SMART team: this are S1-19 and S2-16 baseline cases.}. A plot of the cross-section and the 3D plot of the SMART reactor done with Fiesta is included on figure \ref{fig_SMART_3D_2D}. Note the VV implemented is simpler than the more realistic VV showed on figure \ref{fig_SMART_3D_Alessio}. There is no toroidal field coils because Fiesta assumes axisymmetry, and the toroidal magnetic field is given as an input to Fiesta.
+
+The final configuration of the coilset have been chosen so that it allows highly shaped plasmas, such has having plasmas with negative triangularities. The coils are also named on figure \ref{fig_SMART_3D_2D}, from the inductor Solenoid, Sol , to the poloidal field coils PF1 and PF2 and the divertor coils, Div1 and Div2.
+
+
+\begin{figure}[htbp]
+\centering
+\subfigure[3D plot of SMART.]{\includegraphics[scale=0.6]{imagenes/simulaciones/S2-0000163Dplot}}
+\hfill
+\subfigure[Cross-section of SMART.]{\includegraphics[scale=0.6]{imagenes/simulaciones/S2-000016CrossSection}}
+\caption{Plot of the SMART reactor implemented on Fiesta. There is symmetry with respect to the $Z=0$ plane.}
+\label{fig_SMART_3D_2D}
+\end{figure}
+
+A crucial criteria for setting the coilset currents has been the achievement of the break-down of the pre-fill gas, without any assistance method (heating methods), only by using the Sol coil (\textit{Ohmic breakdown}). For confirming this, the criteria explained on section \ref{sec_breakdown}, such as the Paschen's curve, the empirical LLoyd's criteria and the estimation of the avalanche time have been applied. The avalanche time should be as short as possible, so that the avalanche phase ends rapidly. The latest Tokamak Energy reactor, ST40, \cite{Buxton_results, Gryaznevich_2017} uses merging/compression as the start-up method, in which two small plasmas are induced near two coils inside the VV, and then they are merged in a single plasma, resulting in a conversion of some magnetic energy into thermal energy that heats the plasma. The small plasmas are induced in about 4ms, and the break-down of both plasmas is estimated to last about 1ms. Similar values have been attempted. H$_2$ have been used as a pre-fill gas. The electric field and loop voltage induced by the solenoid have been calculated analytically using the equations showed on section \ref{sec_loop_voltage_field_Sol_theory}.
+
+The currents during the break-down phase, from the ramping up of the Sol to the end of this phase have been calculated from RZIp (currents needed to null out the poloidal field), while the currents during the target equilibrium and the sustaining of this equilibrium were given as an input (the coil current waveforms will be explained in chapter \ref{sec_results}). With the full current waveforms, the fields at the break-down phase, Lloyd's criteria and the connection length have been studied. With the connection length, the Paschen's curve and the avalanche time was checked to test wether ohmic breakdown was possible or not.
+
+The break-down conditions have been studied at t=0ms, just when the Sol induced the electric field that will ionize the gas, so there is no plasma's magnetic field, only the structure's magnetic fields (eddy currents in the VV+coilset currents). For additional safety, I also added the Earth's field\footnote{The Earth's field have been computed from \url{https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml}, using IGRF model, and averaging the $R$ and $\phi$ component to have an axysymmetric value, so it can be introduced on Fiesta. The values correspond to the values of 3/4/2020.}; the field added is
+
+\begin{equation}
+\left.
+\begin{array}{c}
+B_\text{R}=2.7 \cdot 10^{-7}\text{T}, \\
+B_\text{Z}=-3.38 \cdot 10^{-5}\text{T},
+\end{array}
+\right\}
+\Leftrightarrow B_\theta=3.38 \cdot 10^{-5}\text{T}.
+\end{equation}
+%
+This addition ensures the poloidal field obtained inside the VV is never lower than the Earth's field, since in reality, the field will be larger than Earth's field, and also there will be other issues increasing the field such as errors on the coils winding or magnetic materials surrounding the reactor.
+
+As a final remark, the study of the temporal evolution of the breakdown parameters would be more complicated, since the ionized gas will shortly (in few ms) have enough current to create non-negligible field as compared to the structure's field
+%so that its field is relevant relative to the structure's field, and would then need to be considered. 
+. This will be the object of future work. I checked when the plasma's field is relevant relative to the structure's field, and I saw that at 1-2ms the poloidal field created by the plasma, modelling it as a circular wire (which was quite accurate since the plasma current is mainly toroidal) was similar to the structure's field, so the plasma needed to be taken into account for realistic simulations.
+
+\section{Field line tracer}
+
+To compute the connection length by field line tracing, a field line tracer function was made. The field lines of a vector field are always tangent to the vector field. If the diferential vector $\vec{dr}$ lies in the  field lines of a vector field $\vec{B}=\vec{B}(R,Z)$ (independent on the $\varphi$ angle due to the axisymmetry), $\vec{dr}$ will always be paralell to $\vec{B}(R,Z)$, so
+%
+\begin{equation}\label{ec_int_phi}
+\vec{B} \parallel \vec{dr} \Rightarrow\vec{B} \wedge \vec{dr}=0 \Rightarrow 
+\left.
+\begin{array}{c}
+\dfrac{B_{\varphi}(R,Z)}{R d\varphi}= \dfrac{B_Z(R,Z)}{dZ}=\dfrac{B_R(R,Z)}{dR} \equiv \text{constant}, \\
+\end{array} 
+\right.
+\end{equation}
+To integrate \eqref{ec_int_phi}, the toroidal angle $\varphi$ has been chosen as independent variable since it is always positive and monotically increasing, leaving $R$, $Z$ as the dependent variables. The equations to solve are
+%
+\begin{equation}\label{ec R,Z int}
+\left. \begin{array}{c} 
+\dfrac{dR}{d\varphi}=R(\varphi) \dfrac{B_R(R(\varphi),Z(\varphi))}{B_\varphi(R(\varphi),Z(\varphi))} \\ 
+\\
+\dfrac{dZ}{d\varphi}=R(\varphi) \dfrac{B_Z(R(\varphi),Z(\varphi))}{B_\varphi(R(\varphi),Z(\varphi))}  \\
+\end{array} \right\}
+\end{equation}
+
+The total (poloidal and toroidal) length of the magnetic field line is 
+%
+\begin{equation}\label{ec ds/dphi int}
+\left.
+\begin{array}{c}
+ds^2=dR^2+(Rd\varphi)^2+dZ^2 \Rightarrow \\ \dfrac{ds}{d \varphi}=R(\varphi) \sqrt{1+ \Big( \dfrac{B_R(R(\varphi),Z(\varphi))}{B_\varphi(R(\varphi),Z(\varphi))} \Big)^2+ \Big( \dfrac{B_Z(R(\varphi),Z(\varphi))}{B_\varphi(R(\varphi),Z(\varphi))} \Big)^2}= \\ =R(\varphi) \sqrt{1+\dfrac{B_\theta(R(\varphi),Z(\varphi))^2}{B_\varphi(R(\varphi),Z(\varphi))^2}}
+\end{array}
+\right.
+\end{equation}
+
+Equations \eqref{ec R,Z int} and \eqref{ec ds/dphi int} can be easily integrated on MATLAB with the ODE function. The initial value of $\varphi$ has been set as $\varphi_0=0$. The initial $R$ and $Z$ values have been varied so that lines starting through all of the VV are followed. The range of $\varphi$ has been chosen so that all the lines end up colliding with the inner walls of the VV or with the coils inside the VV. The final value of the magnetic field length will be the connection length $L$
+
+%\begin{equation}
+%L=\displaystyle \int_{0}^{\varphi_{end}} \dfrac{ds}{d \varphi} (\varphi) d \varphi = \displaystyle \int_{0}^{{\varphi_{end}}} R(\varphi) \sqrt{1+\dfrac{B_{pol}(R(\varphi),Z(\varphi))^2}{B_\varphi(R(\varphi),Z(\varphi))^2}} d \varphi
+%\end{equation}
+
+Nevertheless, due to computer demands, \eqref{ec R,Z int} and \eqref{ec ds/dphi int} have been integrating using the poloidal length $l_\theta$:
+%
+\begin{equation}
+\vec{B} \parallel \vec{dr} \Rightarrow\vec{B} \wedge \vec{dr}=0 \Rightarrow \dfrac{B_{\varphi}(R,Z)}{R d\varphi}= \dfrac{B_\theta(R,Z)}{d l_\theta} \equiv \text{constant} \Rightarrow \dfrac{d \varphi}{d l_\theta}=\dfrac{1}{R} \dfrac{B_{\varphi}(R,Z)}{B_\theta(R,Z)}
+\end{equation}
+
+Introducing that change of variable on \eqref{ec R,Z int} and \eqref{ec ds/dphi int}, now $R,Z=R(l_\theta),Z(l_\theta)$ and $\varphi=\varphi(l_\theta)$ is also a dependent variable, and the equations to solve are
+%
+\begin{equation}\label{ec_para_integrar_L}
+	\left.
+	\begin{array}{c}
+	\dfrac{d \varphi}{d l_\theta}= R(l_\theta) \dfrac{B_\varphi(R(l_\theta),Z(l_\theta))}{B_\theta (R(l_\theta),Z(l_\theta))} \\ 
+	\\
+		\dfrac{dR}{d l_\theta}= \dfrac{B_R(R(l_\theta),Z(l_\theta))}{B_\theta (R(l_\theta),Z(l_\theta))} \\ 
+	\\
+\dfrac{dZ}{d l_\theta}= \dfrac{B_Z(R(l_\theta),Z(l_\theta))}{B_\theta(R(l_\theta),Z(l_\theta))}  \\
+	\\
+	\dfrac{ds}{d l_\theta}= \sqrt{1+\dfrac{B_\varphi (R(l_\theta),Z(l_\theta))^2}{B_\theta (R(l_\theta),Z(l_\theta))^2}}
+	\end{array}
+	\right\}
+\end{equation}
+
+\subsection{Potential}
+
+As commented on section \ref{sec_breakdown}, one effective criteria to estimate where do break-down takes place is to compute the potential function (which is not the electrostatic potential, as commented on the cited section) gained by the electron as it travels along a magnetic field line:
+%
+\begin{equation}\label{ec_potential_int}
+U= \int_\text{field line} \vec{E} \cdot \vec{dl} = \int_\text{field line} E_\varphi R d\varphi \simeq \int_\text{field line} E_\varphi  ds=  \int_\text{field line} \dfrac{V_\text{loop}}{2 \pi R} ds,
+\end{equation}
+where $ds$ is the total (poloidal and toroidal) differential length of the field line, which has been approximated, as usual, as the toroidal length of the line. 
+
+
+The non-dimensional magnitude has been computed $U/V_\text{loop}$ \cite{Lazarus_1998}. To calculate it, \eqref{ec_potential_int} have been re-written as an ODE, so it can also be integrated with MATLAB:
+%
+\begin{equation}
+\dfrac{d(U/V_\text{loop})}{ds}= \dfrac{1}{2 \pi R} \Rightarrow \dfrac{d(U/V_\text{loop})}{d l_\theta }=\dfrac{d(U/V_\text{loop})}{ds} \dfrac{ds}{d l_\theta}= \dfrac{1}{2 \pi R(l_\theta)} \dfrac{ds}{d l_\theta} .
+\end{equation}
+Zero has been set as initial value of $U/V_\text{loop}$.
+
+
+
+\chapter{Results}
+\label{sec_results}
+\section{Fiesta run}
+
+In this first section, the main outputs of the Fiesta toolbox with both phases 1 and 2 will be shown, which will be used for the breakdown study.
+
+\subsection{Target equilibrium}
+
+Figure \ref{fig_eq} includes the target equilibrium of both phases, indicating the poloidal flux with a colorbar, being the flux maximum at the magnetic axis. Both plots displays 3 bulk regions (upper, central and lower). The central bulk region correspond to the plasma, while the others are created by the divertor coils and have no plasma since they collide with the wall. The plasma is a diverted plasma with two X-points, due to the symmetry with respect to the $Z=0$ plane. VV's eddy currents are not included here because RZIp do not allow that the equilibrium configuration have eddy currents. 
+
+Tables \ref{table_equil_currents} and \ref{table_equil_param} includes the coil currents and the main plasma parameters. Both plasmas displays positive triangularities, about 0.2, although plasmas with negative triangularities can also be obtained with the same coilset configuration if the PF2 coils act as divertor coils, so that they take the role of the Div1 coils, and upper and lower bulks will be placed on the PF2 coils instead of on Div1. The parameters $q0$ and $q95$ are the safety factor at a surface with $\Psi_\text{N}=$0 and 0.95 respectively ($\Psi_\text{N}$ is zero for the magnetic axis, and 1 for the plasma boundary or separatrix). Div2 current is zero in the target equilibrium because Div2 is only used in the break-down phase.
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Phase 1.]{\includegraphics[scale=0.6]{imagenes/simulaciones/S1-000019Target_equilibria}}
+\hfill
+\subfigure[Phase 2.]{\includegraphics[scale=0.6]{imagenes/simulaciones/S2-000016Target_equilibria}}
+\caption{Target equilibrium for both phases, showing the coil currents for the equilibrium configuration and several plasma parameters at the right. 3 bulk region are showed on both plots (upper, lower and central), being the plasma in the central bulk. The colorbar indicates the poloidal flux $\Psi$.}
+\label{fig_eq}
+\end{figure}
+
+\begin{table}[htbp]
+	\begin{minipage}{0.45\textwidth}
+	\centering
+	\begin{tabular}{|c|c|c|} \hline
+	Coil & \multicolumn{2}{|c|}{$I (kA)$} \\ \cline{2-3}
+	 & Phase 1 & Phase 2 \\ \hline
+	Sol & -0.15 & -0.30 \\ \hline
+	PF1 & -0.47 & -1.49 \\ \hline
+	PF2 & -0.07 & -0.14 \\ \hline	
+	Div1 & 0.30 & 1.00 \\ \hline
+	Div2 & 0.00 & 0.00 \\ \hline		
+		\end{tabular}
+		\caption{Coilset currents for the target equilibrium configuration for both phases. Div2 current is zero because it is used only for the break-down phase.}
+		\label{table_equil_currents}
+	\end{minipage}	
+	\hfill
+	\begin{minipage}{0.45\textwidth}
+	\centering
+	\begin{tabular}{|c|c|c|} \hline
+	Parameter & Phase 1 & Phase 2 \\ \hline
+	$R_\text{geo}$(m) & 0.42 & 0.42 \\ \hline
+	$A$ & 1.82 & 1.84 \\ \hline
+	$\kappa$ & 1.95 & 2.01 \\ \hline	
+	$\delta$ & 0.20 & 0.24 \\ \hline
+	q0 & 1.14 & 1.03 \\ \hline		
+	q95 & 7.23 & 7.02 \\ \hline		
+	$\beta_\varphi$(\%) & 2.92 & 3.71 \\ \hline
+	$\beta_\theta$ & 0.73 & 0.91 \\ \hline	
+	$\beta_\text{N}$(\%) & 1.98 & 2.56 \\ \hline
+				\end{tabular}
+		\caption{Plasma parameters on the target equilibrium for both phases. $Z_\text{geo}$=0 due to the symmetry with respect t the $Z=0$ plane.}
+		\label{table_equil_param}
+	\end{minipage}
+	\end{table}
+
+
+
+\subsection{Current waveforms}
+
+
+As stated on chapter \ref{chapter_simu}, the current waveforms were given as an input lacking on the currents in during the break-down, which were calculated using RZIp.
+
+%%%%Explanation of the null region to compute null currents
+
+\begin{wrapfigure}{r}{6cm}
+%\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Sensors}
+\caption{Sensors for the poloidal null region. In that region the poloidal magnetic field will be nulled out (as much as possible) by the PF and Div coils.}
+\label{fig_sensors}
+%\end{figure}
+\end{wrapfigure}
+
+Previous to the RZIp simulation, the region where the poloidal field will be nulled out (poloidal null region) had to be chosen. The size and location was optimized manually to maximize the empirical connection length \eqref{ec L} and reducing the current needed to create the null region. The best shape and size are the one showed on figure \ref{fig_sensors}, an square of 0.30x0.30$\text{m}^2$ centered at $R_\text{null}=0.31$m. The sensors, or magnetic field probes are shown. The region is placed close to the inner wall since its near the inner wall where the gas breaks-down, as explained on section \ref{sec_breakdown}.
+
+
+%%%%END
+
+The full current waveforms, after computing the current needed to null out as much as possible the poloidal field in the sensor region with RZIp, is showed on figure \ref{fig_Input_currents}. This figure also includes the current gradient at each time, which will be denoted with $\Delta$; i.e., the difference between the current value at a certain instant, and the value at the previous instant.
+%
+%\begin{figure}[htbp]
+%\centering
+%\subfigure[Phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Input_currents}}
+%\hfill
+%\subfigure[Phase 2, indicating the discrete points of each of the waveforms.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Input_currents}}
+%\caption{Coilset current waveforms for both phases.}
+%\label{fig_I_input}
+%\end{figure}
+%
+Each current waveform have 7 dots indicating the phases of the plasma discharge, as indicated in figure \ref{fig_Input_currents} (b):
+
+\begin{itemize}
+	\item Point 1, the starting point: all the currents are zero.
+	\item Point 2, pre-pulse: the Sol coil is charged, and the PF and Div coils are ramped on to the currents needed to null out the poloidal field created by the Sol (null currents).
+	\item Point 3, 1º ramp-down: at this point, t=0ms, the Sol current is ramped down, inducing the loop voltage that will ionize the pre-fill gas. The PF and Div coils are the null currents to null out the poloidal field so the avalanche can succeed.
+	\item Point 4, 2º ramp-down: at this point, the Sol coil change its decreasing slope to make it less abrupt. The PF and Div coil currents are still the null currents. The break-down of the pre-fill gas will happen between point 3 and 4. The time interval between them was fixed to match the avalanche time.
+	\item Point 5, target equilibrium: at this point the target equilibrium is reached. The PF and Div coil currents are the values at the target equilibrium.
+	\item Point 6, end target equilibrium: the target equilibrium is sustained from point 5 to point 6, being the time interval between them the \textit{flat-top time}, which is 20ms on phase 1 and 100ms on phase 2.  The Sol coil current vary so that the desired plasma current is maintained, while the PF and Div currents are kept constant
+	\item Point 7, termination of the plasma discharge: all the coil currents are turned off, ending the plasma discharge.
+
+\end{itemize}
+
+To model the plasma current, Spitzer's resistivity have been used, using $Z_{eff}=2$ as effective atomic number to account for Carbon impurities because the plasma-facing material in SMART will be Carbon. Due to the low resistivity on phase 1, the Sol current has to increase from point 5 to 6 to prevent further increase of the plasma current.
+
+The Sol waveform have 2 decreasing slopes, the first one with a higher slope to induce the electric field and the following with a lower slope to continue increasing the plasma current but at a lower rate. The reason for this two slopes is because of engineering requirements. With the design of the power supplies for phase 1, the first operational phase, the coilset current gradients could not surpass 50A/ms. But this slope was not enough to allow the break-down of the pre-fill gas (the electric field induced was below the paschen's curve, so break-down was not possible, the loss rate were greater than the ionization rate), so finally it was decided that there would be a first slope to induce the loop voltage that would surpass the operational limits and would be sustained until the break-down phase ends, and another slope within the operational limits once the break-down phase was finished. Note that the rest of the ramp currents for phase 1 are below 50A/ms. The time interval between point 1 and 2 was chosen so that the current ramp is lower than 50A/ms. This discussion applies to phase 1 only, but phase 2 was also built with two slopes since this two slopes Sol waveform is less demanding for the power supplies.
+
+\begin{figure}[h!]
+\centering
+\subfigure[Input currents of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Input_currents}}
+\hfill
+\subfigure[Input currents of phase 2, indicating the discrete points of each of the waveforms.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Input_currents}}
+
+\subfigure[Currents gradients of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Delta_IPF}}
+\hfill
+\subfigure[Currents gradients of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Delta_IPF}}
+
+\caption{Coilset currents given as inputs and current ramps for both phases. The desired plasma current is sustained for 20ms in phase 1 and for 100ms in phase 2 (flat-top time).}
+\label{fig_Input_currents}
+\end{figure}
+
+
+COMENTAR LO DE LA SEGUNDA PENDIENTE DEL SOL, SE PUSO PARA QUE RAMP iP FUESE MAYOR Q 1MA/s!!!!!!
+
+\subsection{Dynamic simuations}
+
+The RZIp outputs, the plasma current and the net eddy current induced in the VV as a function of time are shown on figure \ref{fig_RZIp}. The coil waveforms have also been included for a better understanding of the outputs. Regarding the plasma current, it can be seen the different growth rate of it due to the 2 slopes of the Sol current, being the first one more abrupt. The plasma is sustained for the desired time, 20ms and 100ms for phase 1 and 2 respectively. A higher plasma current is achieved on phase 1, 35kA instead of 30kA. The reason is that this higher plasma current allows the higher Sol slope to be held during a longer time interval, long enough so that the break-down phase can be completed.
+%
+%and the reason is that this higher plasma current facilitate breakdown by enlargening the Sol ramp and sustaining the loop voltage for a longer time. 
+At the end of the discharge the plasma current is not zero. To null it, cooling down the plasma by allowing air to enter the VV breaking the vacuum would be a method to null out the plasma current. 
+%
+%Regarding the eddy currents in the VV, they displayed the expected behaviour by looking at the input currents. 
+%
+Regarding the eddy currents, they follow the expected behaviour according to the input currents.
+%
+The highest values are about 30kA, which is about the plasma current in phase 1. The eddy currents at t=0ms are 1.6kA for phase 1 and 2.5kA for phase 2.
+%
+
+
+
+
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Input currents of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Input_currents}}
+\hfill
+\subfigure[Input currents of phase 2, indicating the discrete points of each of the waveforms.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Input_currents}}
+
+\subfigure[Plasma current of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Ip}}
+\hfill
+\subfigure[Plasma current of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Ip}}
+
+\subfigure[Net eddy current on VV of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019I_VV}}
+\hfill
+\subfigure[Net eddy current on VV of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016I_VV}}
+\caption{Coiset currents given as inputs and RZIp outputs for both phases, plasma current and the net eddy current induced in the vacuum vessel. The desired plasma current is sustained for 20ms in phase 1 and for 100ms in phase 2 (flat-top time).}
+\label{fig_RZIp}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\subfigure[Plasma current of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Ip}}
+\hfill
+\subfigure[Plasma current of phase 2, indicating the discrete points of each of the waveforms.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Ip}}
+
+\subfigure[Plasma current gradient of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Delta_Ip}}
+\hfill
+\subfigure[Plasma current gradient of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Delta_Ip}}
+
+\caption{Plasma current and variation of the plasma current for both phases.}
+\label{fig_Ip}
+\end{figure}
+
+THE FIGURE WITH iP AND DELTAiP IS NOT REFERENCED IN THE TEXT!!!!!!!!!!!!!!
+
+\section{Break-down results}
+
+\subsection{Magnetic fields}
+\label{sec_results_fields}
+
+%To compute the magnetic fields at t=0ms, just when the Sol current is ramped down inducing the toroidal electric field, the Grad-Shafranov solver was used, doing a vacuum simulation since there is no plasma yet, and including the eddy currents at that time instant. 
+The magnetic field at the start of the Sol ramp down (dot 3 in figure \ref{fig_Input_currents} (b) corresponding to t=0ms) have been calculated using the Grad-Shafranov solver. This calculation includes the eddy currents but no the plasma current, not started yet a this time.
+%
+The Earth's field was also added to avoid extremely low values of the poloidal magnetic field, as commented on chapter \ref{chapter_simu}.
+
+Figure \ref{fig_fields} includes plots of the toroidal field $B_\varphi$, the poloidal field $B_\theta$ and the LLoyd's critera, $E_\varphi B_\varphi/B_\theta$. Due to the symmetry of the field with respect to the Z=0 plane, only the upper portion of the VV is showed\footnote{Actually, due to the addition of the Earth's field, the field is not completely symmetric with respect to the $Z$=0 plane, but the differences are negligible, about $10^{-7}$T.}. Small gaps are appreciable in the VV corners due to rounding issues, without further influence in the simulations. $B_\varphi$ is the field created by the toroidal field coils, which decays with the radial position as $1/R$. The $B_\theta$ plots displays a more complicated pattern due to the addition of the eddy currents. Without the eddy currents, the lowest $B_\theta$ is contained within the polidal field null region (dashed in green), but the addition of the eddys create a more complicated pattern. This is a result of the fact that RZIp can not run using a target equilibrium which contains eddy currents, resulting in that the currents for the poloidal field null configuration (null currents) do not take into account the effect of the eddy currents. Hence, the eddy currents have to be added manually, worsening the field to the point that the lowest poloidal field is not in the poloidal field null region. In the central region of the VV, $B_\theta$ is about $1.1 \cdot 10^{-4} \text{T}$ in phase 1 and $2.1 \cdot 10^{-4} \text{T}$ in phase 2.
+
+Regarding Lloyd's empirical criteria, it can be seen that the criteria for ohmic breakdown is satisfied ($E_\varphi B_\varphi/B_\theta >1000$V/m) near the inner wall in both phases, with a larger region in phase 2 since this phase has larger $B_\varphi$.
+
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Toroidal field of phase 1. $B_T(R_\text{Geo}=0.42\text{m})=0.1$T.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Bphi}}
+\hfill
+\subfigure[Toroidal field of phase 2. $B_T(R_\text{Geo}=0.42\text{m})=0.3$T.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Bphi}}
+
+\subfigure[Poloidal field of phase 1. $I_\text{VV}(t=0)=1.6$kA.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Bpol}}
+\hfill
+\subfigure[Poloidal field of phase 2. $I_\text{VV}(t=0)=2.5$kA.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Bpol}}
+
+\subfigure[Lloyd's criteria of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019LLoyd}}
+\hfill
+\subfigure[Lloyd's criteria of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016LLoyd}}
+\caption{Magnetic fields and Lloyd's criteria at t=0ms. Due to the symmetry with respect to Z=0, only the upper portion is shown. The poloidal field null region is dashed in green. Note in this plot the small gaps on the VV due to rounding issues can be seen.}
+\label{fig_fields}
+\end{figure}
+
+
+
+\subsection{Connection length}
+
+In this section, the connection length computed using both field line tracing and the empirical formula will be showed, as well as the potential gained by the electrons along their path.
+
+Figure \ref{fig_L_int} shows the connection length obtained by field line tracing, the electric potential gained by the electrons and the grid used for the integration. The grid contains a meshgrid of 20x20 points, and the points located where the coils are have been removed. The resolution of the grid is 0.034m in the R axis and 0.0842 in the Z axis, giving a resolution relative to the VV size of 5.26\% in both axis.
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Connection length of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019L}}
+\hfill
+\subfigure[Connection length of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016L}}
+
+\subfigure[$U/V_{loop}$ of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Pseudo}}
+\hfill
+\subfigure[$U/V_{loop}$ of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Pseudo}}
+
+\centering
+\subfigure[Grid for the line tracing. It is a 20x20 grid, and the points where the coils are located in have been removed.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Grid_tracing}}
+
+\caption{Connection length by line tracing and electric potential for SMART at t=0ms. The computational grid is also shown. The poloidal field null region is dashed in green.}
+\label{fig_L_int}
+\end{figure}
+
+The first thing to note considering the connection length $L$ plot is that it is not symmetric with respect to the $Z=0$ plane . This is a consequence of the poloidal field, its components, $B_R$ and $B_Z$. Figure \ref{fig_BR_BZ_int} shows the vertical and radial field a t=0ms for phase 1 (it displays the same behaviour for phase 2). The Sol coil produces negative vertical field in the VV, and the PF and Div coils try to compensate it by creating positive vertical field. The resultant vertical field is mostly negative in the whole VV, but its magnitude has reduced. This explain the fact that the $L$ plot is not symmetric, because the lines starting in the upper portion of the VV have on average higher connection length. Hence, the highest values of $L$ are located at the upper portion of the VV. Higher values are obtained near the inner wall since there the toroidal field has its greatest values ($B_\varphi \propto 1/R$), making $B_\theta$ less relevant, resulting in lines that mostly goes in the toroidal direction, with little deviation.
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Radial field.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019B_R}}
+\hfill
+\subfigure[Vertical field.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019B_Z}}
+
+\caption{Radial and vertical magnetic fields at t=0ms. The vertical component of the Sol field is negative, and the PF and Div coils try to null it by creating positive vertical field. The resultant vertical is mostly negative in the whole VV, but its magnitude has been reduced. The radial field is anti-symmetric and the vertical field symmetric with respect to the $Z=0$ plane.}
+\label{fig_BR_BZ_int}
+\end{figure}
+
+Nevertheless, the highest values appears in the surroundings of the lower PF2 coil ($Z=-0.6$m), because of the inhomogeneity of the field at the surroundings of a coil. Further from the coils, the field is more homogeneous, but at the surroundings on a coil, the field is mostly the field of the coil. Plots of several field lines are shown on figure \ref{fig_lines_int}, showing that some lines in the surroundings of the lower PF2 coil wind around them without colliding with them (the magnetic lines are twisted around the lower PF2 coil in a similar way the magnetic lines are twisted in a tokamak plasma). This figure also shows that, although the upper portion of the VV in general have higher connection lengths due to the fact that the vertical field is negative, if the lines start too high, they end up colliding rapidly with the upper coils or the upper VV wall.
+
+\begin{figure}[t]
+\centering
+\subfigure[Line starting in the upper portion of the VV with high $L$.]{\includegraphics[scale=0.45]{imagenes/simulaciones/S1-000019Line_inner}}
+\hfill
+\subfigure[Line starting on the surroundings of the lower PF2 coil.]{\includegraphics[scale=0.45]{imagenes/simulaciones/S1-000019Line_PF2}}
+
+\subfigure[Line starting on the upper portion of the VV with low $L$.]{\includegraphics[scale=0.45]{imagenes/simulaciones/S1-000019Line_upper}}
+
+\caption{Magnetic field lines starting in the upper portion of the VV with high $L$ (a), on the surroundings of the lower PF2 coil (b), and in the upper portion with low $L$ (c). The starting point is denoted with a black dot, and the ending point with a green dot.}
+\label{fig_lines_int}
+\end{figure}
+
+Considering the $U/V_\text{loop}$ plot, we see that the weird region surrounding the lower PF2 coil has low value of $U/V_\text{loop}$ in comparison to the value of the upper portion of the VV near the inner side, confirming this region is not important regarding break-down. As explained on section \ref{sec_breakdown}, this plot is more valuable than the $B_\theta$ or $L$ plot since it also takes into account the energy gained by the electrons along their path. It can be seen that it displays roughly the same patter of the $L$ plot, but removing this region around the lower PF2 and some regions with high $L$ which are further from the inner VV wall.
+
+Finally, the connection length in the poloidal field null region using the empirical formula will also be obtained, since it usually gives lower values than the connection length by field line tracing, which gives very high results. In spherical tokamaks (ST), $L$ goes from 10 to 50m \cite{VEST_2015}, \cite{Globus_2001}. The results obtained are cast on table \ref{table_L}. The value for the line tracing has been computed averaging the connection length values in the whole poloidal field null region. For the empirical formula, the two visions of $a_{eff}$ have been used, being 0.15m for the ii) and 0.31m for the i), so the i) value will double the ii) value. The line tracing method gives about an order of magnitude greater values than the ii) method. Phase 2 displays greater values than phase 1 because of the higher $B_\varphi$, that makes $B_\theta$ less relevant.
+
+
+
+\begin{table}[htbp]
+\centering
+	\begin{tabular}{|c|c|c|c|} \hline
+Phase	 & \multicolumn{3}{|c|}{$L$(m)} \\ \hline
+	& Line tracing & Empirical ii) & Empirical i) \\ \hline 
+	1 & 657.7 & 42.4 & 87.56 \\ \hline
+	2 & 987.8 & 68.3 & 141.2 \\ \hline
+	\end{tabular}
+	\caption{Connection length at the poloidal field null region, computed via the empirical formula and averaging the field line tracing method. For the empirical formula, $a_{eff}$ is 0.15m for the ii) version and 0.31m for the i) version.}
+\label{table_L}
+\end{table}
+
+
+
+
+\subsection{Paschen curve and avalanche time}
+
+This section will review the Paschen curve's criteria and the estimation of the avalanche time.
+
+The Paschen equation is (see \ref{sec_breakdown})
+%
+\begin{equation}
+{E_\varphi}_{min}=\dfrac{C_2 p}{\ln(C_1 p L)},
+\end{equation}
+and, given the connection length $L$ and the pre-fill pressure $p$, it gives the minimum electric field needed to sustain the electron density. Since the connection length depends on both $R$ and $Z$, the minimum electric field required will also depend on both $R$ and $Z$. However, ${E_\varphi}_{min}(R,Z)$ as a function of $p$ would need a 4D plot, so, instead, to create the Paschen's curve, an average value of $L$ is chosen. This value is often the value obtained by using the empirical formula, which is $L$ at the poloidal field null region. Since this formula gives lower values than the values obtained by line tracing, this formula will be used here too. Regarding the electric field, it is given by $E=V_\text{loop}/2 \pi R$ (see \eqref{ec_E_sol}), so the $R$ coordinate needs to be chosen to do the Paschen's curve. It is often used $R_\text{Geo}$, which also serves as a guideline to compare with other reactors. However, due to the fact that the gas will break-down near the inner side, I have also used $R_\text{Geo}-a \equiv R_\text{in}$, which is the inner $R$ coordinate of the Last Closed Flux Surface (LCFS), for $Z=0$. For both phases, $R_\text{Geo}=0.42$m and  $R_\text{Geo}-a \equiv R_\text{in}=0.19$m.
+
+Figure \ref{fig_Paschen} shows the Paschen's curve for SMART using both $R_\text{Geo}$ and $R_\text{in}$ for several L values between the range of the values obtained. It is also included with dashed lines the values of similar spherical tokamaks, VEST and GlobusM, whose values are also included on table  \ref{tabla_Paschen_GlobusVEST}. SMART values are included on table \ref{table_Paschen_SMART}. For both phases, using $E(R_\text{in})$ breakdown could be possible for $L \geq 30$m, while using $E(R_\text{Geo})$ $L \geq 70$m would be needed. SMART $E(R_\text{Geo})$ value is similar to VEST value, but VEST uses ECRH assistance to get break-down. Ohmic breakdown in GlobusM needs between 4.5 and 8V of $V_\text{loop}$, which is 1.5 and 2.7 times higher than SMART $V_\text{loop}$. However, it can be seen that $E(R_\text{in})$ is between GlobusM $E(R_\text{Geo})$ values. Using $E(R_\text{Geo})$ instead of $E(R_\text{in})$ gives additional safety, since if breakdown is achieved at $R_\text{Geo}$, it will also be achieved on $R_\text{in}$ since $B_\varphi \propto 1/R$.
+
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Phase 1.]{\includegraphics[scale=0.55]{imagenes/simulaciones/S1-000019Paschen_complete}}
+\hfill
+\subfigure[Phase 2.]{\includegraphics[scale=0.55]{imagenes/simulaciones/S2-000016Paschen_complete}}
+
+\caption{Paschen curves for SMART, showing VEST and GlobusM data. Hydrogen is used as the pre-fill gas in the three reactors.}
+\label{fig_Paschen}
+\end{figure}
+
+
+\begin{table}
+	\centering		
+	\begin{tabular}{|c|c|c|} \hline
+		& VEST & GlobusM \\ \hline
+		$p$($10^{-5}$Torr) & $2-3$ &  $3-6$ \\ \hline
+		$V_\text{loop}$(V) & 3 & 4.5-8 \\ \hline
+		$E$(V/m) & 1.2 & 1.8-3.1 \\ \hline
+	\end{tabular}
+	\caption{GlobusM \cite{Globus_2001} and VEST \cite{VEST_2015} break-down data. Both use H$_2$ as pre-fill gas. $E \equiv E(R_\text{Geo})$, where $R_\text{Geo}$=0.36m for GlobusM and  0.4m for VEST. VEST data correspond to break-down assisted with ECRH. GlobusM data is for ohmic solenoid. With ECRH, GlobusM needs 1-2V of $V_\text{loop}$.}
+	\label{tabla_Paschen_GlobusVEST}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering
+	\begin{tabular}{|c|c|c|c|} \hline
+Phase	 & $V_\text{loop}$(V) & $E(R_\text{in})$(V/m) & $E(R_\text{geo})$(V/m) \\ \hline
+	1 & 2.98 & 2.49 & 1.06 \\ \hline
+	2 & 2.90 & 2.39 & 1.03 \\ \hline
+	\end{tabular}
+	\caption{SMART loop voltage and electric field created by the Sol for both phases, using H$_2$ as pre-fill gas.}
+\label{table_Paschen_SMART}
+\end{table}
+
+Nevertheless, as explained on section \ref{sec_breakdown}, Paschen's curve gives the electric field needed to sustain the electron density, so further information about wether breakdown could be achieved or not is the calculation of the avalanche time, since the existence of the avalanche time implies the avalanche succeed. 
+
+Using \eqref{ec t_ava} the avalanche time has been calculated as a function of $p$ and $E_\varphi$ for given $L$ values, creating a plot similar to the Paschen's curve. For the pre-fill temperature, it has been used $T_\text{pre}=20$ºC. For the $L$ values, multiples of the empirical values obtained have been used (see table \ref{table_L}).
+
+Figure \ref{fig_t_ava_ph1} and \ref{fig_t_ava_ph2} shows the avalanche time for several $L$ for phase 1 and 2 respectively. Due to the lower connection length of phase 1, this phase will also need more time to end the break-down phase. The loop voltage of the Sol is induced for 4ms in phase 1 and 12ms in phase 2 (from do 3 to 4 in figure \ref{fig_RZIp} (a) and (b), there are 4ms in phase 1, and 12ms in phase 2). Regarding the more conservatives value, the $ii)$ method, $L_\text{emp}|_{ii)}$, about 4ms will be the minimum time for $p=1.3 \cdot 10^{-4}$Torr, which is just the time the  loop voltage is sustained in the Sol waveform on phase 1. Phase 2 would need 2.2ms with $p=9.3 \cdot 10^{-5}$Torr, which a sixth of the time the loop voltage is sustained, 12ms. With the $i)$ method, phase 1 would need 1.7ms, which is roughly half the time the loop voltage is sustained, and phase 2 would need 1.4ms, a similar time to what Tokamak Energy needs.
+
+Figure \ref{fig_t_ava_ph1} and \ref{fig_t_ava_ph2} also contains the plots for half $L_\text{emp}|_{ii)}$, the worst scenario, and $4 L_\text{emp}|_{ii)}$, the ideal scenario. In the worst scenario, no break-down would be possible in phase 1, although on figure \ref{fig_Paschen}, SMART E($R_\text{in}$) tightly surpass the $L=30$m. This remind us Paschen's curve not ensure avalanche, and that is why \cite{ITER_2007} recommends to double the minimum electric field to ensure break-down. For phase 2 it could be possible, but spending about 9.3ms in the optimal case. On the contrary, in the ideal case, $4 L_\text{emp}|_{i)}$,both phases would need about 1ms in the optimal case. However, the connection length may be too high. This will be discussed in the next section.
+
+
+\begin{figure}[t]
+\centering
+\subfigure[$L=L_\text{emp}|_{ii)}/2$. No ohmic avalanche possible.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019tau_ava_L_1}}
+\hfill
+\subfigure[$L=L_\text{emp}|_{ii)}$. Ohmic breakdown possible using $R_\text{in}$. The minimum time is 3.9ms, for $p=1.3 \cdot 10^{-4}$Torr.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019tau_ava_L_2}}
+
+\subfigure[$L=2 L_\text{emp}|_{ii)} \simeq L_\text{emp}|_{i)}$. Ohmic breakdown possible using $R_\text{in}$. The minimum time is 1.7ms, for $p=8.1 \cdot 10^{-5}$Torr.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019tau_ava_L_3}}
+\hfill
+\subfigure[$L=4 L_\text{emp}|_{ii)} \simeq 2 L_\text{emp}|_{i)}$.  Ohmic breakdown possible using $R_\text{in}$. The minimum time is 1.2ms, for $p=5.3 \cdot 10^{-4}$Torr.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019tau_ava_L_4}}
+
+\caption{Avalanche time for SMART phase 1, for multiples of the empirical connection length.}
+\label{fig_t_ava_ph1}
+\end{figure}
+
+
+
+\begin{figure}[t]
+\centering
+\subfigure[$L=L_\text{emp}|_{ii)}/2$. Ohmic breakdown possible using $R_\text{in}$. The minimum time is 9.3ms, for $p=1.6 \cdot 10^{-4}$Torr]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016tau_ava_L_1}}
+\hfill
+\subfigure[$L=L_\text{emp}|_{ii)}$. Ohmic breakdown possible using $R_\text{in}$. The minimum time is 2.2ms, for $p=9.3 \cdot 10^{-5}$Torr.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016tau_ava_L_2}}
+
+\subfigure[$L=2 L_\text{emp}|_{ii)} \simeq L_\text{emp}|_{i)}$. Ohmic breakdown possible using $R_\text{in}$. The minimum time is 1.4ms, for $p=6.0 \cdot 10^{-5}$Torr.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016tau_ava_L_3}}
+\hfill
+\subfigure[$L=4 L_\text{emp}|_{ii)} \simeq 2 L_\text{emp}|_{i)}$.  Ohmic breakdown possible using $R_\text{in}$. The minimum time is 1.0ms, for $p=3.9 \cdot 10^{-5}$Torr.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016tau_ava_L_4}}
+
+\caption{Avalanche time for SMART phase 2, for multiples of the empirical connection length.}
+\label{fig_t_ava_ph2}
+\end{figure}
+
+
+
+
+%%%%%%%%%%%%%%%%
+%\newpage
+\section{Discussion}
+
+In this section, the results obtained will be compared to other tokamaks of similar characteristics.
+
+The first thing to compare is the poloidal field $B_\theta$ and Lloyd's criteria. Figure \ref{fig_Bpol} shows a comparison between VEST $B_\theta$ and Lloyd's criteria with SMART phase 1, since for phase 1 the toroidal field $B_\varphi$ is the same in both, 0.1T. The electric field is also very similar, 1.12 vs 1.06V/m. VEST achieves about $10^{-3}$T in its central region, while we achieved $10^{-4}$T. Roughly the same difference in values are found in VEST Lloyd's plot. The figure also included a comparison with GlobusM poloidal field, comparing it with phase 2 because GlobusM has $B_T<0.62$T. The minimum $B_\theta$ of GlobusM is 3.78G in the null region, while we achieve 2.13G ($10^{-3.6713}$T) in the null region, which is very similar to GlobusM value. However, although the agreement between our values and VEST and GlobuM values seems good enough, there is a source of imprecision in our simulations, and is the fact that RZIp do not run in a self-consistent manner with the eddy currents, as commented on section \ref{sec_results_fields}, so the null currents do not take into account the eddy currents, and the addition of the eddy currents worsen the field, so that the lowest poloidal field is not in the field null region. Another source of error is that our simulations use the ideal current waveforms, while more realistic simulations, such as VEST simulations, also simulate the power supplys of the coils.
+
+As a conclusion for this magnetic field comparison, other effects such as errors in the coil windings or magnetic material materials surrounding the VV could also alter the magnetic field.
+ 
+ %it has to be taken into account that reality could be more complicated because other issues could appear such as errors in the coil windings which could alter the field, or magnetic material surroundings the VV.
+%
+\begin{figure}[htbp]
+\centering
+\subfigure[Poloidal field of SMART phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Bpol}}
+\hfill
+\subfigure[Poloidal field of VEST. $1G=10^{-4}$T.]{\includegraphics[scale=0.35]{imagenes/Bpol_VEST}}
+
+\subfigure[Poloidal field of SMART phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Bpol}}
+\hfill
+\subfigure[Poloidal field of GlobusM.]{\includegraphics[scale=0.25]{imagenes/Bpol_Globus}}
+
+\subfigure[Lloyd's criteria of SMART phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Lloyd}}
+\hfill
+\subfigure[Lloyd's criteria of VEST.]{\includegraphics[scale=0.37]{imagenes/Lloyd_VEST}}
+\caption{Comparison of the poloidal field and Lloyd's criteria with VEST \cite{VEST_2015} and GlobusM \cite{Globus_2001} (both simulated data) at the exact time when the loop voltage is induced. Phase 1 is used to compare with VEST because it the same $B_\varphi=0.1$T. $E_\varphi=1.12$V/m for VEST and 1.06V/m for phase 1. $B_\varphi<0.62$T for GlobusM, so it is compared with phase 2, which has 0.3T.}
+\label{fig_Bpol}
+\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\subfigure[Poloidal field of SMART phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Bpol}}
+%\hfill
+%\subfigure[Poloidal field of GlobusM. $1G=10^{-4}$T.]{\includegraphics[scale=0.3]{imagenes/Bpol_Globus}}
+
+%\caption{Comparison of the poloidal field with GlobusM \cite{Globus_2001} (simulated data). $B_T=0.3$T for phase2, and $B_T<0.62$T for GlobusM.}
+%\label{fig_Bpol_GlobusM}
+%\end{figure}
+
+
+The next thing to compare is the connection length $L$ by line tracing. Figure \ref{fig_L_NSTX} include a comparison with NSTX and phase 2, because NSTX has $B_\varphi=0.3$T \cite{NSTX_BT}. The values of both phase 2 and NSTX are about km long, but the appearance of both plots are not very similar. This difference is caused by the fact that SMART has most of its coils inside the VV, while NSTX has its coils outside, as can be seen on (c). To prove this point, a $L$ plot of an older SMART configuration with all the coils outside (phase 1) is included (d), showing similarities with the NSTX plot; both plots displays high $L$ arm-like regions, pointing upward and outward (to the outer wall). However, SMART do not have an arm pointing downward while NSTX do, and this arm seems to be caused by a lower PF coil of NSTX, PF1B, which do not appears in the upper portion of the NSTX cross-section (i.e., NSTX cross-section do not displays symmetry with respect to the $Z=0$ plane).
+
+Regarding Paschen's curve and avalanche time, SMART loop voltage seem a bit low in comparison to GlobusM, but since the loop voltage is strongly dependent on the configuration of the machine, which is different for each machine, is not such a determinant factor. Instead, studying other variables such as the avalanche time would give more information, and in our case the avalanche time confirm that we could end the breakdown phase in a short enough time interval, going from 1 to 4ms. Data reconstruction in a VEST discharge using ECRH assistance shows that the plasma has already formed and moved to the outer wall 2ms after the ramp-down of the Sol, so the avalanche time must be $\leq 2$ms \cite{VEST_2015}. This is a similar time interval to the Tokamak Energy's ST40 tokamak (see section \ref{chapter_simu}) and lies between the range of values obtained for SMART, with the difference that the SMART results have been obtained with an ohmic startu, without any assistance. However, SMART will also have ECRH assistance for the breakdown just in case it is needed to ionize the pre-fill gas.
+
+Nevertheless, the loop voltage calculated here is the loop voltage induced by only the Sol, excluding the effect of the eddy currents, which will decrease the loop voltage according to Lenz's law. A more precise simulation should compute the loop voltage in a self-consistent manner with the eddy currents. This can not be done with Fiesta, but could be done by using finite element software such as COMSOL.
+
+Finally, the simulations carried out here, and in most of the bibliography regarding breakdown studies, are done ignoring the time dependence of all the variables such as the connection length or the poloidal field, so they have to be treated as a first approximation to the problem of the tokamak start-up (to deduce \eqref{ec ne}, the time dependence of the loss rate was neglected). For deeper studies of the start-up phase, specific codes have been developed to simulate all the stages of the start-up phase such as DYON \cite{KimThesis} or DINA.
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Connection length of SMART phase 2.]{\includegraphics[scale=0.55]{imagenes/simulaciones/S2-000016L}}
+\hfill
+\subfigure[Connection length of NSTX.]{\includegraphics[scale=0.3]{imagenes/l_article}}
+
+\subfigure[Cross-section of NSTX.]{\includegraphics[scale=0.35]{imagenes/Section_NSTX}}
+\hfill
+\subfigure[Connection length of an older SMART phase 1 with the coils outside (S1-014).]{\includegraphics[scale=0.55]{imagenes/simulaciones/S1-000014L_older}}
+
+
+\caption{Comparison of the connection length plot with NSTX \cite{NSTX_2017} \cite{NSTX_cross}. $B_\varphi=0.3$T for NSTX and for phase 2.}
+\label{fig_L_NSTX}
+\end{figure}
+
+
+\chapter{Conclusions}
+
+In this work, the breakdown phase of the future SMART reactor of the University of Seville has been explored numerically using the Fiesta toolbox, programmed in MATLAB.
+
+The fundamentals of tokamak physics and tokamak start-up have been reviewed to understand the foundation of this work. The Fiesta toolbox has also been review on its fundamental aspects, although there is still many work to do to completely understand it
+
+The work of this thesis summarized months of working in the design of the SMART reactor along with the SMART team of the PSFT group, made by physicists and engineers students and researchers, showing the most updated scenarios for the initial operational phase of SMART and a future upgrade. The break-down of Hydrogen as a pre-fill gas could be achieved, spending a short time to ended (from 2 to 4ms), as was mandatory for a suitable break-down phase.
+
+Still, this is the first approach to the study of the break-down phase of the tokamak start-up, further studies such as the use of specific codes to model the entire tokamak start-up phase are required to ensure proper plasma initiation. Also, a deeper understanding of the Fiesta toolbox is needed for self-consistent simulations, if possible. Also, for doing more realistic simulations, the power supply's behaviour should be included in the simulations, as well as a more realistic vacuum vessel.
+
+
+%%%%%%%%%REFERENCIAS%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{apalike} %apalike too long
+
+\bibliography{bibliografiaTFM}
+
+%
+
+
+
+
+\appendix %MEJOR CON EL BEGIN PQ TE PONE APPENDICES ANTES DE MSOTRARTELOS
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Calculation of the voltage induced by a solenoid of finite width}
+\label{appendix_loop voltage}
+The magnetic field $\vec{B}$ of a solenoid of inner radius $R_\text{in}$ and outer radius $R_\text{out}$($<R_\text{in}$), ignoring border effects (i.e., assuming infinite length), ca be easily calculated using Ampère's law, giving:
+%
+\begin{equation}
+\vec{B}_\text{Sol}= \stackrel{\wedge}{Z}
+\left\{
+	\begin{array}{cc}
+	\mu_0 I \dfrac{N}{l} & R < R_\text{in} \\
+	\\
+	 \mu_0 I \dfrac{N}{l} \Big(1- \dfrac{R-R_\text{in}}{R_\text{out}-R_\text{in}} \Big)  & R_\text{in}<R<R_\text{out} \\ 
+	 \\
+	0 & R> R_\text{out} \\
+	\end{array}
+\right.
+\end{equation}
+where $N$ is its number of turns and l the length of the Sol, and $I$ the intensity of each turn, $I_\text{Sol}$\footnote{Note the boundary conditions of the magnetic field are satisfied, the field is continuous since there is no surface charge density at $R_\text{in}$ or at $R_\text{out}$.}.
+
+The normal vector $\vec{n}$ on \eqref{ec_Faraday_loop} is chosen to be $ \stackrel{\wedge}{Z}$, so the loop voltage is
+%
+\begin{equation}
+V_\text{loop} = - \dfrac{d}{dt} \int_S B_\text{Sol} dS= - \int_S \dfrac{d B_\text{Sol}}{dt} dS,
+\end{equation}
+introducing the derivative into the integral since the integration variables do not vary, the only thing that vary is the Sol current. The derivate of the Sol current can be computed since the Sol current is decreased linearly, so it satisfies
+%
+\begin{equation}\label{ec_I_sol}
+I_\text{Sol}(t)=m t +n.
+\end{equation}
+At $t=0$, $I_\text{Sol} \equiv I_0$, and the ramp goes down until $I_\text{Sol}(t_1) \equiv  I_1$ ($I_0>I_1$), so the Sol current is
+%
+\begin{equation}
+I_\text{Sol}(t)=\dfrac{I_1-I_0}{t_1} t +I_0.
+\end{equation}
+To solve \eqref{ec_Vloop_Sol}, the integral has to be divided into the three intervals that $\vec{B}_\text{Sol}$ has:
+%
+\begin{equation}
+\int_S \dfrac{d B_\text{Sol}}{dt} dS=\int_{0<R<R_\text{in}} \dfrac{d B_\text{Sol}}{dt} dS + \int_{R_\text{in}<R<R_\text{out}} \dfrac{d B_\text{Sol}}{dt} dS+ \cancelto{0}{\int_{R_\text{out}<R} \dfrac{d B_\text{Sol}}{dt} dS};
+\end{equation}
+Let'solve each term separately:
+
+\begin{itemize}
+
+\item $\displaystyle \int_{0<R<R_\text{in}} \dfrac{d B_\text{Sol}}{dt} dS= \displaystyle \int_{0<R<R_\text{in}} \mu_0 \dfrac{d I}{dt} \dfrac{N}{l} dS=\mu_0 \dfrac{d I}{dt} \dfrac{N}{l} \pi R_\text{in}^2$,
+
+\item $\displaystyle \int_{R_\text{in}<R<R_\text{out}} \dfrac{d B_\text{Sol}}{dt} dS= \displaystyle \int_{0<R<R_\text{in}} \mu_0 \dfrac{d I}{dt} \dfrac{N}{l} \Big(1- \dfrac{R-R_\text{in}}{R_\text{out}-R_\text{in}} \Big) dS=\mu_0 \dfrac{d I}{dt} \dfrac{N}{l} \Big[ \\ \\ \displaystyle \int_{R_\text{in}}^{R_\text{out}} \int_{0}^{2 \pi} R dR d\varphi - \dfrac{1}{R_\text{out}-R_\text{in}} \int_{R_\text{in}}^{R_\text{out}} \int_{0}^{2 \pi} (R-R_\text{in}) R dR d\varphi \Big]= \mu_0 \dfrac{d I}{dt} \dfrac{N}{l} \Big[ \\ \\ \pi (R_\text{out}^2-R_\text{in}^2)- \dfrac{2 \pi}{R_\text{out}-R_\text{in}} \Big( \dfrac{1}{3}(R_\text{out}^3-R_\text{in}^3)-\dfrac{R_\text{in}}{2} (R_\text{out}^2-R_\text{in}^2) \Big) \Big]$.
+\end{itemize}
+%
+The loop voltage induced is, taking into account \eqref{ec_I_sol}, 
+%
+\begin{equation}
+V_\text{loop}= - \mu_0 \dfrac{N}{l} \dfrac{I_1-I_0}{t} \Big[ \pi R_\text{in}^2  + \pi (R_\text{out}^2-R_\text{in}^2) - \dfrac{2 \pi}{R_\text{out}-R_\text{in}} \Big( \dfrac{1}{3} (R_\text{out}^3-R_\text{in}^3) - \dfrac{R_\text{in}}{2} (R_\text{out}^2-R_\text{in}^2) \Big) \Big].
+\end{equation}
+With the normal vector choice, the loop voltage is positive.
+
+
+%%%%%%%%%%State space
+
+\chapter{State space representation}
+\label{app_state_space}
+
+The state space representation is a mathematical model of a physical system, whose scheme is shown in figure \ref{diagrama state space}. The system can be represented by the following system of equations \cite{Nise} (section 3.3)
+%
+\begin{equation} \label{ec stat spa}
+\left\{
+\begin{array}{c}
+\dfrac{d\boldsymbol{x}}{dt}=\boldsymbol{A} \boldsymbol{x} +\boldsymbol{B} \boldsymbol{u}, \\
+\boldsymbol{y}=\boldsymbol{C}\boldsymbol{x} +\boldsymbol{D} \boldsymbol{u},
+\end{array}
+\right.
+\end{equation}
+
+The column vector $\boldsymbol{x}$ contains the state space variables (the minimun set of variables needed to determine the system), and it is called the \textit{state vector}. $\boldsymbol{u}$ is the \textit{input or control vector}, which contains the input variables, and $\boldsymbol{y}$ is the \textit{output vector}, and contains the output variables. $\boldsymbol{A}$ is the \textit{system matrix}, and defines the first-order differential equations that determines the state variables, $\boldsymbol{B}$ is the \textit{input matrix}, which relates the input variables with the time derivatives of the state variables. $\boldsymbol{C}$ is the \textit{output matrix}, which defines the set of equations that determines the output variables as a combination of the state space variables and the inputs, and $\boldsymbol{D}$ is the \textit{feedforward matrix}, which relates the input and output variables.
+
+\begin{figure}[htbp]
+    \centering
+\includegraphics[scale=0.7]{imagenes/Typical_State_Space_model}
+\caption{Block diagram representation of the linear state-space equations.}
+\label{diagrama state space}
+\end{figure}
+
+
+%\end{appendices}
+
+\end{document}
