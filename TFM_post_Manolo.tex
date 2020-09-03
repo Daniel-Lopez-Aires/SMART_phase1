@@ -126,9 +126,9 @@ Faculty of Physics, University of Seville \\
 
 %The human kind has always been fascinating about the stars. Nowadays it is known the stars shine due to nuclear fusion, confining the reactants gravitationally. Is it possible to create a device that provides energy to the human kind by means of a certain fusion reaction? Could a star be created on Earth?  It can not be created a device as massive as a star, but this is not the only approach to achieve nuclear fusion. The reactants can also be confined by magnetic field, since they are nuclei, which has electric charge. To pursue this, the reactants have to be so hot they reach the fourth state of matter, the plasma state. Achieving controlled nuclear fusion on Earth could also provide a huge step against the climate change fight, since it could replace fossic-fuels. Furthermore, there is enough fuel on Earth for thousands of years.
 
-Achieving controlled nuclear fusion on Earth could be a decisive step on the climate change fight since it would bring a virtually renewable energy source without CO$_2$ emissions. \st{It is also an exciting field because of its scientific and technological challenges}. The Plasma Science and Fusion Technology group of the University of Seville is planning to build a magnetic fusion device, a \textit{spherical tokamak} for controlled nuclear fusion research, called SMall Aspect Ratio Tokamak (SMART).
+Achieving controlled nuclear fusion on Earth could be a decisive step on the \st{climate change fight} \textcolor{blue}{quest towards green energy production} since it would bring a virtually renewable energy source without CO$_2$ emissions. \st{It is also an exciting field because of its scientific and technological challenges}. The Plasma Science and Fusion Technology group of the University of Seville is planning to build a magnetic fusion device, a \textit{spherical tokamak} for controlled nuclear fusion research, called SMall Aspect Ratio Tokamak (SMART).
 
-This thesis will model the first phase of the initiation of a tokamak (tokamak start-up), the break-down phase, in which the fuel will transition from the gas state to the plasma state. The fundamental of tokamaks physics and tokamak start-up will be reviewed. The configuration of the SMART reactor in the break-down phase have been studied and optimized using the Fiesta toolbox (MATLAB) ensuring a robust break-down scenario in which the gas breaks-down in a few ms. The connection length and the electric potential gained by the electrons along the magnetic field lines have also been studied to estimate where the gas will break down.
+This thesis will model the first phase of the initiation of a tokamak (tokamak start-up), the break-down phase, in which the fuel will transition from the gas state to the plasma state. The fundamental of tokamak physics and tokamak start-up will be reviewed. The configuration of the SMART reactor in the break-down phase has been studied and optimized using the Fiesta toolbox (MATLAB) ensuring a robust break-down scenario in which the gas breaks-down in a few ms. The connection length and the electric potential gained by the electrons along the magnetic field lines have also been studied to estimate where the gas will break down.
 
 \st{To pursue controlled nuclear fusion, the fuel must be heated to $10^8$K, an extremely high temperature, hotter than the Sun's core ($10^7$K). At such high temperatures, the fuel would be in the plasma state. This master's thesis will focus on the first phase of the creation of the plasma (plasma start-up), called the break-down phase, in which the initial gas that is introduced into the reactor is ionized and turns into a plasma (the gas breaks-down into a plasma)}.
 
@@ -153,11 +153,13 @@ Special thanks also to Scott, who, despite arriving to the group in march,  have
 I would also like to thank to Jesús Poley, our talks about fusion and science in general were really interesting and helpful for both of us. Special mention also to the CS-GO team for all the good Friday nights during the Covid-19 quarantine.
 
 
-Finally, I would like to thank Alexandra Elbakyan for developing a website that make scientific research freely available for everyone, as it should be.
+%Finally, I would like to thank Alexandra Elbakyan for developing a website that make scientific research freely available for everyone, as it should be.
+
+%Removido el alegato de ciencia accesible apra todos, demasiado explicito dice Carlos. Sugiere que el homenaje a Sci hub sea disimulado.
 
 \begin{figure}[b]
 \centering
-\includegraphics[scale=0.4]{imagenes/Scihub}
+\includegraphics[scale=0.3]{imagenes/Scihub}
 \end{figure}
 
 
@@ -1476,7 +1478,7 @@ Zero has been set as initial value of $U/V_\text{loop}$.
 \label{sec_results}
 \section{Fiesta outputs }
 \st{Fiesta run}
-In this first section, the main outputs of the Fiesta toolbox with both phases 1 and 2 will be shown, which will be used for the breakdown study.
+In this first section, the main outputs of the Fiesta toolbox with both phases 1 and 2 will be shown, which will be used for the break-down study.
 
 \subsection{Target equilibrium}
 
@@ -1489,7 +1491,7 @@ Tables \ref{table_equil_currents} and \ref{table_equil_param} includes the coil 
 \subfigure[Phase 1.]{\includegraphics[scale=0.7]{imagenes/simulaciones/S1-000019Target_equilibria}}
 \hfill
 \subfigure[Phase 2.]{\includegraphics[scale=0.7]{imagenes/simulaciones/S2-000016Target_equilibria}}
-\caption{Target equilibrium for both phases, showing the coil currents for the equilibrium configuration and several plasma parameters at the right. 3 bulk region are showed on both plots (upper, lower and central), being the plasma in the central bulk. The colorbar indicates the poloidal flux $\Psi$.}
+\caption{Target equilibrium for both phases, showing the coil currents for the equilibrium configuration and several plasma parameters at the right. 3 bulk region are showed on both plots (upper, lower and central), being the plasma in the central bulk. The colorbar indicates the poloidal flux $\Psi$. Eddy currents in the VV are not included here.}
 \label{fig_eq}
 \end{figure} %scale 0.6 pre Manolo
 
@@ -1533,7 +1535,7 @@ Tables \ref{table_equil_currents} and \ref{table_equil_param} includes the coil 
 \subsection{Current waveforms}
 
 
-As stated on chapter \ref{chapter_simu}, the current waveforms were given as an input lacking on the currents in during the break-down, which were calculated using RZIp.
+As stated on chapter \ref{chapter_simu}, the current waveforms were given as an input lacking on the currents during the break-down, which were calculated using RZIp.
 
 %%%%Explanation of the null region to compute null currents
 
@@ -1577,7 +1579,7 @@ Each current waveform have 7 dots indicating the phases of the plasma discharge,
 
 To model the plasma current, Spitzer's resistivity have been used, using $Z_{eff}=2$ as effective atomic number to account for Carbon impurities because the plasma-facing material in SMART will be Carbon. Due to the low resistivity on phase 1, the Sol current has to increase from point 5 to 6 to prevent further increase of the plasma current.
 
-The Sol waveform have 2 decreasing slopes, the first one with a higher slope to induce the electric field and the following with a lower slope to continue increasing the plasma current but at a lower rate. The reason for this two slopes is because of engineering requirements. With the design of the power supplies for phase 1, the first operational phase, the coilset current gradients could not surpass 50A/ms. But this slope was not enough to allow the break-down of the pre-fill gas (the electric field induced was below the paschen's curve, so break-down was not possible, the loss rate were greater than the ionization rate), so finally it was decided that there would be a first slope to induce the loop voltage that would surpass the operational limits and would be sustained until the break-down phase ends, and another slope within the operational limits once the break-down phase was finished. Note that the rest of the ramp currents for phase 1 are below 50A/ms. The time interval between point 1 and 2 was chosen so that the current ramp is lower than 50A/ms. This discussion applies to phase 1 only, but phase 2 was also built with two slopes since this two slopes Sol waveform is less demanding for the power supplies.
+The Sol waveform have 2 decreasing slopes, the first one with a higher slope to induce the electric field and the following with a lower slope to continue increasing the plasma current but at a lower rate. The reason for this two slopes is because of engineering requirements. With the design of the power supplies for phase 1, the first operational phase, the coilset current gradients could not surpass 50A/ms. But this slope was not enough to allow the break-down of the pre-fill gas (the electric field induced was below the paschen's curve, so break-down was not possible, the loss rate were greater than the ionization rate), so finally it was decided that there would be a first slope to induce the loop voltage that would surpass the operational limits and would be sustained until the break-down phase ends, and another slope within the operational limits once the break-down phase was finished. Note that the rest of the ramp currents for phase 1 are below 50A/ms. The time interval between point 1 and 2 was chosen so that the current ramp is lower than 50A/ms. The second slope was designed so that the plasma current rises up at rate from 1 to 10MA/s, as was found in spherical tokamaks with ohmic startup \cite{Lazarus_1998, VEST_2013, ASDEX, HL_2A}. The above discussion applies to phase 1 only, but phase 2 was also built with two slopes since this two slopes Sol waveform is less demanding for the power supplies.
 
 \begin{figure}[h!]
 \centering
@@ -1589,16 +1591,14 @@ The Sol waveform have 2 decreasing slopes, the first one with a higher slope to 
 \hfill
 \subfigure[Currents gradients of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Delta_IPF}}
 
-\caption{Coilset currents given as inputs and current ramps for both phases. The desired plasma current is sustained for 20ms in phase 1 and for 100ms in phase 2 (flat-top time).}
+\caption{Coilset currents given as inputs and current gradients for both phases. The desired plasma current is sustained for 20ms in phase 1 and for 100ms in phase 2 (flat-top time).}
 \label{fig_Input_currents}
 \end{figure}
 
 
-COMENTAR LO DE LA SEGUNDA PENDIENTE DEL SOL, SE PUSO PARA QUE RAMP iP FUESE MAYOR Q 1MA/s!!!!!!
+\subsection{Dynamic simulations}
 
-\subsection{Dynamic simuations}
-
-The RZIp outputs, the plasma current and the net eddy current induced in the VV as a function of time are shown on figure \ref{fig_RZIp}. The coil waveforms have also been included for a better understanding of the outputs. Regarding the plasma current, it can be seen the different growth rate of it due to the 2 slopes of the Sol current, being the first one more abrupt. The plasma is sustained for the desired time, 20ms and 100ms for phase 1 and 2 respectively. A higher plasma current is achieved on phase 1, 35kA instead of 30kA. The reason is that this higher plasma current allows the higher Sol slope to be held during a longer time interval, long enough so that the break-down phase can be completed.
+The RZIp outputs, the plasma current and the net eddy current induced in the VV as a function of time are shown on figure \ref{fig_RZIp}. The coil waveforms have also been included for a better understanding of the outputs. Regarding the plasma current, it can be seen the different growth rate of it due to the 2 slopes of the Sol current, being the first one more abrupt. The plasma is sustained for the desired time, 20ms and 100ms for phase 1 and 2 respectively. %A higher plasma current is achieved on phase 1, 35kA instead of 30kA. The reason is that this higher plasma current allows the higher Sol slope to be held during a longer time interval, long enough so that the break-down phase can be completed.
 %
 %and the reason is that this higher plasma current facilitate breakdown by enlargening the Sol ramp and sustaining the loop voltage for a longer time. 
 At the end of the discharge the plasma current is not zero. To null it, cooling down the plasma by allowing air to enter the VV breaking the vacuum would be a method to null out the plasma current. 
@@ -1609,10 +1609,6 @@ Regarding the eddy currents, they follow the expected behaviour according to the
 %
 The highest values are about 30kA, which is about the plasma current in phase 1. The eddy currents at t=0ms are 1.6kA for phase 1 and 2.5kA for phase 2.
 %
-
-
-
-
 
 \begin{figure}[htbp]
 \centering
@@ -1631,6 +1627,8 @@ The highest values are about 30kA, which is about the plasma current in phase 1.
 \label{fig_RZIp}
 \end{figure}
 
+Figure \ref{fig_Ip} includes the plasma current and its gradient, showing that the growth rates are kept within the desired range, from 1 to 10MA/s (1kA/ms=1MA/s).
+
 \begin{figure}[t]
 \centering
 \subfigure[Plasma current of phase 1.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Ip}}
@@ -1641,11 +1639,9 @@ The highest values are about 30kA, which is about the plasma current in phase 1.
 \hfill
 \subfigure[Plasma current gradient of phase 2.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Delta_Ip}}
 
-\caption{Plasma current and variation of the plasma current for both phases.}
+\caption{Plasma current and plasma current gradient for both phases.}
 \label{fig_Ip}
 \end{figure}
-
-THE FIGURE WITH iP AND DELTAiP IS NOT REFERENCED IN THE TEXT!!!!!!!!!!!!!!
 
 \section{Break-down results}
 
@@ -1664,9 +1660,9 @@ Regarding Lloyd's empirical criteria, it can be seen that the criteria for ohmic
 
 \begin{figure}[htbp]
 \centering
-\subfigure[Toroidal field of phase 1. $B_T(R_\text{Geo}=0.42\text{m})=0.1$T.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Bphi}}
+\subfigure[Toroidal field of phase 1. $B_T(R_\text{Geo})=0.1$T.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Bphi}}
 \hfill
-\subfigure[Toroidal field of phase 2. $B_T(R_\text{Geo}=0.42\text{m})=0.3$T.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Bphi}}
+\subfigure[Toroidal field of phase 2. $B_T(R_\text{Geo})=0.3$T.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S2-000016Bphi}}
 
 \subfigure[Poloidal field of phase 1. $I_\text{VV}(t=0)=1.6$kA.]{\includegraphics[scale=0.5]{imagenes/simulaciones/S1-000019Bpol}}
 \hfill
@@ -1716,7 +1712,7 @@ The first thing to note considering the connection length $L$ plot is that it is
 \label{fig_BR_BZ_int}
 \end{figure}
 
-Nevertheless, the highest values appears in the surroundings of the lower PF2 coil ($Z=-0.6$m), because of the inhomogeneity of the field at the surroundings of a coil. Further from the coils, the field is more homogeneous, but at the surroundings on a coil, the field is mostly the field of the coil. Plots of several field lines are shown on figure \ref{fig_lines_int}, showing that some lines in the surroundings of the lower PF2 coil wind around them without colliding with them (the magnetic lines are twisted around the lower PF2 coil in a similar way the magnetic lines are twisted in a tokamak plasma). This figure also shows that, although the upper portion of the VV in general have higher connection lengths due to the fact that the vertical field is negative, if the lines start too high, they end up colliding rapidly with the upper coils or the upper VV wall.
+Nevertheless, the highest values appear in the surroundings of the lower PF2 coil ($Z=-0.6$m), because of the inhomogeneity of the field at the surroundings of a coil. Further from the coils, the field is more homogeneous, but at the surroundings on a coil, the field is mostly the field of the coil. Plots of several field lines are shown on figure \ref{fig_lines_int}, showing that some lines in the surroundings of the lower PF2 coil wind around them without colliding with them (the magnetic lines are twisted around the lower PF2 coil in a similar way the magnetic lines are twisted in a tokamak plasma). This figure also shows that, although the upper portion of the VV in general have higher connection lengths due to the fact that the vertical field is negative, if the lines start too high, they end up colliding rapidly with the upper coils or the upper VV wall.
 
 \begin{figure}[t]
 \centering
@@ -1732,7 +1728,7 @@ Nevertheless, the highest values appears in the surroundings of the lower PF2 co
 
 Considering the $U/V_\text{loop}$ plot, we see that the weird region surrounding the lower PF2 coil has low value of $U/V_\text{loop}$ in comparison to the value of the upper portion of the VV near the inner side, confirming this region is not important regarding break-down. As explained on section \ref{sec_breakdown}, this plot is more valuable than the $B_\theta$ or $L$ plot since it also takes into account the energy gained by the electrons along their path. It can be seen that it displays roughly the same patter of the $L$ plot, but removing this region around the lower PF2 and some regions with high $L$ which are further from the inner VV wall.
 
-Finally, the connection length in the poloidal field null region using the empirical formula will also be obtained, since it usually gives lower values than the connection length by field line tracing, which gives very high results. In spherical tokamaks (ST), $L$ goes from 10 to 50m \cite{VEST_2015, Globus_2001}. The results obtained are cast on table \ref{table_L}. The value for the line tracing has been computed averaging the connection length values in the whole poloidal field null region. For the empirical formula, the two visions of $a_{eff}$ have been used, being 0.15m for the ii) and 0.31m for the i), so the i) value will double the ii) value. The line tracing method gives about an order of magnitude greater values than the ii) method. Phase 2 displays greater values than phase 1 because of the higher $B_\varphi$, that makes $B_\theta$ less relevant.
+Finally, the connection length in the poloidal field null region using the empirical formula will also be obtained, since it usually gives lower values than the connection length by field line tracing, which gives very high results. In spherical tokamaks (ST), $L$ goes from 10 to 50m \cite{VEST_2015, Globus_2001}. The results obtained are cast on table \ref{table_L}. The value for the line tracing has been computed averaging the connection length values in the whole poloidal field null region. For the empirical formula, the two visions of $a_\text{eff}$ have been used, being 0.15m for the ii) and 0.31m for the i), so the i) value will double the ii) value. The line tracing method gives about an order of magnitude greater values than the ii) method. Phase 2 displays greater values than phase 1 because of the higher $B_\varphi$, that makes $B_\theta$ less relevant.
 
 
 
@@ -1848,7 +1844,7 @@ Figure \ref{fig_t_ava_ph1} and \ref{fig_t_ava_ph2} also contains the plots for h
 
 In this section, the results obtained will be compared to other tokamaks of similar characteristics.
 
-The first thing to compare is the poloidal field $B_\theta$ and Lloyd's criteria. Figure \ref{fig_Bpol} shows a comparison between VEST $B_\theta$ and Lloyd's criteria with SMART phase 1, since for phase 1 the toroidal field $B_\varphi$ is the same in both, 0.1T. The electric field is also very similar, 1.12 vs 1.06V/m. VEST achieves about $10^{-3}$T in its central region, while we achieved $10^{-4}$T. Roughly the same difference in values are found in VEST Lloyd's plot. The figure also included a comparison with GlobusM poloidal field, comparing it with phase 2 because GlobusM has $B_T<0.62$T. The minimum $B_\theta$ of GlobusM is 3.78G in the null region, while we achieve 2.13G ($10^{-3.6713}$T) in the null region, which is very similar to GlobusM value. However, although the agreement between our values and VEST and GlobuM values seems good enough, there is a source of imprecision in our simulations, and is the fact that RZIp do not run in a self-consistent manner with the eddy currents, as commented on section \ref{sec_results_fields}, so the null currents do not take into account the eddy currents, and the addition of the eddy currents worsen the field, so that the lowest poloidal field is not in the field null region. Another source of error is that our simulations use the ideal current waveforms, while more realistic simulations, such as VEST simulations, also simulate the power supplys of the coils.
+The first thing to compare is the poloidal field $B_\theta$ and Lloyd's criteria. Figure \ref{fig_Bpol} shows a comparison between VEST $B_\theta$ and Lloyd's criteria with SMART phase 1, since for phase 1 the toroidal field $B_\varphi$ is the same in both, 0.1T. The electric field is also very similar, 1.12 vs 1.06V/m. VEST achieves about $10^{-3}$T in its central region, while we achieved $10^{-4}$T. Roughly the same difference in values are found in VEST Lloyd's criteria plot. The figure also included a comparison with GlobusM poloidal field, comparing it with phase 2 because GlobusM has $B_T<0.62$T. The minimum $B_\theta$ of GlobusM is 3.78G in the null region, while we achieve 2.13G ($10^{-3.6713}$T) in the null region, which is very similar to GlobusM value. However, although the agreement between our values and VEST and GlobuM values seems good enough, there is a source of imprecision in our simulations, and is the fact that RZIp do not run in a self-consistent manner with the eddy currents, as commented on section \ref{sec_results_fields}, so the null currents do not take into account the eddy currents, and the addition of the eddy currents worsen the field, so that the lowest poloidal field is not in the field null region. Another source of error is that our simulations use the ideal current waveforms, while more realistic simulations, such as VEST simulations, also simulate the power supplys of the coils.
 
 As a conclusion for this magnetic field comparison, other effects such as errors in the coil windings or magnetic material materials surrounding the VV could also alter the magnetic field.
  
@@ -1884,7 +1880,7 @@ As a conclusion for this magnetic field comparison, other effects such as errors
 
 \st{The next thing to compare is the connection length $L$ by line tracing} \textcolor{red}{Considering now the connection length $L$ by line tracing,} figure \ref{fig_L_NSTX} include a comparison with NSTX and phase 2, because NSTX has $B_\varphi=0.3$T \cite{NSTX_BT}. The values of both phase 2 and NSTX are about km long, but the appearance of both plots are not very similar. This difference is caused by the fact that SMART has most of its coils inside the VV, while NSTX has its coils outside, as can be seen on (d). To prove this point, a $L$ plot of an older SMART configuration with all the coils outside (phase 1) is included (c), showing similarities with the NSTX plot; both plots displays high $L$ arm-like regions, pointing upward and outward (to the outer wall). However, SMART do not have an arm pointing downward while NSTX do, and this arm seems to be caused by a lower PF coil of NSTX, PF1B, which do not appears in the upper portion of the NSTX cross-section (i.e., NSTX cross-section do not displays symmetry with respect to the $Z=0$ plane).
 
-Regarding Paschen's curve and avalanche time, SMART loop voltage seem a bit low in comparison to GlobusM, but since the loop voltage is strongly dependent on the configuration of the machine, which is different for each machine, is not such a determinant factor. Instead, studying other variables such as the avalanche time would give more information, and in our case the avalanche time confirm that we could end the breakdown phase in a short enough time interval, going from 1 to 4ms. Data reconstruction in a VEST discharge using ECRH assistance shows that the plasma has already formed and moved to the outer wall 2ms after the ramp-down of the Sol, so the avalanche time must be $\leq 2$ms \cite{VEST_2015}. This is a similar time interval to the Tokamak Energy's ST40 tokamak (see section \ref{chapter_simu}) and lies between the range of values obtained for SMART, with the difference that the SMART results have been obtained with an ohmic startu, without any assistance. However, SMART will also have ECRH assistance for the breakdown just in case it is needed to ionize the pre-fill gas.
+Regarding Paschen's curve and avalanche time, SMART loop voltage seem a bit low in comparison to GlobusM, but since the loop voltage is strongly dependent on the configuration of the machine, which is different for each machine, is not such a determinant factor. Instead, studying other variables such as the avalanche time would give more information, and in our case the avalanche time confirm that we could end the breakdown phase in a short enough time interval, going from 1 to 4ms. Data reconstruction in a VEST discharge using ECRH assistance shows that the plasma has already formed and moved to the outer wall 2ms after the ramp-down of the Sol, so the avalanche time must be $\leq 2$ms \cite{VEST_2015}. This is a similar time interval to the Tokamak Energy's ST40 tokamak (see section \ref{chapter_simu}) and lies between the range of values obtained for SMART, with the difference that the SMART results have been obtained with an ohmic startup, without any assistance. However, SMART will also have ECRH assistance for the breakdown just in case it is needed to ionize the pre-fill gas.
 
 Nevertheless, the loop voltage calculated here is the loop voltage induced by only the Sol, excluding the effect of the eddy currents, which will decrease the loop voltage according to Lenz's law. A more precise simulation should compute the loop voltage in a self-consistent manner with the eddy currents. This can not be done with Fiesta, but could be done by using finite element software such as COMSOL.
 
@@ -1904,7 +1900,7 @@ Finally, the simulations carried out here, and in most of the bibliography regar
 
 
 
-\caption{Comparison of the connection length plot with NSTX \cite{NSTX_2017} \cite{NSTX_cross}. $B_\varphi=0.3$T for NSTX and for phase 2.}
+\caption{Comparison of the connection length plot with NSTX \cite{NSTX_2017, NSTX_cross} (simulated data). $B_\varphi=0.3$T for NSTX and for phase 2.}
 \label{fig_L_NSTX}
 \end{figure}
 
