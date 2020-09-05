@@ -104,8 +104,9 @@ Daniel López Aires\footnote{E-mail addres: danlopair@gmail.com}
 \hfill 
 \begin{flushright}
 \textit{Supervisors}: \\
-Dr. Carlos Soria del Hoyo\footnote{Department of Electronics and Electromagnetism, Faculty of Physics, University of Seville} \\
 Dr. Manuel García Muñoz\footnote{Department of Atomic, Molecular and Nuclear Physics, Faculty of Physics, University of Seville}\\
+Dr. Carlos Soria del Hoyo\footnote{Department of Electronics and Electromagnetism, Faculty of Physics, University of Seville} \\
+
 \end{flushright}
 
 %\hspace{5cm}
@@ -622,226 +623,15 @@ The main parameters of this \st{two} \textcolor{red}{three} phases are shown in 
 
 The goal of this work \st{has been} \textcolor{blue}{is} to model the initial phase of the tokamak start-up, the break-down of the gas, of \st{the SMART tokamak} \textcolor{blue}{SMART}, optimizing the device so that the gas breaks-down and turns into a plasma for the first operational phase and the first upgrade, phase two, without any additional heating method. \st{Hydrogen have been used as the gas that will fill the VV.}
 
-This thesis is organized as follows: \st{in the second chapter, the tokamak start-up is reviewed} \textcolor{blue}{chapter 2 reviews the tokamak start-up}, focusing on the break-down phase, introducing the basic physics of this phase, as well as several criteria to ensure a proper break-down of the gas.
-\st{The third chapter} \textcolor{blue}{Chapter 3} presents the basics of tokamak physics, the simplest model of the plasma, and the fundamental equation to describe the tokamak equilibrium, the Grad-Shafranov equation, as well as the characterization of a tokamak plasma. 
+This thesis is organized as follows: \st{in the second chapter, the tokamak start-up is reviewed} \textcolor{blue}{chapter 2} presents the basics of tokamak physics, the simplest model of the plasma, and the fundamental equation to describe the tokamak equilibrium, the Grad-Shafranov equation, as well as the characterization of a tokamak plasma. \textcolor{blue}{Chapter 3 reviews the tokamak start-up}, focusing on the break-down phase, introducing the basic physics of this phase, as well as several criteria to ensure a proper break-down of the gas.
+\st{The third chapter} 
 \st{The fourth chapter} \textcolor{blue}{Chapter 4} reviews the Fiesta toolbox used for computing the plasma equilibrium and the dynamic behaviour of the plasma using the RZIp model.
 \st{The fifth chapter} \textcolor{blue}{Chapter 5} summarizes the simulation procedure followed in this work.
 \textcolor{blue}{Chapter 6} contains the simulation results, as well as the discussion of the results with other operating tokamaks.
 Finally, \textcolor{blue}{chapter 7} summarized the work carried out in this thesis, and discuss future work.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-\chapter{Tokamak start-up}
-
-The words \textit{Tokamak start-up} refer to the processes that take place from the induction of the toroidal electric field by the inductor coil to the achievement of the target equilibrium configuration of the plasma, with the desired current and shape\footnote{A general review of the tokamak start-up can be found on \cite{MuellerStartup}. As stated in the cited document, tokamak start-up receives attention only when there is a failure on it, so there is no extensive theory about it. However, to have commercial nuclear fusion power plants based on tokamaks this needs to change. \st{One of the first theoretical reviewsI have ever seen on this topic can be found on ITER2019} \textcolor{red}{A theoretical approach to the tokamak start-up problem can be found on \cite{ITER_2019}}.}. This processes can be divided into three phases:
-%
-%
-\begin{enumerate}
-	\item Plasma break-down
-	\item Plasma burn-through
-	\item Plasma current ramp-up
-\end{enumerate}
-
-This thesis is focused on the first phase, the break-down of the gas that is pre-filled into the vacuum vessel (VV). A review of all the phases will be given here. A plot displaying the variation of several variables during the start-up is showed on figure \ref{fig_startup}, which will be explained as the phases of the start-up are reviewed.
-
-As previous conditions, the VV is pre-filled with a gas, and the toroidal field coils are turned on creating the toroidal magnetic field.  In the first phase (blue coloured on figure \ref{fig_startup}), the toroidal electric field induced by the inductor coil accelerates the free electrons in the VV, and if they acquire enough energy, they could ionize the neutral atoms in the gas when colliding with them. The extracted electrons will also be accelerated, creating an avalanche of free electrons, called \textit{Townsend avalanche}. As a result of this avalanche, the ionized gas start to develop a current, as can be seen on figure \ref{fig_startup}. The electron temperature $T_e$ starts to increase as well. When Coulomb collisions (collisions between charged particles) dominate along neutral atom-electron collisions, the break-down phase ends ant the burn-through phase begins.
-
-\begin{wrapfigure}{r}{10cm}
-%\begin{figure}[htbp]
-\centering
-\includegraphics[scale=0.4]{imagenes/esquema_startup}
-\caption{Time evolution of the plasma current (a), the line radiation of Deuterium (b), line-radiation losses ($\alpha$ line of Deuterium) (c) and electron temperature (d) during a tokamak start-up. Source: \cite{TCV_thesis}. Deuterium is used as a prefilled gas here, since its line-radiation is showed. This plot assumes the beginning of the burn-through phase to be when the maximum of line radiation occurs.}
-\label{fig_startup}
-%\end{figure}
-\end{wrapfigure}
-
-In the \textit{burn-through} phase, the plasma will ionize itself completely. In this phase, radiation losses starts to be relevant. This losses are caused by several factors such as Breemstrahlung radiation due to the deceleration of the electron in the collision with another atom, line-radiation of neutral atoms (neutrals) due to the excitation of the electronic shell of the neutrals followed by a de-excitation by emitting electromagnetic radiation, recombination of ions and electrons, and radiation from impurities from the non-perfect vacuum of the VV or impurities sputtered from the wall by the collisions of electrons with the VV (An extensive review of the power losses mechanisms and the burn-through phase can be found on \cite{KimThesis}, and a simpler approach can be found on \cite{Lloyd_1996}). Power losses starts to increase rapidly until a maximum is reached in the line radiation, as can be seen on fig \ref{fig_startup}\footnote{Note that the end of the avalanche phase and the beginning of the burn-through phase differs along the bibliography. For example, the source of fig \ref{fig_startup}, \cite{TCV_thesis} defines the beginning of burn-through phase when the maximum in the line radiation is reached, while other articles suggest the beginning on the burn-through at an earlier stage, such as \cite{ITER_2019}. \st{I will follow the approach of}\cite{ITER_2019} \textcolor{red}{The approach of \cite{ITER_2019} will be followed in this thesis}.}.
-
-This maximum can be easily understood. The line-radiation emissions should be proportional to the neutral atoms, since they are the ones whose electrons can be excited in collisions, decaying emitting electromagnetic radiation. Furthermore, it should be proportional to the electron density, since increasing the electron density means that more electrons could collide with neutral atoms, ionizing them. Provided that as the ionization proceed the electron density increases while the neutral density decreases, there must be a maximum point of line-radiation emissions.
-
-In the meantime, at some point over this two phases, the poloidal field created by the plasma will start to be relevant, confining most of the particles. Once the plasma is completely ionized, the final phase, the \textit{ramp-up phase} begins. In this phase the plasma current is increased by plasma heating, increasing the electron temperature (previously the increase in plasma current was mainly due to the increase of the electron density). Electromagnetic instabilities have to be avoided, since they could lead to an abrupt decrease of the plasma current.
-%
-%
-\section{Plasma break-down}
-\label{sec_breakdown}
-The plasma break-down phase \cite{Lloyd_1991, ITER_1999, ITER_2007, ITER_2019} is the first phase on the tokamak start-up, and in this phase the pre-fill gas is ionized or \textit{broken-down} into a plasma\footnote{\st{The most cited article for this phase is} \cite{Lloyd_1991}. \st{However, I prefer the ITER articles since they also review the existing bibliography}, \cite{ITER_1999}, \cite{ITER_2007}, \st{and for a theoretical approach} \cite{ITER_2019}.}.
-
-Plasma break-down is modelled using a \textit{Townsend model}. In this model, the ions are considered at rest due to its enormous mass relative to the electron mass. When you apply an electric field in the toroidal direction $E_\varphi$ to the gas in the VV, the electrons that are free in the tokamaks (there are always some) will be accelerated by the electric field, so if they acquire a determine amount of energy before a collision with a neutral atom, the neutral atom can be ionized. In the case of H$_2$, the energy to ionize it is about 15eV \cite{ITER_2019}, leaving 2 electrons, which will be accelerated, and could produce more electrons, creating an electron avalanche called \textit{Townsend avalanche}. However, not all the electrons are ionizing constantly, they end up colliding with the wall of the tokamak due to looses. The ionization and looses rate will be explored.
-%
-\begin{itemize}
-
-	\item Ionization rate $\nu_\text{ion}$. If an electron produces $\alpha$ electrons per meter in the direction of the electric field, and there are $N$ electrons, when traveling an infinitesimal distance $dx$, those $N$ elecrons will produce an infinitesimal increase in the number of electrons $dN=\alpha N dx$. Dividing by the volume of the tokamak, we get the increase in the electron density, $dn_e=\alpha n_e dx$. 
-
-The electrons are accelerated by the electric field, but due to of the collision with the neutral atoms that slow them down, they end up achieving a constant speed along the electric field direction $v_{\parallel}$. In that case, the differential distance traveled in a differential time $dt$ is $dx=v_{\parallel} dt$, so the rate of creation of electrons or ionization rate $\nu_\text{ion}$ is 
-%
-	\begin{equation}\label{nu ion}
-dn_e=\alpha n_e v_{\parallel} dt \Rightarrow \dfrac{dn_e}{dt}=\alpha n_e v_{\parallel} \equiv n_e \nu_\text{ion},
-	\end{equation}
-where $\nu_\text{ion} \equiv \alpha v_{\parallel}$. $\alpha$ is called the \textit{first Townsend coefficient}, which can be expressed as \cite{KimThesis} (section 2)
-%
-	\begin{equation}\label{ec_def_alfa}
-\alpha = C_1 p \exp \Big(-\dfrac{C_2 p}{E_\varphi} \Big),
-	\end{equation}
-where $p$ is the pre-fill gas pressure, $E_\varphi$ is the toroidal electric field induced, and $C_1,C_2$ are experimentally determined constants (they are not absolute constants, they are constant for a certain range of $Eº_\varphi/p$, but for our case, they have a single value). 
-
-The constant parallel speed is proportional to $E$ and $p$:
-%
-\begin{equation}
-v_\parallel \propto \dfrac{E_\varphi}{p} \Rightarrow v_\parallel = C_3 \dfrac{E_\varphi}{p}.
-\end{equation}
-$C_3$ is taken as 43 in \cite{Lloyd_1991}. However, for large $\dfrac{E_\varphi}{p}$ values, the previous formula is not valid, the electrons do not achieve a terminal velocity, which also means they do not create new electrons since they do not collide enough with the neutral atoms. This electrons are called \textit{runaway electrons}. \cite{Lloyd_1991} proposed that they appears when $\dfrac{E_\varphi}{p}>2 \cdot 10^4 $V m$^{-1}$Torr$^{-1}$. Torr is a pressure unit widely used in this context; 1Torr $\equiv 1/760 \text{atm}=101325/760 \text{Pa} \simeq 133.32 \text{Pa}$. As a consequence, the production of runaway electrons have to be avoided\footnote{\st{Actually, this is more complicated because there are more fluid forces (drag forces) that can avoid the electron velocity to increase endlessly. See ITER2019 for an extensive review of this.}}.
-
-	\item Loss rate $\nu_\text{loss}$. There are several sources of electron looses. The first source is due to the magnetic drifts discusses on section \ref{sec_tokamaks}. Another source is the \textit{stray} poloidal field $B_\theta$ present in the VV due to several factors, such as eddy currents in the VV, the inductor coil itself, which created poloidal field (border effects) or any magnetic material surrounding the VV. Due to this stray field, most of the magnetic field lines end up colliding with the VV, so electrons following them will eventually collide with the vessel. The dominant source is the stray field. If the length of the line parallel to the electric field is $L$, called the \textit{connection length}, the loss rate due to the stray field can be expressed as
-%
-	\begin{equation}\label{nu loss}
-\nu_\text{loss} = \dfrac{v_{\parallel}}{L}.
-	\end{equation}
-
-Since the length of the magnetic field lines in a tokamak is mostly in the parallel direction (the toroidal direction) usually the total connection length (considering both poloidal and toroidal lengths) is taken as the parallel connection length. To decrease the effect of the stray field, it is common in tokamaks to create with the PF coils a region where the poloidal field is as low as possible, called \textit{poloidal field null region}, so that there the field lines goes in the toroidal direction mostly, and electrons following them will collide with each other. The connection length can be calculated numerically by integrating the magnetic field lines equation, but also an empirical formula is used to estimate it in the poloidal field null region \cite{ITER_2007}:
-%
-	\begin{equation}\label{ec L}
-L \simeq 0.25 a_\text{eff}\dfrac{B_\varphi(R_{\text{null}})}{<B_\theta>},
-	\end{equation}
-where $B_\varphi(R_{\text{null}})$ is the toroidal magnetic field at the center of this region $R_{\text{null}}$ and $<B_\theta>$ is the average poloidal field in the surface of this region. Regarding $a_\text{eff}$, there are two visions in the bibliography:
-%
-	\begin{itemize}
-		\item[i)] $a_\text{eff}$ is the linear distance to the closest wall. Sometimes this is estimated as the minor radius of the plasma target equilibrium configuration \cite{KimThesis, Lloyd_1991}.
-		\item[ii)] $a_\text{eff}$ is the minor radius of the field null region \cite{TCV_thesis, ITER_2007, ITER_2019}.
-	\end{itemize}
-
-\end{itemize}
-
-The variation in the electron density considering both ionization and losses is
-%
-\begin{equation}\label{ec dne/dt}
-\dfrac{d n_e}{dt}=n_e (\nu_\text{ion}-\nu_\text{loss}).
-\end{equation}
-The ionization rate can be assumed constant since electrons will acquire a constant speed quickly after the start of the ionization process. About the loss rate, the connection length may vary since as the toroidal electric field is induced inside the VV, eddy currents are also induced in the VV, which will affect the field, and hence alter the connection length $L$. However, as a first approximation, we could assume $L$ to be constant. In that case the electron density as a function of time will be
-%
-\begin{equation}\label{ec ne}
-n_e(t)=n_e(0)\exp{ [(\nu_\text{ion}-\nu_\text{loss})t]},
-\end{equation}
-where $n_e(0)$ is the electron density at $t=0$, the time at which the toroidal electric field is induced. For a proper ionization of the gas, the ionization rate must be greater than the loss rate, so that the electron density increases. Imposing this, and introducing \eqref{nu ion} and \eqref{nu loss} in \eqref{ec dne/dt} gives
-%
-\begin{equation}
-\dfrac{d n_e}{dt}=n_e v_{\parallel}(\alpha-1/L)>0 \Rightarrow (\alpha-1/L)>0 \Rightarrow \alpha L>1,
-\end{equation}
-taking into account v$_{\parallel}$ is the module of the speed, ergo, positive. For Townsend avalanche to proceed, $\alpha L>1$ is needed. Setting $\alpha L=1$  will give the limit condition so that the avalanche nor increase nor decrease. Introducing this condition on \eqref{ec_def_alfa} gives
-%
-\begin{equation}\label{ec Paschen}
-{E_\varphi}_{min}=\dfrac{C_2 p}{\ln(C_1 p L)},
-\end{equation}
-where ${E_\varphi}_{min}$ is the electric field needed for this condition. Since this condition do not ensures avalanche, \cite{ITER_2007} states that $E_\varphi>2{E_\varphi}_{min}$ for a reliable start-up, so that the avalanche increases. 
-
-\begin{wrapfigure}{r}{10cm}
-%\begin{figure}[htbp]
-\centering
-\includegraphics[scale=0.6]{imagenes/simulaciones/S2-000016Paschen_TFM}
-\caption{Paschen's curve for for H$_2$ as pre-fill gas, showing different connection lengths.}
-\label{fig_Paschen_ejemplo}
-%\end{figure}
-\end{wrapfigure}
-
-The plot of ${E_\varphi}_{min}$ as a function of $p$ for a given $L$ is called the Paschen's curve. An example is shown on figure \ref{fig_Paschen_ejemplo}, for H$_2$ as pre-fill gas. The constant are $C_1=510 \text{m}^{-1} \text{Torr}^{-1}$ and $C_2=1.25 \cdot 10^4 \text{V} \text{m}^{-1} \text{Torr}^{-1}$. It can be seen from the figure that all the lines displays a minimum electric field needed for a certain pressure. This can be easily understood: for high pressures, the mean free-path will be too short (the mean free path $\lambda$ is given by $\lambda=1/(C_1 p)$ \cite{KimThesis}), so for the electrons to gain enough energy to ionize, the electric field needs to be high. For low pressures, the mean free-path will be too long meaning that there would be too little collisions before the electrons are lost, although all the collisions will be ionizing collisions because the electron will have gained enough energy. This results in a vertical asymptote, so that to the left of that asymptote the loss rate is greater than the ionization rate, regardless of the field, because there is not enough molecules to create avalanches.
-
-A widely used empirical criteria for a reliable startup is the so-called Lloyd's criteria \cite{ITER_1999}
-%
-\begin{equation}
-E_\varphi \dfrac{B_\varphi}{B_\theta} >1000 \text{V}\text{m}^{-1}.
-\end{equation}
-In the case of plasma break-down assisted by Electron Ciclotron Resonance Heating (ECRH), which is a heating method based on the irradiation of electromagnetic waves of certain frequencies to the ionized gas so that it absorbs them helping ionize the gas \cite{ITER_2019}, the minimum value is 100$\text{V}\text{m}^{-1}$ instead of 1000$\text{V}\text{m}^{-1}$ \cite{VEST_2015}.
-
-In the DIII-D tokamak\footnote{\url{https://www.ga.com/magnetic-fusion/diii-d}.} it has been shown \cite{Lazarus_1998} that the break-down of the pre-fill gas did not occur where the stray poloidal field was minimum; instead, it took place where the potential gained by the electrons along their path $\int_\text{field line} \vec{E} \cdot \vec{dl}$ was greatest. This potential is not the electrostatic potential \st{(the electrostatic potential between two points $A$ and $B$ is $V_B-V_A=- \int_A^B \vec{E} \cdot \vec{dl}$)} because the electric field has been created by a changing magnetic field. \st{The main difference is that this potential function depends on the path of the integral, while the electrostatic potential only depends on the starting and ending positions, so that, an electron after doing a revolution inside the tokamak returning to the starting point have gained energy}\footnote{\st{An electrostatic field $\vec{E}$ can be written as  $\vec{E}=-\nabla V$, where $V$ is the electrostatic potential. In the presence of transient magnetic fields, the electric field is given by $\vec{E}=-\nabla V- \p \vec{A}/ \p t$, where $\vec{A}$ is the vector potential. The line integral between two points $A$ and $B$ of this electric field is
-$\int_A^B \vec{E} \cdot \vec{dl}=\int_A^B -\nabla V \cdot \vec{dl} -\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$= $-V(B)+V(A)-\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$. To compute the last integral, the path followed from $A$ to $B$ needs to be known, and hence, the final result will depend on the path followed.}}. \textcolor{red}{An electrostatic field $\vec{E}$ can be written as  $\vec{E}=-\nabla V$, where $V$ is the electrostatic potential. The line integral between two points $A$ and $B$ is $\int_A^B \vec{E} \cdot \vec{dl}=-V(B)+V(A)$, so it does not depend on the path followed, only on the starting and ending points. In the presence of transient magnetic fields, the electric field is given by $\vec{E}=-\nabla V- \p \vec{A}/ \p t$, where $\vec{A}$ is the vector potential. The line integral in this case would be
-$\int_A^B \vec{E} \cdot \vec{dl}=\int_A^B -\nabla V \cdot \vec{dl} -\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$= $-V(B)+V(A)-\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$. To compute the last integral, the path followed from $A$ to $B$ needs to be known, and hence, the final result will depend on the path followed. This means that an electron gains energy after doing a revolution inside the tokamak returning to the starting point.}
-
-
-\cite{NSTX_2017} also confirms this empirical results. This seems understandable since to create avalanches, the electrons have to gained enough energy to ionize, so it is not only relevant that they follow a path with the minimum deviation to collide as much as possible, but that they gain as much energy as possible in its path so that most of the collisions are ionizing collisions.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Avalanche or break-down time}
-
-When Coulomb collisions dominate over neutral-electron collisions, the fuel starts to behave like a plasma, entering the \textit{burn-through} phase. This phase is reached usually when the ionization fraction of the gas is about 5\% \cite{ITER_2019}. At this stage, the avalanche as described above, with a gas being ionized by a toroidal electric field stops being valid, and the further ionization is made by the plasma itself, if the power losses are counterbalanced. 
-
-The time when the this phase starts (or when the break-down phase ends) can be estimated using eq \eqref{ec ne}. Introducing the concept of ionization fraction $f_i$, which is the ratio between the electron density created by ionization and the neutral pre-fill gas density $n_\text{pre}$, which is
-%
-\begin{equation}
-f_i \equiv \dfrac{n_e/2}{n_\text{pre}},
-\end{equation} 
-where the 2 accounts for the 2 electrons that H$_2$ (and also He) gives. The pre-fill gas density is related to the gas pressure by the ideal gas law, $p=n_\text{pre} K_\text{B} T_\text{pre}$. Substituting this into \eqref{ec ne} yields, assuming $n_e(0)$=1 which is an standard assumption \cite{ITER_2019, Lloyd_1991},
-%
-\begin{equation}\label{ec fi}
-f_i(t)=\dfrac{1}{2 n_\text{pre}} \exp{ [(\nu_\text{ion}-\nu_\text{loss})t]}= \dfrac{1}{2} \dfrac{K_\text{B} T_\text{pre}}{p} \exp \Big[v_\parallel (\alpha-\dfrac{1}{L})t \Big].
-\end{equation}
-Setting $f_i=5\%$ on \eqref{ec fi} will give an estimation for the time needed for the avalanche or break-down phase to end, the \textit{avalanche time} $t_\text{ava}$:
-%
-\begin{equation}\label{ec t_ava}
-t_\text{ava}= \dfrac{\ln \Big(2\cdot 0.05 \cdot \dfrac{p}{K_\text{B} T_\text{pre}} \Big) }{v_\parallel (\alpha-\dfrac{1}{L})}=\dfrac{\ln \Big(2\cdot 0.05 \cdot \dfrac{p}{K_\text{B} T_\text{pre}} \Big) }{43 \dfrac{E_\varphi}{p}\Big[ C_1 p \exp \Big(-\dfrac{C_2 p}{E_\varphi} \Big)-\dfrac{1}{L} \Big]}.
-\end{equation}\footnote{\st{This formula is sometimes simplified by setting the dividend to 41, as in LLoyd1991. However, LLoyd1991 states a similar formula estimates the time need to reach the maximum in the line-radiation emissions. I trust more the vision on ITER2019 since this formula has been derived using a model of a gas being ionized, which is not valid once the gas turned into a plasma, and the plasma is formed prior to the maximum in the line-radiation emissions.}}
-Note that it is positive since $\alpha-1/L>0$ which is the condition for the avalanche to occur.
-
-
-
-\subsection{Voltage and electric field induced by the inductor solenoid}
-\label{sec_loop_voltage_field_Sol_theory}
-
-To start the break-down phase, the inductor solenoid (Sol) is pre-charged with a certain current, and then its current its ramped down rapidly to induce the electric field. In this subsection the electric field and the voltage induced will be derived.
-
-
-The voltage induced by the ramp down of the Sol, called \textit{loop voltage}, can be easily computed using Faraday's law in its integral form:
-%
-\begin{equation}\label{ec_Faraday_loop}
-\varepsilon \equiv V_\text{loop} = -\dfrac{d}{dt} \int_S \vec{B} \cdot \vec{n} dS,
-\end{equation}
-where $S$ is the surface enclosed by the loop, which is a circle of an arbitrary radius, and $\vec{n}$ its unit vector, which will go in the $Z$ direction. The magnetic field $\vec{B}$ of a solenoid also goes in the $Z$ direction, so the loop voltage is, choosing $\vec{n}=\stackrel{\wedge}{Z}$:
-%
-\begin{equation}\label{ec_Vloop_Sol}
-V_\text{loop} = - \dfrac{d}{dt} \int_S B_\text{Sol} dS= - \int_S \dfrac{d B_\text{Sol}}{dt} dS.
-\end{equation}
-The derivative can be introduced into the integral since the integration variables do not vary over time. The only thing that vary with time is the Sol current. Its derivative can be computed easily since the Sol current is decreased linearly, so it satisfies
-%
-\begin{equation}
-I_\text{Sol}(t)=m t +n.
-\end{equation}
-At $t=0$, $I_\text{Sol} \equiv I_0$, and the ramp goes down until $I_\text{Sol}(t_1) \equiv  I_1$ ($I_0>I_1$), so the Sol current is
-%
-\begin{equation}
-I_\text{Sol}(t)=\dfrac{I_1-I_0}{t_1} t +I_0.
-\end{equation}
-Solving \eqref{ec_Vloop_Sol} for the magnetic field of a solenoid of inner radius $R_\text{in}$ and outer radius $R_\text{out}>R_\text{in}$ with $N/l$ turns per unit length, ignoring border effects (i.e., considering infinite length), gives (see appendix \ref{appendix_loop voltage})
-\begin{equation}
-V_\text{loop}= - \mu_0 \dfrac{N}{l} \dfrac{I_1-I_0}{t} \Big[ \pi R_\text{in}^2  + \pi (R_\text{out}^2-R_\text{in}^2) - \dfrac{2 \pi}{R_\text{out}-R_\text{in}} \Big( \dfrac{1}{3} (R_\text{out}^3-R_\text{in}^3) - \dfrac{R_\text{in}}{2} (R_\text{out}^2-R_\text{in}^2) \Big) \Big].
-\end{equation}
-Since the slope of the Sol current is negative, the loop voltage induced is positive.
-
-Once the loop voltage has been computed, the electric field can also be computed. For computing it, the integral form of Faraday's law will be used:
-%
-\begin{equation} \label{ec Faraday E}
-V_\text{loop}=\varepsilon \equiv \oint_\Gamma \vec{E} \cdot \vec{dl}= -\dfrac{d}{dt} \int_S \vec{B} \cdot \vec{n} dS,
-\end{equation}
-where $\Gamma$ is the loop's perimeter. To compute the electric field $\vec{E}$ from this equation we must know its symmetry. To do so, let's take into account that \eqref{ec Faraday E} is very similar to Ampère's law
-%
-\begin{equation}\label{ec Ampere}
-\oint_\Gamma \vec{B} \cdot \vec{dl}=\mu_0 \int_S \vec{J} \cdot \vec{n} dS=\mu_0 I_\text{enclosed}.
-\end{equation}
-It is widely known that the magnetic field of a infinite cilindral conductor carrying a current density $\vec{J}=J \stackrel{\wedge}{Z}$ is $\vec{B}=B \stackrel{\wedge}{\varphi}$ (see any book of classic electromagnetism, like \cite{Griffiths}). And, since the roles of $\vec{B}$ and $\vec{J}$ in Ampère's law are the same as the roles of $\vec{E}$ and $\vec{B}$ respectively in Faraday's law, provided that $\vec{B}=B \stackrel{\wedge}{Z}$ in Faraday's law, the electric field must be $\vec{E}=E \stackrel{\wedge}{\varphi}$. Furthermore, taking into account the axysymmetry and the assumption of no border effects (infinite length), the electric field can only depend on the radial coordinate $R$, so $\vec{E}=E(R) \stackrel{\wedge}{\varphi}$. Considering this, the field can be computed, since $\vec{dl}=R d\varphi \stackrel{\wedge}{\varphi}$:
-%
-\begin{equation}\label{ec_E_sol}
-V_\text{loop} = \oint_\Gamma \vec{E} \cdot \vec{dl}= 2 \pi R E(R) \Rightarrow E(R)= \dfrac{V_\text{loop}}{2 \pi R}.
-\end{equation}
-%
-The electric field will be more intense near the inner wall of the VV. The same applies to the toroidal magnetic field, which also goes as $1/R$. The potential gained in that region will be the greatest, enhancing the ionization processes, and the magnetic field lines will be mostly toroidal lines in that region (since the toroidal field will be greater in that region, the effect of the poloidal field will be reduced as a consequence), reducing the electron losses. This two factors explain why the pre-fill gas breaks-down near the inner side of the VV in general.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
+%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 
 \chapter{Fundamentals of tokamak physics}
 
@@ -1100,6 +890,222 @@ P_\text{fus} \propto \beta_\text{N}^2 \kappa (1+\kappa)^2 \dfrac{R_\text{geo}^3 
 where $B_{\varphi_\text{max}}$ is the maximum toroidal magnetic field, $f(A) \equiv 1.22 A-0.68$, and $q(a)$ is the safety factor at the plasma boundary. From this formula, increasing $\kappa$ leads to greater fusion powers, which is another advantage of spherical tokamaks, their plasmas are more elongated than standard tokamaks plasmas.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\chapter{Tokamak start-up}
+
+The words \textit{Tokamak start-up} refer to the processes that take place from the induction of the toroidal electric field by the inductor coil to the achievement of the target equilibrium configuration of the plasma, with the desired current and shape\footnote{A general review of the tokamak start-up can be found on \cite{MuellerStartup}. As stated in the cited document, tokamak start-up receives attention only when there is a failure on it, so there is no extensive theory about it. However, to have commercial nuclear fusion power plants based on tokamaks this needs to change. \st{One of the first theoretical reviewsI have ever seen on this topic can be found on ITER2019} \textcolor{red}{A theoretical approach to the tokamak start-up problem can be found on \cite{ITER_2019}}.}. This processes can be divided into three phases:
+%
+%
+\begin{enumerate}
+	\item Plasma break-down
+	\item Plasma burn-through
+	\item Plasma current ramp-up
+\end{enumerate}
+
+This thesis is focused on the first phase, the break-down of the gas that is pre-filled into the vacuum vessel (VV). A review of all the phases will be given here. A plot displaying the variation of several variables during the start-up is showed on figure \ref{fig_startup}, which will be explained as the phases of the start-up are reviewed.
+
+As previous conditions, the VV is pre-filled with a gas, and the toroidal field coils are turned on creating the toroidal magnetic field.  In the first phase (blue coloured on figure \ref{fig_startup}), the toroidal electric field induced by the inductor coil accelerates the free electrons in the VV, and if they acquire enough energy, they could ionize the neutral atoms in the gas when colliding with them. The extracted electrons will also be accelerated, creating an avalanche of free electrons, called \textit{Townsend avalanche}. As a result of this avalanche, the ionized gas start to develop a current, as can be seen on figure \ref{fig_startup}. The electron temperature $T_e$ starts to increase as well. When Coulomb collisions (collisions between charged particles) dominate along neutral atom-electron collisions, the break-down phase ends ant the burn-through phase begins.
+
+\begin{wrapfigure}{r}{10cm}
+%\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.4]{imagenes/esquema_startup}
+\caption{Time evolution of the plasma current (a), the line radiation of Deuterium (b), line-radiation losses ($\alpha$ line of Deuterium) (c) and electron temperature (d) during a tokamak start-up. Source: \cite{TCV_thesis}. Deuterium is used as a prefilled gas here, since its line-radiation is showed. This plot assumes the beginning of the burn-through phase to be when the maximum of line radiation occurs.}
+\label{fig_startup}
+%\end{figure}
+\end{wrapfigure}
+
+In the \textit{burn-through} phase, the plasma will ionize itself completely. In this phase, radiation losses starts to be relevant. This losses are caused by several factors such as Breemstrahlung radiation due to the deceleration of the electron in the collision with another atom, line-radiation of neutral atoms (neutrals) due to the excitation of the electronic shell of the neutrals followed by a de-excitation by emitting electromagnetic radiation, recombination of ions and electrons, and radiation from impurities from the non-perfect vacuum of the VV or impurities sputtered from the wall by the collisions of electrons with the VV (An extensive review of the power losses mechanisms and the burn-through phase can be found on \cite{KimThesis}, and a simpler approach can be found on \cite{Lloyd_1996}). Power losses starts to increase rapidly until a maximum is reached in the line radiation, as can be seen on fig \ref{fig_startup}\footnote{Note that the end of the avalanche phase and the beginning of the burn-through phase differs along the bibliography. For example, the source of fig \ref{fig_startup}, \cite{TCV_thesis} defines the beginning of burn-through phase when the maximum in the line radiation is reached, while other articles suggest the beginning on the burn-through at an earlier stage, such as \cite{ITER_2019}. \st{I will follow the approach of}\cite{ITER_2019} \textcolor{red}{The approach of \cite{ITER_2019} will be followed in this thesis}.}.
+
+This maximum can be easily understood. The line-radiation emissions should be proportional to the neutral atoms, since they are the ones whose electrons can be excited in collisions, decaying emitting electromagnetic radiation. Furthermore, it should be proportional to the electron density, since increasing the electron density means that more electrons could collide with neutral atoms, ionizing them. Provided that as the ionization proceed the electron density increases while the neutral density decreases, there must be a maximum point of line-radiation emissions.
+
+In the meantime, at some point over this two phases, the poloidal field created by the plasma will start to be relevant, confining most of the particles. Once the plasma is completely ionized, the final phase, the \textit{ramp-up phase} begins. In this phase the plasma current is increased by plasma heating, increasing the electron temperature (previously the increase in plasma current was mainly due to the increase of the electron density). Electromagnetic instabilities have to be avoided, since they could lead to an abrupt decrease of the plasma current.
+%
+%
+\section{Plasma break-down}
+\label{sec_breakdown}
+The plasma break-down phase \cite{Lloyd_1991, ITER_1999, ITER_2007, ITER_2019} is the first phase on the tokamak start-up, and in this phase the pre-fill gas is ionized or \textit{broken-down} into a plasma\footnote{\st{The most cited article for this phase is} \cite{Lloyd_1991}. \st{However, I prefer the ITER articles since they also review the existing bibliography}, \cite{ITER_1999}, \cite{ITER_2007}, \st{and for a theoretical approach} \cite{ITER_2019}.}.
+
+Plasma break-down is modelled using a \textit{Townsend model}. In this model, the ions are considered at rest due to its enormous mass relative to the electron mass. When you apply an electric field in the toroidal direction $E_\varphi$ to the gas in the VV, the electrons that are free in the tokamaks (there are always some) will be accelerated by the electric field, so if they acquire a determine amount of energy before a collision with a neutral atom, the neutral atom can be ionized. In the case of H$_2$, the energy to ionize it is about 15eV \cite{ITER_2019}, leaving 2 electrons, which will be accelerated, and could produce more electrons, creating an electron avalanche called \textit{Townsend avalanche}. However, not all the electrons are ionizing constantly, they end up colliding with the wall of the tokamak due to looses. The ionization and looses rate will be explored.
+%
+\begin{itemize}
+
+	\item Ionization rate $\nu_\text{ion}$. If an electron produces $\alpha$ electrons per meter in the direction of the electric field, and there are $N$ electrons, when traveling an infinitesimal distance $dx$, those $N$ elecrons will produce an infinitesimal increase in the number of electrons $dN=\alpha N dx$. Dividing by the volume of the tokamak, we get the increase in the electron density, $dn_e=\alpha n_e dx$. 
+
+The electrons are accelerated by the electric field, but due to of the collision with the neutral atoms that slow them down, they end up achieving a constant speed along the electric field direction $v_{\parallel}$. In that case, the differential distance traveled in a differential time $dt$ is $dx=v_{\parallel} dt$, so the rate of creation of electrons or ionization rate $\nu_\text{ion}$ is 
+%
+	\begin{equation}\label{nu ion}
+dn_e=\alpha n_e v_{\parallel} dt \Rightarrow \dfrac{dn_e}{dt}=\alpha n_e v_{\parallel} \equiv n_e \nu_\text{ion},
+	\end{equation}
+where $\nu_\text{ion} \equiv \alpha v_{\parallel}$. $\alpha$ is called the \textit{first Townsend coefficient}, which can be expressed as \cite{KimThesis} (section 2)
+%
+	\begin{equation}\label{ec_def_alfa}
+\alpha = C_1 p \exp \Big(-\dfrac{C_2 p}{E_\varphi} \Big),
+	\end{equation}
+where $p$ is the pre-fill gas pressure, $E_\varphi$ is the toroidal electric field induced, and $C_1,C_2$ are experimentally determined constants (they are not absolute constants, they are constant for a certain range of $Eº_\varphi/p$, but for our case, they have a single value). 
+
+The constant parallel speed is proportional to $E$ and $p$:
+%
+\begin{equation}
+v_\parallel \propto \dfrac{E_\varphi}{p} \Rightarrow v_\parallel = C_3 \dfrac{E_\varphi}{p}.
+\end{equation}
+$C_3$ is taken as 43 in \cite{Lloyd_1991}. However, for large $\dfrac{E_\varphi}{p}$ values, the previous formula is not valid, the electrons do not achieve a terminal velocity, which also means they do not create new electrons since they do not collide enough with the neutral atoms. This electrons are called \textit{runaway electrons}. \cite{Lloyd_1991} proposed that they appears when $\dfrac{E_\varphi}{p}>2 \cdot 10^4 $V m$^{-1}$Torr$^{-1}$. Torr is a pressure unit widely used in this context; 1Torr $\equiv 1/760 \text{atm}=101325/760 \text{Pa} \simeq 133.32 \text{Pa}$. As a consequence, the production of runaway electrons have to be avoided\footnote{\st{Actually, this is more complicated because there are more fluid forces (drag forces) that can avoid the electron velocity to increase endlessly. See ITER2019 for an extensive review of this.}}.
+
+	\item Loss rate $\nu_\text{loss}$. There are several sources of electron looses. The first source is due to the magnetic drifts discusses on section \ref{sec_tokamaks}. Another source is the \textit{stray} poloidal field $B_\theta$ present in the VV due to several factors, such as eddy currents in the VV, the inductor coil itself, which created poloidal field (border effects) or any magnetic material surrounding the VV. Due to this stray field, most of the magnetic field lines end up colliding with the VV, so electrons following them will eventually collide with the vessel. The dominant source is the stray field. If the length of the line parallel to the electric field is $L$, called the \textit{connection length}, the loss rate due to the stray field can be expressed as
+%
+	\begin{equation}\label{nu loss}
+\nu_\text{loss} = \dfrac{v_{\parallel}}{L}.
+	\end{equation}
+
+Since the length of the magnetic field lines in a tokamak is mostly in the parallel direction (the toroidal direction) usually the total connection length (considering both poloidal and toroidal lengths) is taken as the parallel connection length. To decrease the effect of the stray field, it is common in tokamaks to create with the PF coils a region where the poloidal field is as low as possible, called \textit{poloidal field null region}, so that there the field lines goes in the toroidal direction mostly, and electrons following them will collide with each other. The connection length can be calculated numerically by integrating the magnetic field lines equation, but also an empirical formula is used to estimate it in the poloidal field null region \cite{ITER_2007}:
+%
+	\begin{equation}\label{ec L}
+L \simeq 0.25 a_\text{eff}\dfrac{B_\varphi(R_{\text{null}})}{<B_\theta>},
+	\end{equation}
+where $B_\varphi(R_{\text{null}})$ is the toroidal magnetic field at the center of this region $R_{\text{null}}$ and $<B_\theta>$ is the average poloidal field in the surface of this region. Regarding $a_\text{eff}$, there are two visions in the bibliography:
+%
+	\begin{itemize}
+		\item[i)] $a_\text{eff}$ is the linear distance to the closest wall. Sometimes this is estimated as the minor radius of the plasma target equilibrium configuration \cite{KimThesis, Lloyd_1991}.
+		\item[ii)] $a_\text{eff}$ is the minor radius of the field null region \cite{TCV_thesis, ITER_2007, ITER_2019}.
+	\end{itemize}
+
+\end{itemize}
+
+The variation in the electron density considering both ionization and losses is
+%
+\begin{equation}\label{ec dne/dt}
+\dfrac{d n_e}{dt}=n_e (\nu_\text{ion}-\nu_\text{loss}).
+\end{equation}
+The ionization rate can be assumed constant since electrons will acquire a constant speed quickly after the start of the ionization process. About the loss rate, the connection length may vary since as the toroidal electric field is induced inside the VV, eddy currents are also induced in the VV, which will affect the field, and hence alter the connection length $L$. However, as a first approximation, we could assume $L$ to be constant. In that case the electron density as a function of time will be
+%
+\begin{equation}\label{ec ne}
+n_e(t)=n_e(0)\exp{ [(\nu_\text{ion}-\nu_\text{loss})t]},
+\end{equation}
+where $n_e(0)$ is the electron density at $t=0$, the time at which the toroidal electric field is induced. For a proper ionization of the gas, the ionization rate must be greater than the loss rate, so that the electron density increases. Imposing this, and introducing \eqref{nu ion} and \eqref{nu loss} in \eqref{ec dne/dt} gives
+%
+\begin{equation}
+\dfrac{d n_e}{dt}=n_e v_{\parallel}(\alpha-1/L)>0 \Rightarrow (\alpha-1/L)>0 \Rightarrow \alpha L>1,
+\end{equation}
+taking into account v$_{\parallel}$ is the module of the speed, ergo, positive. For Townsend avalanche to proceed, $\alpha L>1$ is needed. Setting $\alpha L=1$  will give the limit condition so that the avalanche nor increase nor decrease. Introducing this condition on \eqref{ec_def_alfa} gives
+%
+\begin{equation}\label{ec Paschen}
+{E_\varphi}_{min}=\dfrac{C_2 p}{\ln(C_1 p L)},
+\end{equation}
+where ${E_\varphi}_{min}$ is the electric field needed for this condition. Since this condition do not ensures avalanche, \cite{ITER_2007} states that $E_\varphi>2{E_\varphi}_{min}$ for a reliable start-up, so that the avalanche increases. 
+
+\begin{wrapfigure}{r}{10cm}
+%\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.6]{imagenes/simulaciones/S2-000016Paschen_TFM}
+\caption{Paschen's curve for for H$_2$ as pre-fill gas, showing different connection lengths.}
+\label{fig_Paschen_ejemplo}
+%\end{figure}
+\end{wrapfigure}
+
+The plot of ${E_\varphi}_{min}$ as a function of $p$ for a given $L$ is called the Paschen's curve. An example is shown on figure \ref{fig_Paschen_ejemplo}, for H$_2$ as pre-fill gas. The constant are $C_1=510 \text{m}^{-1} \text{Torr}^{-1}$ and $C_2=1.25 \cdot 10^4 \text{V} \text{m}^{-1} \text{Torr}^{-1}$. It can be seen from the figure that all the lines displays a minimum electric field needed for a certain pressure. This can be easily understood: for high pressures, the mean free-path will be too short (the mean free path $\lambda$ is given by $\lambda=1/(C_1 p)$ \cite{KimThesis}), so for the electrons to gain enough energy to ionize, the electric field needs to be high. For low pressures, the mean free-path will be too long meaning that there would be too little collisions before the electrons are lost, although all the collisions will be ionizing collisions because the electron will have gained enough energy. This results in a vertical asymptote, so that to the left of that asymptote the loss rate is greater than the ionization rate, regardless of the field, because there is not enough molecules to create avalanches.
+
+A widely used empirical criteria for a reliable startup is the so-called Lloyd's criteria \cite{ITER_1999}
+%
+\begin{equation}
+E_\varphi \dfrac{B_\varphi}{B_\theta} >1000 \text{V}\text{m}^{-1}.
+\end{equation}
+In the case of plasma break-down assisted by Electron Ciclotron Resonance Heating (ECRH), which is a heating method based on the irradiation of electromagnetic waves of certain frequencies to the ionized gas so that it absorbs them helping ionize the gas \cite{ITER_2019}, the minimum value is 100$\text{V}\text{m}^{-1}$ instead of 1000$\text{V}\text{m}^{-1}$ \cite{VEST_2015}.
+
+In the DIII-D tokamak\footnote{\url{https://www.ga.com/magnetic-fusion/diii-d}.} it has been shown \cite{Lazarus_1998} that the break-down of the pre-fill gas did not occur where the stray poloidal field was minimum; instead, it took place where the potential gained by the electrons along their path $\int_\text{field line} \vec{E} \cdot \vec{dl}$ was greatest. This potential is not the electrostatic potential \st{(the electrostatic potential between two points $A$ and $B$ is $V_B-V_A=- \int_A^B \vec{E} \cdot \vec{dl}$)} because the electric field has been created by a changing magnetic field. \st{The main difference is that this potential function depends on the path of the integral, while the electrostatic potential only depends on the starting and ending positions, so that, an electron after doing a revolution inside the tokamak returning to the starting point have gained energy}\footnote{\st{An electrostatic field $\vec{E}$ can be written as  $\vec{E}=-\nabla V$, where $V$ is the electrostatic potential. In the presence of transient magnetic fields, the electric field is given by $\vec{E}=-\nabla V- \p \vec{A}/ \p t$, where $\vec{A}$ is the vector potential. The line integral between two points $A$ and $B$ of this electric field is
+$\int_A^B \vec{E} \cdot \vec{dl}=\int_A^B -\nabla V \cdot \vec{dl} -\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$= $-V(B)+V(A)-\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$. To compute the last integral, the path followed from $A$ to $B$ needs to be known, and hence, the final result will depend on the path followed.}}. \textcolor{red}{An electrostatic field $\vec{E}$ can be written as  $\vec{E}=-\nabla V$, where $V$ is the electrostatic potential. The line integral between two points $A$ and $B$ is $\int_A^B \vec{E} \cdot \vec{dl}=-V(B)+V(A)$, so it does not depend on the path followed, only on the starting and ending points. In the presence of transient magnetic fields, the electric field is given by $\vec{E}=-\nabla V- \p \vec{A}/ \p t$, where $\vec{A}$ is the vector potential. The line integral in this case would be
+$\int_A^B \vec{E} \cdot \vec{dl}=\int_A^B -\nabla V \cdot \vec{dl} -\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$= $-V(B)+V(A)-\int_A^B \p \vec{A}/ \p t \cdot \vec{dl}$. To compute the last integral, the path followed from $A$ to $B$ needs to be known, and hence, the final result will depend on the path followed. This means that an electron gains energy after doing a revolution inside the tokamak returning to the starting point.}
+
+
+\cite{NSTX_2017} also confirms this empirical results. This seems understandable since to create avalanches, the electrons have to gained enough energy to ionize, so it is not only relevant that they follow a path with the minimum deviation to collide as much as possible, but that they gain as much energy as possible in its path so that most of the collisions are ionizing collisions.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Avalanche or break-down time}
+
+When Coulomb collisions dominate over neutral-electron collisions, the fuel starts to behave like a plasma, entering the \textit{burn-through} phase. This phase is reached usually when the ionization fraction of the gas is about 5\% \cite{ITER_2019}. At this stage, the avalanche as described above, with a gas being ionized by a toroidal electric field stops being valid, and the further ionization is made by the plasma itself, if the power losses are counterbalanced. 
+
+The time when the this phase starts (or when the break-down phase ends) can be estimated using eq \eqref{ec ne}. Introducing the concept of ionization fraction $f_i$, which is the ratio between the electron density created by ionization and the neutral pre-fill gas density $n_\text{pre}$, which is
+%
+\begin{equation}
+f_i \equiv \dfrac{n_e/2}{n_\text{pre}},
+\end{equation} 
+where the 2 accounts for the 2 electrons that H$_2$ (and also He) gives. The pre-fill gas density is related to the gas pressure by the ideal gas law, $p=n_\text{pre} K_\text{B} T_\text{pre}$. Substituting this into \eqref{ec ne} yields, assuming $n_e(0)$=1 which is an standard assumption \cite{ITER_2019, Lloyd_1991},
+%
+\begin{equation}\label{ec fi}
+f_i(t)=\dfrac{1}{2 n_\text{pre}} \exp{ [(\nu_\text{ion}-\nu_\text{loss})t]}= \dfrac{1}{2} \dfrac{K_\text{B} T_\text{pre}}{p} \exp \Big[v_\parallel (\alpha-\dfrac{1}{L})t \Big].
+\end{equation}
+Setting $f_i=5\%$ on \eqref{ec fi} will give an estimation for the time needed for the avalanche or break-down phase to end, the \textit{avalanche time} $t_\text{ava}$:
+%
+\begin{equation}\label{ec t_ava}
+t_\text{ava}= \dfrac{\ln \Big(2\cdot 0.05 \cdot \dfrac{p}{K_\text{B} T_\text{pre}} \Big) }{v_\parallel (\alpha-\dfrac{1}{L})}=\dfrac{\ln \Big(2\cdot 0.05 \cdot \dfrac{p}{K_\text{B} T_\text{pre}} \Big) }{43 \dfrac{E_\varphi}{p}\Big[ C_1 p \exp \Big(-\dfrac{C_2 p}{E_\varphi} \Big)-\dfrac{1}{L} \Big]}.
+\end{equation}\footnote{\st{This formula is sometimes simplified by setting the dividend to 41, as in LLoyd1991. However, LLoyd1991 states a similar formula estimates the time need to reach the maximum in the line-radiation emissions. I trust more the vision on ITER2019 since this formula has been derived using a model of a gas being ionized, which is not valid once the gas turned into a plasma, and the plasma is formed prior to the maximum in the line-radiation emissions.}}
+Note that it is positive since $\alpha-1/L>0$ which is the condition for the avalanche to occur.
+
+
+
+\subsection{Voltage and electric field induced by the inductor solenoid}
+\label{sec_loop_voltage_field_Sol_theory}
+
+To start the break-down phase, the inductor solenoid (Sol) is pre-charged with a certain current, and then its current its ramped down rapidly to induce the electric field. In this subsection the electric field and the voltage induced will be derived.
+
+
+The voltage induced by the ramp down of the Sol, called \textit{loop voltage}, can be easily computed using Faraday's law in its integral form:
+%
+\begin{equation}\label{ec_Faraday_loop}
+\varepsilon \equiv V_\text{loop} = -\dfrac{d}{dt} \int_S \vec{B} \cdot \vec{n} dS,
+\end{equation}
+where $S$ is the surface enclosed by the loop, which is a circle of an arbitrary radius, and $\vec{n}$ its unit vector, which will go in the $Z$ direction. The magnetic field $\vec{B}$ of a solenoid also goes in the $Z$ direction, so the loop voltage is, choosing $\vec{n}=\stackrel{\wedge}{Z}$:
+%
+\begin{equation}\label{ec_Vloop_Sol}
+V_\text{loop} = - \dfrac{d}{dt} \int_S B_\text{Sol} dS= - \int_S \dfrac{d B_\text{Sol}}{dt} dS.
+\end{equation}
+The derivative can be introduced into the integral since the integration variables do not vary over time. The only thing that vary with time is the Sol current. Its derivative can be computed easily since the Sol current is decreased linearly, so it satisfies
+%
+\begin{equation}
+I_\text{Sol}(t)=m t +n.
+\end{equation}
+At $t=0$, $I_\text{Sol} \equiv I_0$, and the ramp goes down until $I_\text{Sol}(t_1) \equiv  I_1$ ($I_0>I_1$), so the Sol current is
+%
+\begin{equation}
+I_\text{Sol}(t)=\dfrac{I_1-I_0}{t_1} t +I_0.
+\end{equation}
+Solving \eqref{ec_Vloop_Sol} for the magnetic field of a solenoid of inner radius $R_\text{in}$ and outer radius $R_\text{out}>R_\text{in}$ with $N/l$ turns per unit length, ignoring border effects (i.e., considering infinite length), gives (see appendix \ref{appendix_loop voltage})
+\begin{equation}
+V_\text{loop}= - \mu_0 \dfrac{N}{l} \dfrac{I_1-I_0}{t} \Big[ \pi R_\text{in}^2  + \pi (R_\text{out}^2-R_\text{in}^2) - \dfrac{2 \pi}{R_\text{out}-R_\text{in}} \Big( \dfrac{1}{3} (R_\text{out}^3-R_\text{in}^3) - \dfrac{R_\text{in}}{2} (R_\text{out}^2-R_\text{in}^2) \Big) \Big].
+\end{equation}
+Since the slope of the Sol current is negative, the loop voltage induced is positive.
+
+Once the loop voltage has been computed, the electric field can also be computed. For computing it, the integral form of Faraday's law will be used:
+%
+\begin{equation} \label{ec Faraday E}
+V_\text{loop}=\varepsilon \equiv \oint_\Gamma \vec{E} \cdot \vec{dl}= -\dfrac{d}{dt} \int_S \vec{B} \cdot \vec{n} dS,
+\end{equation}
+where $\Gamma$ is the loop's perimeter. To compute the electric field $\vec{E}$ from this equation we must know its symmetry. To do so, let's take into account that \eqref{ec Faraday E} is very similar to Ampère's law
+%
+\begin{equation}\label{ec Ampere}
+\oint_\Gamma \vec{B} \cdot \vec{dl}=\mu_0 \int_S \vec{J} \cdot \vec{n} dS=\mu_0 I_\text{enclosed}.
+\end{equation}
+It is widely known that the magnetic field of a infinite cilindral conductor carrying a current density $\vec{J}=J \stackrel{\wedge}{Z}$ is $\vec{B}=B \stackrel{\wedge}{\varphi}$ (see any book of classic electromagnetism, like \cite{Griffiths}). And, since the roles of $\vec{B}$ and $\vec{J}$ in Ampère's law are the same as the roles of $\vec{E}$ and $\vec{B}$ respectively in Faraday's law, provided that $\vec{B}=B \stackrel{\wedge}{Z}$ in Faraday's law, the electric field must be $\vec{E}=E \stackrel{\wedge}{\varphi}$. Furthermore, taking into account the axysymmetry and the assumption of no border effects (infinite length), the electric field can only depend on the radial coordinate $R$, so $\vec{E}=E(R) \stackrel{\wedge}{\varphi}$. Considering this, the field can be computed, since $\vec{dl}=R d\varphi \stackrel{\wedge}{\varphi}$:
+%
+\begin{equation}\label{ec_E_sol}
+V_\text{loop} = \oint_\Gamma \vec{E} \cdot \vec{dl}= 2 \pi R E(R) \Rightarrow E(R)= \dfrac{V_\text{loop}}{2 \pi R}.
+\end{equation}
+%
+The electric field will be more intense near the inner wall of the VV. The same applies to the toroidal magnetic field, which also goes as $1/R$. The potential gained in that region will be the greatest, enhancing the ionization processes, and the magnetic field lines will be mostly toroidal lines in that region (since the toroidal field will be greater in that region, the effect of the poloidal field will be reduced as a consequence), reducing the electron losses. This two factors explain why the pre-fill gas breaks-down near the inner side of the VV in general.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
 \chapter{Fiesta toolbox}
 
 The Fiesta toolbox is an object-oriented toolbox programmed in MATLAB by G. Cunningham at the Culham Centre for Fusion Energy \cite{Pangione_Fiesta, Windridge_Fiesta}. It was created for equilibrium calculations such as solving Grad-Shafranov equation and plasma shape control. However, dynamic calculations are also included, using the RZIp model, which will be reviewed later. The reactor geometry is introduced using its object architecture.
@@ -1239,7 +1245,7 @@ The linearizations of eq \eqref{ec RZIP 1}, \eqref{ec RZIP 2}, \eqref{ec RZIP 3}
 \end{array}
 \right.
 \end{equation}
-where $^0$ indicates equilibrium value, so $R_{geo}^0$ indicates the value at the target equilibrium, $S$ is the plasma cross section of the equilibrium configuration, and $l$ the perimeter of this cross-section. The state vector $\boldsymbol{x}$ is
+where $^0$ indicates equilibrium value, so $R_{geo}^0$ indicates the value at the target equilibrium, $S$ is the plasma cross-section of the equilibrium configuration, and $l$ its perimeter. The state vector $\boldsymbol{x}$ is
 %
 \begin{equation}
 \boldsymbol{x}=
