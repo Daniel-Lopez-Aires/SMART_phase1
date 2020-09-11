@@ -1,0 +1,1089 @@
+%%%%%%-----PLANTILLA PARA PRESENTACIONES----%%%%%%
+%
+%
+%%%%%%-----Realizado por Daniel López Aires----%%%%%%
+
+\documentclass[10pt]{beamer}
+\usetheme{CambridgeUS} %el tema
+%\usepackage[español]{babel} %idioma español
+%\usecolortheme{dolphin} 
+\usecolortheme{seahorse}
+%%%Colors for the group
+%\definecolor{UniBlue}{RGB}{83,121,170}
+%\definecolor{UniBlue}{RGB}{128,128,128}
+\definecolor{Grey_PSFT}{RGB}{0,0,0}
+%\setbeamercolor{title}{fg=Grey_PSFT}
+%\setbeamercolor{frametitle}{fg=Grey_PSFT}
+\setbeamercolor{structure}{fg=Grey_PSFT}
+
+\usepackage[utf8]{inputenc} %codificacion, la estandar (permite poner tildes y espo)
+\usepackage[T1]{fontenc} %npi xd
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{graphicx} %para graficos
+\usepackage{float} %para el manejo de los entornos flotantes
+\usepackage{caption} %para manejar lo de nombrar a las figuras y eso
+\usepackage{multirow} %para vertical rows
+\usepackage{subfigure} %para usar subfiguras
+\usepackage[]{hyperref} %esto hace que todo sea interactivo, y el hidelinks, que se pone en los [], hace que no los recuadre en rojo todas las cosas que son interactivas.
+\usepackage[labelsep=period]{caption} %para q en las figuras no ponga dos puntos, sino solo uno.
+\usepackage[font=footnotesize]{caption} %esto para hacer que el caption se escriba mas pequeño que el texto normal. Se escribe todo, el caption y lo que escribes tú, asi que no es necesario declarar \footnotesize donde vas a escribir tú.
+%\decimalpoint %para poner un punto decimal en lugar de una coma. Esto evitara coonfusiones en las comas del texto y comas de separar parte entera y decimal
+\usepackage{graphicx,wrapfig,lipsum}
+\usepackage{textpos} %to include logos on fram title
+%%%
+%\usepackage{epstopdf}
+%\usepackage[outdir=./]{epstopdf}
+
+
+
+
+
+
+
+%LA PUTA POLLA ESTO:
+\AtBeginSection[]
+{
+    \begin{frame}
+        \frametitle{\bf Table of Contents}
+        \tableofcontents[currentsection]
+    \end{frame}
+}
+
+
+%%%%%%%%%%%%%%%REDEFINICIONES COMANDOS, POR FLOJERA%%%%
+
+\newcommand{\p}{\partial}
+%---------------- PORTADA -----------------
+\title[\bf Modelling of a plasma break-down for SMART]{\bf Modelling of a plasma break-down for the SMART tokamak}
+
+\subtitle{ }
+\author[\bf Daniel López Aires]{Daniel López Aires\\
+\and danlopair@gmail.com \\
+%
+\and \\ Supervisors: Dr. Manuel García Muñoz \& Dr. Carlos Soria del Hoyo
+}
+\institute[]{Faculty of physics, \\University of Seville}
+
+
+\date{ \today}
+%\logo{\includegraphics[scale=0.5]{logo_us}}
+
+\titlegraphic{\includegraphics[width=2cm]{logo_us} \hfill
+   \includegraphics[width=2cm]{logo_PSFT}
+}
+
+%Lo que va en [] te lo pone abajo de todoas las diapos
+%---------------------------------------------------
+%%%%%%%%%%%%%%%%%%%
+%%%    DOCUMENTO   %%%%%%
+%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%\begin{noheadline} %Esto seria si no quisiera lo que sale arriba (para el tema warsaw), como un indice
+
+\begin{frame}
+\vspace{-1cm}
+\maketitle
+\end{frame}
+
+%To add the 2 logos
+\addtobeamertemplate{frametitle}{}{%
+\begin{textblock*}{100mm}(.85\textwidth,-1cm)
+\includegraphics[height=1cm,width=1cm]{logo_PSFT}\includegraphics[height=1cm,width=1cm]{logo_us}
+\end{textblock*}}
+
+\begin{frame}{\bf Table of Contents} %lo de \bf () es el titulo de esa diapo
+\tableofcontents
+\end{frame}
+
+
+\section{Introduction}
+
+\begin{frame}{\bf Nuclear fusion as an energy source}
+
+\begin{minipage}{0.55\textwidth}
+\begin{itemize}
+
+\item No $\text{C} \text{O}_2$ emissions
+
+\item No long-lived radioactive waste
+
+\item There is enough fuel for thousands of years (\textit{virtually renewable})
+
+\item The most promising reaction is the D-T reaction 
+
+\item The fuel is in the plasma state 
+($\sim 10^8$K)
+
+\end{itemize}
+\vfill
+\begin{small}
+\textit{plasma}: quasineutral gas of charged and neutral particles which exhibits collective effects
+\end{small}
+\end{minipage}
+%
+\hfill
+\begin{minipage}{0.42\textwidth}
+
+\begin{figure}[htbp]
+\includegraphics[scale=0.18]{imagenes/Cross_section}
+\end{figure}
+
+\begin{figure}[htbp]
+\includegraphics[scale=0.08]{imagenes/esquema_DT_reaction}
+\end{figure}
+
+
+\end{minipage}
+
+\vfill 
+
+
+
+
+\end{frame}
+
+
+\begin{frame}{\bf Plasma confinement}
+
+\begin{itemize}
+
+\item Stars: gravitational confinement
+
+\item There is no material wall that can withstand the plasma temperature $\Rightarrow$ \underline{Magnetic confinement}
+
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Sun.]{\includegraphics[scale=0.1]{imagenes/sun1}}
+%\hfill
+%\hfill
+\subfigure[JET tokamak (U.K.)]{\includegraphics[scale=0.16]{imagenes/JET}}
+\subfigure[VEST tokamak (Korea)]{\includegraphics[scale=0.24]{imagenes/vest}}
+%\caption{Drifts in a torus and definition of the poloidal and toroidal directions on a torus.}
+\end{figure}
+
+\end{frame}
+
+%\begin{frame}
+%\begin{itemize}
+%	\item[$\star$] The PSFT group is planning to build a small tokamak at CNA, in Seville
+%	\vfill
+%	\item[$\star$] In this work some of the issues dealing with the design have been studied:
+%	\begin{itemize}
+%	\item Configuration of the tokamak
+%		\begin{itemize}
+%			\item Shape of its vacuum vessel
+%			\item coil configuration
+%		\end{itemize}
+%	\item Time response of the tokamak
+%		\begin{itemize}
+%			\item Eddy currents in the vessel
+%			\item Pressures the vessel has to withstand
+%		\end{itemize}
+%	\end{itemize}
+%\end{itemize}
+%\end{frame}
+
+
+\begin{frame}{\bf Confinement of a charged particle}
+
+\begin{minipage}{0.55\textwidth}
+
+\begin{itemize}
+
+\item Lorentz's force: $\vec{F}_\text{mag}=q( \vec{v} \wedge \vec{B} +\vec{E})$
+
+\begin{itemize}
+
+\item Simpler case: uniform  $\vec{B}$
+
+\item For more complex situations the guiding centre motion is studied
+
+\begin{itemize}
+
+\item Acceleration due to $E_{\parallel}$:
+
+$m \dfrac{d v_{\parallel}}{dt}=q E_{\parallel}$
+
+\item $\vec{E} \wedge \vec{B}$ drift:
+
+$\vec{v}_{\vec{E} \wedge \vec{B}}=\dfrac{\vec{E} \wedge \vec{B}}{B^2}$
+
+\item $\nabla B$ drift:
+
+$\vec{v}_{\nabla B}=\dfrac{m v_{\perp}^2}{2q} \dfrac{\vec{B} \wedge \nabla B}{B^3}$
+
+\end{itemize}
+
+\end{itemize}
+\end{itemize}
+\end{minipage}
+%
+\hfill
+%
+\begin{minipage}{0.4\textwidth}
+\begin{figure}[htbp]
+\includegraphics[scale=0.2]{imagenes/motion_particle_uniform_field}
+\caption{Motion of a charged particle in the presence of an uniform magnetic field.}
+\end{figure}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}{\bf Magnetic fusion devices}
+
+\begin{minipage}{0.55\textwidth}
+
+\begin{itemize}
+\item Toroidal devices
+
+\begin{itemize}
+\item $\vec{B}=B(R) \stackrel{\wedge}{\phi}$
+\item $B(R) \propto 1/R \Rightarrow \nabla B \ \text{drift} \Rightarrow \vec{E} \wedge \vec{B} \ \text{drift} \Rightarrow$ particles collide with the external surface of the torus!
+
+\end{itemize}
+
+\item \textit{Tokamaks} overcome those drifts by twisting the field lines:
+
+$$\vec{B}=\vec{B}_\text{toroidal}+\underline{\vec{B}_\text{poloidal}}$$
+
+\end{itemize}
+\end{minipage}
+%
+\hfill
+%
+\begin{minipage}{0.4\textwidth}
+\begin{figure}[htbp]
+\centering
+\subfigure[Drifts in a torus.]{\includegraphics[scale=0.35]{imagenes/drift_en_toro}}
+%\hfill
+\subfigure[Toroidal (blue) and poloidal(red) directions of a torus.]{\includegraphics[scale=0.1]{imagenes/Toroidal_coord}}
+%\caption{Drifts in a torus and definition of the poloidal and toroidal directions on a torus.}
+\end{figure}
+\end{minipage}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%
+
+\begin{frame}{\bf Tokamaks}
+
+\begin{itemize}
+
+\item A transformer induced plasma current, which creates the poloidal magnetic field $\Rightarrow$ pulsed regime
+\item Poloidal field coils for plasma shape control
+%\item Operates in a pulsed regime
+%\item The tokamak discharge ends up abruptly due to disruptions
+\item At the start of the discharge (\textit{start-up}) the pre-fill gas breaks-down and turns into a plasma
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.31]{imagenes/esquema_tokamak}
+\caption{Sketch of a tokamak.}
+\label{def aspect ratio}
+\end{figure}
+\end{frame}
+
+%%%MPTIVATIO, SMART
+
+\begin{frame}{\bf Motivation: SMART}
+	\begin{itemize}
+		\item[$\star$] The PSFT group is planning to build a SMall Aspect Ratio Tokamak (SMART)
+
+		\begin{figure}[htbp]
+		\centering
+		\subfigure[Reactor.]{\includegraphics[scale=0.2]{imagenes/SMART_3D_fancy_NBI}}
+		\hfill
+		\subfigure[Coilset.]{\includegraphics[scale=0.2]{imagenes/coilset_3D}}
+		\caption{3D plots of the SMART reactor.}
+		\end{figure}
+	\end{itemize}
+\end{frame}
+
+%%%%%
+
+\begin{frame}{\bf Motivation: SMART}
+	\begin{itemize}
+		\item[$\star$] Spherical tokamaks  (ST)
+		\begin{itemize}
+			\item Aspect ratio$<2$
+			\item More compact $\Rightarrow$ lower costs
+			\item Better plasma parameters ($q$, $\beta$, fusion power)
+		\end{itemize}
+
+	\begin{figure}[htbp]
+	%\centering
+	\includegraphics[scale=0.3]{imagenes/tokamaks_vs_st}
+	\caption{Tokamak and spherical tokamak.}
+	\end{figure}
+
+	\end{itemize}
+\end{frame}
+
+%%%Objetives
+
+\begin{frame}{\bf Objetives of the work}
+	\begin{itemize}
+		\item[$\star$] Model the break-down phase (1º stage of the start-up) of SMART 
+		\begin{itemize}
+			\item Phase 1, first operational phase of the tokamak
+			\item Phase 2, a future upgrade
+		\end{itemize}
+		\item[$\star$] Ensure the gas breaks-down and turns into a plasma without any assistance
+
+	\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Theoretical background}
+
+\subsection{Grad-Shafranov equation}
+
+\begin{frame}{\bf Grad-Shafranov equation}
+
+\begin{itemize}
+
+\item Magnetohydrodynamic model of a plasma: $\rho \Big[\dfrac{\p \vec{v}}{\p t}+(\vec{v} \cdot \nabla)\vec{v} \Big]=\vec{j} \wedge \vec{B} -\nabla p$
+
+\item Static equilibria $\Rightarrow \vec{j} \wedge \vec{B} = \nabla p \Rightarrow \left\{ \begin{array}{c}
+\vec{B} \cdot \nabla p=0 \\
+\vec{j} \cdot \nabla p=0
+\end{array}\right. $
+
+\begin{figure}[t]
+\centering
+\subfigure[Confining magnetic flux surfaces of a tokamak equilibria.]{\includegraphics[scale=0.4]{imagenes/magnetic_surfaces}}
+\hfill
+\subfigure[Toroidal and poroidal surface elements between two magnetic flux surfaces.]{\includegraphics[scale=0.35]{imagenes/Flux_definition_libro}}
+%\caption{Cylindrical coordinate system for toroidal devices, and definition of the poloidal flux in a torus.}
+\end{figure}
+
+
+\item The poloidal flux verifies $\Psi=2 \pi R A_\phi \equiv 2 \pi \psi$
+
+
+
+\end{itemize}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+
+\begin{center}
+$ \vec{j} \wedge \vec{B} = \nabla p \Rightarrow$ \fbox{$R \dfrac{\p }{\p R} \Big( \dfrac{1}{R} \dfrac{\p \psi}{\p R} \Big) +\dfrac{\p^2 \psi}{\p Z^2}=-\mu_0 R^2 \dfrac{d p(\psi)}{d \psi} -\mu_0^2 f( \psi) \dfrac{d f(\psi)}{d \psi}$}
+\end{center}
+
+
+
+$$\begin{array}{c}
+\vec{B}_\theta=\dfrac{1}{R} \nabla \psi \wedge \stackrel{\wedge}{\phi} \\
+\vec{j}_\theta=\dfrac{1}{R}\nabla f \wedge \stackrel{\wedge}{\phi} \\
+f=\dfrac{R B_\phi}{\mu_0}
+
+\end{array}$$
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Cylindrical coordinate system.]{\includegraphics[scale=0.15]{imagenes/Coordinate_system}}
+\hfill
+\subfigure[Typical solution.]{\includegraphics[scale=0.3]{imagenes/solution_of_grad_shafranov}}
+%\caption{Cylindrical coordinate system for toroidal devices, and definition of the poloidal flux in a torus.}
+\end{figure}
+
+\end{frame}
+
+\subsection{Tokamak start-up}
+
+\begin{frame}{\bf Tokamak start-up}
+	\begin{minipage}{0.4\textwidth}
+		\begin{itemize}
+			\item Tokamak start-up has 3 phases			
+			\begin{enumerate}
+				\item Plasma break-down: the pre-fill gas ionizes and turns into a plasma
+				\item Plasma burn-through: full ionization of the plasma
+				\item Plasma ramp-up: plasma current rises to the desired value
+			\end{enumerate}
+		\end{itemize}
+	\end{minipage}
+%
+%\hfill
+%
+	\begin{minipage}{0.45\textwidth}
+		\begin{figure}
+		\centering
+		\includegraphics[scale=0.25]{imagenes/esquema_startup}
+%\caption{Time evolution of the plasma current (a), the line radiation of Deuterium (b), line-radiation losses ($\alpha$ line of Deuterium) (c) and electron temperature (d) during a tokamak start-up. Source: \cite{TCV_thesis}. Deuterium is used as a prefilled gas here, since its line-radiation is showed. This plot assumes the beginning of the burn-through phase to be when the maximum of line radiation occurs.}
+		\caption{Time evolution of several plasma parameters during a tokamak start-up.}
+		\end{figure}
+	\end{minipage}
+\end{frame}
+
+\subsection{Plasma break-down}
+
+\begin{frame}{\bf Break-down phase}
+	\begin{minipage}{0.45\textwidth}
+		\begin{itemize}
+			\item The voltage induced by the inductor coil creates electron avalanches
+			\item The gas will ionize if the ionization rate is greater then the loss rate
+			\item This phase ends when Coulomb collisions dominate under atom-electron collision
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\includegraphics[scale=0.15]{imagenes/Electron_avalanche}
+%\caption{Time evolution of the plasma current (a), the line radiation of Deuterium (b), line-radiation losses ($\alpha$ line of Deuterium) (c) and electron temperature (d) during a tokamak start-up. Source: \cite{TCV_thesis}. Deuterium is used as a prefilled gas here, since its line-radiation is showed. This plot assumes the beginning of the burn-through phase to be when the maximum of line radiation occurs.}
+		\caption{Electron or Townsend avalanche.}
+		\end{figure}
+	\end{minipage}
+	\end{frame}
+
+\begin{frame}{\bf Break-down phase}
+	\begin{minipage}{0.45\textwidth}
+		\begin{itemize}
+			\item Ionization rate: $\nu_\text{ion}=v_\parallel \alpha$, $ \alpha = C_1 p \exp (-C_2 p/E_\varphi) $
+			\item Loss rate: $\nu_\text{loss}=v_\parallel /L$
+			\begin{itemize}
+					\item Loss rate are reduced by reducing the vertical field created by the inductor coil
+			\end{itemize}
+
+			\item The temporal evolution of the electron density is
+			\begin{equation} %\nonumber
+\dfrac{d n_e}{dt}=n_e(\nu_\text{ion}-\nu_\text{loss})=n_e v_{\parallel}(\alpha-1/L)
+			\end{equation}
+			\item For avalanche, $\dfrac{d n_e}{dt}>0 \Rightarrow \alpha L>1$
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.45\textwidth}
+		\begin{figure}
+		\centering
+		\includegraphics[scale=0.25]{imagenes/esquema_losses}
+
+		\caption{Magnetic field line (red) colliding with the vessel.}
+		\end{figure}
+	\end{minipage}
+\end{frame}
+
+\begin{frame}{\bf Break-down phase: Paschen's curve}
+	\begin{minipage}{0.45\textwidth}
+		\begin{equation} \nonumber
+\dfrac{d n_e}{dt}=n_e(\nu_\text{ion}-\nu_\text{loss})=n_e v_{\parallel}(\alpha-1/L)
+		\end{equation}
+		\begin{itemize}
+			\item $ \alpha L=0$ gives the limit condition:
+			\begin{equation}\label{ec Paschen}
+{E_\varphi}_{min}=\dfrac{C_2 p}{\ln(C_1 p L)}
+			\end{equation}		
+			\item The plot of \eqref{ec Paschen} for a  given $L$ is called the Paschen's break-down curve	
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.45\textwidth}
+		\begin{figure}
+		\centering
+		\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Paschen_TFM}
+
+		\caption{Paschen's break-down curves for Hydrogen, showing different connection lengths.}
+		\end{figure}
+	\end{minipage}
+\end{frame}
+
+%%%%%%%%%%5
+
+\begin{frame}{\bf Break-down phase: avalanche time}
+		\begin{equation} \nonumber
+\dfrac{d n_e}{dt}=n_e(\nu_\text{ion}-\nu_\text{loss})=n_e v_{\parallel}(\alpha-1/L)
+		\end{equation}
+		\begin{itemize}
+			\item Assuming ionization and loss rate constants:
+			\begin{equation}\label{ec ne}
+n_e(t)=n_e(0)\exp{ [(\nu_\text{ion}-\nu_\text{loss})t]},
+			\end{equation}	
+			\item The avalanche ends when the ionization fraction $f_i \equiv (n_e/2)/n_\text{pre} \sim 5\%$, and this time is
+			\begin{equation}\label{ec t_ava}
+t_\text{ava}= \dfrac{\ln \Big(2\cdot 0.05 \cdot \dfrac{p}{K_\text{B} T_\text{pre}} \Big) }{v_\parallel (\alpha-\dfrac{1}{L})}=\dfrac{\ln \Big(2\cdot 0.05 \cdot \dfrac{p}{K_\text{B} T_\text{pre}} \Big) }{43 \dfrac{E_\varphi}{p}\Big[ C_1 p \exp \Big(-\dfrac{C_2 p}{E_\varphi} \Big)-\dfrac{1}{L} \Big]}.
+\end{equation}	
+		\end{itemize}
+
+\end{frame}
+
+\begin{frame}{\bf Break-down}
+
+	\begin{block}{\bf Lloyd's break-down criteria}
+		\begin{itemize}
+			\item A empirical criteria to ensure proper break-down condition is:
+			\begin{equation}
+E_\varphi \dfrac{B_\varphi}{B_\theta} >1000 \text{V}\text{m}^{-1}.
+			\end{equation}
+			\begin{itemize}
+				\item 100V/m with Electron Cyclotron Resonance Heating
+			\end{itemize}
+		\end{itemize}
+	\end{block}
+	\begin{block}{\bf Electric potential}	
+		\begin{itemize}
+			\item The electric potential gained by the electrons as they follow the field lines seems to predict where the gas will break-down
+			\begin{equation}
+		\int_\text{field line} \vec{E} \cdot \vec{dl}
+			\end{equation}	
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Simulation method}
+
+\subsection{Fiesta toolbox}
+
+\begin{frame}{\bf Fiesta toolbox (MATLAB)}
+	\begin{itemize}
+		\item Object oriented code $\Rightarrow$ hierarchy of its elements
+		\item Grad-Shafranov solver (EFIT)
+		\item Dynamic response, using RZIp model		
+	\end{itemize}
+
+	\begin{block}{RZIp (R, Z and Ip) model}
+		\begin{itemize}
+			\item Considers the plasma a rigid conductor that can move radially and vertically
+			\begin{itemize}
+				\item Plasma shape remains constant
+				\item Plasma current distribution remains constant
+			\end{itemize}
+			\item Linearized model based on circuit equations and force balance equations
+		\end{itemize}
+	\end{block}
+
+\end{frame}
+
+\begin{frame}{\bf Fiesta toolbox}
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{imagenes/HPEMFlowDiagram_DLA}
+	\caption{Flow diagram of the Fiesta toolbox.}
+	\label{fig_diagram_Fiesta}
+	\end{figure}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+
+\subsection{Simulation procedure}
+
+
+\begin{frame}{\bf Simulation proceudre}
+	\begin{itemize}
+		\item Ensure break-down of the pre-fill gas (H$_2$)
+		\item Coil current design
+		\begin{itemize}
+			\item Achievement of desired equilibrium
+			\item Fulfillment of Lloyd's criteria					\item $t_\text{ava}$ from 1 to 4ms
+			\item Calculation of the connection length
+			\begin{itemize}
+				\item Field line tracing
+				\item Empirical formula:
+					\begin{equation}\label{ec L}
+L \simeq 0.25 a_\text{eff}\dfrac{B_\varphi(R_{\text{null}})}{<B_\theta>},
+					\end{equation}
+			\end{itemize}
+			\item Calc of the electric potential to estimate where the gas will break down
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%5
+
+\begin{frame}{\bf SMART tokamak on Fiesta}
+	\begin{figure}[htbp]
+	\centering
+	\subfigure[3D plot.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-0000163Dplot}}
+	\subfigure[Cross-section.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016CrossSection}}
+	\caption{Plot of the SMART reactor implemented on Fiesta. There is symmetry with respect to the $Z=0$ plane. There is no toroidal field coils because Fiesta assumes axysymmetry.}
+	\end{figure}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Results}
+
+	\subsection{Static and dynamic behaviour of SMART}
+%%%%Target equil
+
+\begin{frame}{\bf Target equilibrium}
+	\begin{figure}[htbp]
+	\centering
+	\subfigure[Phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Target_equilibria}}
+	\hfill
+	\subfigure[Phase 2.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Target_equilibria}}
+	\caption{Target equilibrium for both phases. The colorbar indicates the poloidal flux $\Psi$. Eddy currents in the VV are not included here.}
+	\end{figure} %scale 0.6 pre Manolo
+\end{frame}
+
+%%%Poloidal field null region
+
+\begin{frame}{\bf Poloidal field null region}
+	\begin{minipage}{0.45\textwidth}
+		\begin{itemize}
+			\item Region where the poloidal field created by the Sol coil will be reduced by the coils
+			\item Sol produces negative vertical field in the VV
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.45\textwidth}
+		\begin{figure}[t]
+			\centering
+			\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Sensors}
+			\caption{Sensors for the poloidal null region.}
+		\end{figure}
+	\end{minipage}
+\end{frame}
+
+\begin{frame}{\bf Current waveforms}
+	\begin{figure}[h!]
+	\centering
+	\subfigure[Input currents of phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Input_currents}}
+	\hfill
+	\subfigure[Input currents of phase 2, indicating the discrete points of each of the waveforms.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Input_currents}}
+	\caption{Coilset currents given as inputs and current gradients for both phases. The desired plasma current is sustained for 20ms in phase 1 and for 100ms in phase 2 (flat-top time).}
+	\end{figure}
+\end{frame}
+
+%%%RZIp outputs
+
+\begin{frame}{\bf Plasma current}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Ip}}
+		\hfill
+		\subfigure[Phase 2.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Ip}}
+
+		\caption{Plasma current for both phases. The desired plasma current is sustained for 20ms in phase 1 and for 100ms in phase 2 (flat-top time).}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{\bf dELET THIS???}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019I_VV}}
+		\hfill
+		\subfigure[Phase 2.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016I_VV}}
+		\caption{Total eddy current induced in the vaccum vessel for both phases.}
+	\end{figure}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%555
+
+\subsection{Break-down results}
+
+\begin{frame}{\bf Toroidal field}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Phase 1. $B_T(R_\text{Geo})=0.1$T.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Bphi}}
+		\hfill
+		\subfigure[Phase 2. $B_T(R_\text{Geo})=0.3$T.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Bphi}}
+		\caption{Toroidal field at t=0ms for both phases. The poloidal field null region is dashed in green.}
+	\end{figure}
+\end{frame}
+
+
+%Bpol
+\begin{frame}{\bf Poloidal field}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Poloidal field of phase 1. $I_\text{VV}(t=0)=1.6$kA.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Bpol}}
+		\hfill
+		\subfigure[Poloidal field of phase 2. $I_\text{VV}(t=0)=2.5$kA.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Bpol}}
+		\caption{Poloidal field at t=0ms. The poloidal field null region is dashed in green.}
+	\end{figure}
+\end{frame}
+
+%Lloyd
+\begin{frame}{\bf Lloyd's criteria}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Lloyd's criteria of phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019LLoyd}}
+		\hfill
+		\subfigure[Lloyd's criteria of phase 2.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016LLoyd}}
+		\caption{Lloyd's criteria at t=0ms. The poloidal field null region is dashed in green.}
+	\end{figure}
+\end{frame}
+
+
+%%%%%%Connection length
+
+\begin{frame}{\bf Connection length}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019L}}
+		\hfill
+		\subfigure[Phase 2.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016L}}
+est
+		\caption{Connection length by line tracing at t=0ms. The computational grid is also shown. The poloidal field null region is dashed in green.}
+\end{figure}
+\end{frame}
+
+%lines
+
+\begin{frame}{\bf Field lines}
+	\begin{figure}[t]
+		\centering
+		\subfigure[Line starting in the upper portion of the VV with high $L$.]{\includegraphics[scale=0.35]{imagenes/simulaciones/S1-000019Line_inner}}
+		\hfill
+		\subfigure[Line starting on the surroundings of the lower PF2 coil.]{\includegraphics[scale=0.35]{imagenes/simulaciones/S1-000019Line_PF2}}
+
+\caption{Magnetic field lines. The starting point is denoted with a black dot, and the ending point with a green dot.}
+	\end{figure}	
+\end{frame}
+
+%%%%
+
+\begin{frame}{\bf Electric potential}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Pseudo}}
+		\hfill
+		\subfigure[Phase 2.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Pseudo}}
+		\centering
+		\caption{Electric potential at t=0ms. The computational grid is also shown. The poloidal field null region is dashed in green.}
+	\end{figure}
+\end{frame}
+
+%potential and L
+
+\begin{frame}{\bf Comparison $L$ and electric potential}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Connection length of phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019L}}
+		\hfill
+		\subfigure[$U/V_\text{loop}$ of phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Pseudo}}
+		\caption{Comparison between $L$ and $U/V_\text{loop}$. The $U/V_\text{loop}$ removes the lines with high $L$ values surrounding the lower PF2 coil and the lines far from the inner wall.}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{\bf Connection length by the empirical formula}
+	\begin{equation}\label{ec L}
+L \simeq 0.25 a_\text{eff}\dfrac{B_\varphi(R_{\text{null}})}{<B_\theta>},
+	\end{equation}
+	\begin{itemize}
+	\item Regarding $a_\text{eff}$, there are two visions in the bibliography:
+%
+		\begin{itemize}
+			\item[i)] $a_\text{eff}$ is the linear distance to the closest wall.
+			\item[ii)] $a_\text{eff}$ is the minor radius of the poloidal field null region.
+		\end{itemize}
+	\end{itemize}
+	%
+	\begin{table}[htbp]
+		\centering
+		\begin{tabular}{|c|c|c|c|} \hline
+Phase	 & \multicolumn{3}{|c|}{$L$(m)} \\ \hline
+	& Line tracing & Empirical ii) & Empirical i) \\ \hline 
+	1 & 657.7 & 42.4 & 87.56 \\ \hline
+	2 & 987.8 & 68.3 & 141.2 \\ \hline
+		\end{tabular}
+		\caption{Connection length at the poloidal field null region, computed via the empirical formula \eqref{ec L} and averaging the field line tracing method over the field null region surface. For the empirical formula, $a_\text{eff}$ is 0.15m for the ii) version and 0.31m for the i) version.}
+	\end{table}
+\end{frame}
+
+%%%%%%%%%%%%%%%55
+
+\begin{frame}{\bf Paschen's curve}
+%\begin{equation}\label{ec Paschen}
+$ {E_\varphi}_{min}=C_2 p/[\ln(C_1 p L_\text{emp}|_{ii)})],$ \hfill $ E_\varphi=E_\varphi(R)=V_\text{loop}/(2 \pi R) $
+%\end{equation}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Phase 1.]{\includegraphics[scale=0.29]{imagenes/simulaciones/S1-000019Paschen_complete}}
+		\hfill
+		\subfigure[Phase 2.]{\includegraphics[scale=0.29]{imagenes/simulaciones/S2-000016Paschen_complete}}
+		\caption{Paschen curves (H$_2$) for SMART, showing VEST and GlobusM data. 1Torr=1/760 atm.}
+	\end{figure}
+\end{frame}
+
+%%%%%
+\begin{frame}{\bf Avalanche time}
+	\begin{figure}[t]
+		\centering
+		\subfigure[$L=L_\text{emp}|_{ii)}$. The minimum time is 3.9ms, for $p=1.3 \cdot 10^{-4}$Torr.]{\includegraphics[scale=0.35]{imagenes/simulaciones/S1-000019tau_ava_L_2}}
+		\hfill
+		\subfigure[$L=2 L_\text{emp}|_{ii)} \simeq L_\text{emp}|_{i)}$. The minimum time is 1.7ms, for $p=8.1 \cdot 10^{-5}$Torr.]{\includegraphics[scale=0.35]{imagenes/simulaciones/S1-000019tau_ava_L_3}}
+		\caption{Avalanche time for SMART phase 1 using the empirical connection length.}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{\bf Avalanche time}
+	\begin{figure}[t]
+		\centering
+		\subfigure[$L=L_\text{emp}|_{ii)}$. The minimum time is 2.2ms, for $p=9.3 \cdot 10^{-5}$Torr.]{\includegraphics[scale=0.35]{imagenes/simulaciones/S2-000016tau_ava_L_2}}
+		\hfill
+		\subfigure[$L=2 L_\text{emp}|_{ii)} \simeq L_\text{emp}|_{i)}$. The minimum time is 1.4ms, for $p=6.0 \cdot 10^{-5}$Torr.]{\includegraphics[scale=0.35]{imagenes/simulaciones/S2-000016tau_ava_L_3}}					\caption{Avalanche time for SMART phase 2 using the empirical connection length.}
+	\end{figure}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Conclusions}
+\begin{frame}{\bf Conclusions}
+
+\begin{itemize}
+
+\item Ohmic break-down have been achieved for both phases
+\item Avalanche times about 1-4ms for pressures about $10^{-4}$Torr
+\item Similar poloidal field minimum values than GlobusM and VEST, about 1 Gauss
+
+\end{itemize}
+
+\begin{block}{\bf Future work}
+\begin{itemize}
+
+\item Study of the whole start-up phase (temporal evolution)
+
+\item Self-consistent simulation of eddy currents
+
+\item Minor upgrades:
+
+\begin{itemize}
+	\item Realistic vaccum vessel
+	\item Simulating the power supplies
+
+\end{itemize}
+
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%BACKUP%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section*{Backup}
+
+\begin{frame}
+\centering
+\begin{huge}
+\textbf{BACKUP}
+\end{huge}
+
+\end{frame}
+
+\begin{frame}{\bf Definition of a plasma}
+
+\begin{minipage}{0.55\textwidth}
+
+\begin{itemize}
+
+\item A plasma is a quasineutral gas of charged and neutral particles which exhibits collective behaviour
+
+\begin{itemize}
+
+\item Quasineutrality: shielding of charge accumulations
+
+\item Collective behaviour: particle motion governed by electromagnetic forces
+
+\end{itemize}
+\end{itemize}
+\end{minipage}
+%
+\hfill
+%
+\begin{minipage}{0.4\textwidth}
+\begin{figure}[htbp]
+\includegraphics[scale=0.4]{imagenes/debye_shielding}
+%\caption{Quasineutrality condition}
+\end{figure}
+\end{minipage}
+
+\end{frame}
+
+%%%%%%%%%%%tokamak parameters%%%%%%%%%%%%%5
+\begin{frame}{\bf Plasma shape control in tokamaks}
+	\begin{itemize}
+		\item Plasma boundary is the outermost closed magnetic surface inside the vessel
+
+		\begin{itemize}
+			\item Created by a set of coils (diverted plasma)
+			\item limited by the vessel itself (limited plasma)
+		\end{itemize}
+	\end{itemize}
+	
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Limited and diverted plasma.]{\includegraphics[scale=0.35]{imagenes/plasma_boundary}}
+		\hfill
+		\subfigure[Plasma boundary.]{\includegraphics[scale=0.35]{imagenes/plasma_geometry_general_rec}}
+	%\caption{Plasma geometry and plasma boundaries in tokamaks}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{\bf $\beta$ and q factors}
+	\begin{minipage}{0.4\textwidth}
+		\begin{itemize}
+			\item Confinement efficiency: $\beta \equiv \dfrac{p}{\dfrac{B^2}{2\mu_0}}$
+			\begin{itemize}
+				\item Higher $\beta \Rightarrow$ higher confinement efficiency
+			\end{itemize}
+			\item Stability of the plasma: $q \equiv \dfrac{\Delta \phi}{2 \pi}$
+			\begin{itemize}
+				\item Higher $q \Rightarrow$ higher stability
+			\end{itemize}
+
+		\end{itemize}
+	\end{minipage}
+%
+%\hfill
+%
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\subfigure[]{\includegraphics[scale=.45]{imagenes/simulaciones/field_lines_psin_peq.eps}}
+%\hfill
+		\subfigure[]{\includegraphics[scale=.4]{imagenes/simulaciones/field_lines_psin_grande}}
+%\caption{Field lines}
+		\end{figure}
+	\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%5
+
+
+\begin{frame}{\bf Magnetohydrodynamic model of a plasma}
+
+\begin{equation}
+\dfrac{\p \rho}{\p t}+\nabla \cdot (\rho \vec{v})=0, \ [\text{Mass conservation}] 
+\end{equation}
+\begin{equation} \label{momentum cons}
+\rho \Big[\dfrac{\p \vec{v}}{\p t}+(\vec{v} \cdot \nabla)\vec{v} \Big]=\vec{j} \wedge \vec{B} -\nabla p, \ [\text{Momentum  conservation}] 
+\end{equation}
+\begin{equation}
+\vec{E} +\vec{v} \wedge \vec{B}=\eta \vec{j}, \  [\text{Ohm's  law}] 
+ \end{equation}
+ \begin{equation}
+\dfrac{\p}{\p t}(p \rho^{-\gamma})+(\vec{v} \cdot \nabla) (p \rho^{-\gamma})=0, \ [\text{Adiabatic  behaviour}] 
+\end{equation}
+\begin{equation} \label{faraday}
+\nabla \wedge \vec{E}=- \dfrac{\p \vec{B}}{\p t},  
+\end{equation}
+\begin{equation}\label{ampere}
+\nabla \wedge \vec{B}=\mu_0 \vec{j}, 
+\end{equation}
+\begin{equation} \label{nablaBnulo}
+\nabla \cdot \vec{B}=0. 
+\end{equation}
+
+\end{frame}
+
+
+
+%%%%%%%Tabla con cosas eq
+
+\begin{frame}{\bf Equilibrium data}
+	\begin{table}[htbp]
+		\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tabular}{|c|c|c|} \hline
+	\multirow{2}{*}{Coil} & \multicolumn{2}{|c|}{$I$(kA)} \\ \cline{2-3}
+	 & Phase 1 & Phase 2 \\ \hline
+	Sol & -0.15 & -0.30 \\ \hline
+	PF1 & -0.47 & -1.49 \\ \hline
+	PF2 & -0.07 & -0.14 \\ \hline	
+	Div1 & 0.30 & 1.00 \\ \hline
+	Div2 & 0.00 & 0.00 \\ \hline		
+		\end{tabular}
+		\caption{Coilset currents for the target equilibrium configuration for both phases. Div2 current is zero because it is used only for the break-down phase.}
+		\end{minipage}	
+	\hfill
+		\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tabular}{|c|c|c|} \hline
+	Parameter & Phase 1 & Phase 2 \\ \hline
+	$R_\text{geo}$(m) & 0.42 & 0.42 \\ \hline
+	$A$ & 1.82 & 1.84 \\ \hline
+	$\kappa$ & 1.95 & 2.01 \\ \hline	
+	$\delta$ & 0.20 & 0.24 \\ \hline
+	q0 & 1.14 & 1.03 \\ \hline		
+	q95 & 7.23 & 7.02 \\ \hline		
+	$\beta_\varphi$(\%) & 2.92 & 3.71 \\ \hline
+	$\beta_\theta$ & 0.73 & 0.91 \\ \hline	
+	$\beta_\text{N}$(\%) & 1.98 & 2.56 \\ \hline
+		\end{tabular}
+		\caption{Plasma parameters on the target equilibrium for both phases. $Z_\text{geo}$=0 due to the symmetry with respect t the $Z=0$ plane.}
+		\end{minipage}
+	\end{table}
+\end{frame}
+
+%%%%%%%5Current gradients
+
+\begin{frame}{ \bf Current gradients}
+	\begin{figure}[h!]
+	\centering
+	\subfigure[Phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Delta_IPF}}
+	\hfill
+	\subfigure[Phase 2.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Delta_IPF}}
+\caption{Current gradients for both phases. The desired plasma current is sustained for 20ms in phase 1 and for 100ms in phase 2 (flat-top time). 50A/ms is the operational limit for phase 1 power supplies.}
+\label{fig_Input_currents}
+\end{figure}
+\end{frame}
+
+\begin{frame}{\bf Plasma current gradient}
+	\begin{figure}[t]
+	\centering
+	\subfigure[Phase 1.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019Delta_Ip}}
+	\hfill
+	\subfigure[Phase 2.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S2-000016Delta_Ip}}
+	\caption{Plasma current gradient for both phases. Current raises from 1 to 10MA/s were the goal in the 2º current raise (1MA/s=1kA/ms).}
+	\end{figure}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%BR Y BZ
+
+\begin{frame}{\bf Radial and vertical field of SMART}
+	\begin{figure}[htbp]
+		\centering
+		\subfigure[Radial field.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019B_R}}
+		\hfill
+		\subfigure[Vertical field.]{\includegraphics[scale=0.4]{imagenes/simulaciones/S1-000019B_Z}}
+		\caption{Radial and vertical magnetic fields at t=0ms. The vertical component of the Sol field is negative, and the PF and Div coils try to null it by creating positive vertical field. The resultant vertical is mostly negative in the whole VV, but its magnitude has been reduced. The radial field is anti-symmetric and the vertical field symmetric with respect to the $Z=0$ plane.}
+\end{figure}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{\bf VEST}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{imagenes/vest}
+\caption{VEST tokamak (Korea).}
+\end{figure}
+
+\end{frame}
+
+\end{document}
