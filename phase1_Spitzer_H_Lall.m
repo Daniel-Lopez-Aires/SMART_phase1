@@ -1474,81 +1474,15 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
          %r_inside_VVL=r_inside_VVL(2:end-1);
          %z_inside_VVL=z_inside_VVL(2:end-1); 
         
-       %Now, if the coils are inside, the grid points there have to be removed because ode 'se raya', and spent too long time
+       %Define coils limit points
        global Rin_coils Rout_coils Zdown_coils Zup_coils
        
        Rin_coils=[R_PF2 R_Div1 R_Div2]-[width_PF2 width_Div1 width_Div2]/2; %[m] inner R of coilset (no SOl and PF1 (outside))
        Rout_coils=[R_PF2 R_Div1 R_Div2]+[width_PF2 width_Div1 width_Div2]/2;   %[m]outer R of coilset (no SOl and PF1 (outside))
        Zdown_coils=[Z_PF2 Z_Div1 Z_Div2]-[height_PF2 height_Div1 height_Div2]/2;   %[m]lowerZ of coilset (no SOl and PF1 (outside))
        Zup_coils=[Z_PF2 Z_Div1 Z_Div2]+[height_PF2 height_Div1 height_Div2]/2;    %[m]higher Z of coilset (no SOl and PF1 (outside))    
-            %They are good
-        
-       %Lets rehape the meshgrid to do the loop to remove points
-       r_ins_VVL=reshape(r_ins_VVL,length(r_ins_VVL)^2,1);
-       z_ins_VVL=reshape(z_ins_VVL,length(z_ins_VVL)^2,1);
-       
-    
-        for co=1:length(Rin_coils) %at each iter, removes the grid points inside the coils
-              StoreRZ=[0 0]; %initialization of stored grid points
-            for i=1:length(r_ins_VVL) %Have to check each point
-                Point=[r_ins_VVL(i) z_ins_VVL(i)]; %grid point to test            
-                
-                switch sign(Point(2)) %First lets check if Z><0
-                    
-                    case 1 %z>0
-                
-                    if Point(1)<Rin_coils(co) | Point(1)>Rout_coils(co) %R out of the coil
-                                                                                                   %All Z are good
-                               StoreRZ=[StoreRZ; Point]; %store of good points                                                                                           
-                    
-                    elseif  Point(1)>Rin_coils(co) | Point(1)<Rout_coils(co) %R inside of the coil
-                            if Point(2)<Zdown_coils(co) | Point(2)>Zup_coils(co)  %Z out coil
-                                StoreRZ=[StoreRZ; Point]; %store of good points
-                            end
-                    end
-                        
-                    case -1 %z<0
-                
-                    if Point(1)<Rin_coils(co) | Point(1)>Rout_coils(co) %R out of the coil
-                                                                                                   %All Z are good
-                               StoreRZ=[StoreRZ; Point]; %store of good points                                                                                        
-                    
-                    elseif  Point(1)>Rin_coils(co) | Point(1)<Rout_coils(co) %R inside of the coil
-                            if Point(2)>-Zdown_coils(co) | Point(2)<-Zup_coils(co)  %Z out coil
-                                StoreRZ=[StoreRZ; Point]; %store of good points
-                            end
-                    end  
-                        
-                end             
-            end  
-            StoreRZ=StoreRZ(2:end,:); %remove first row, the initialization one
-            r_ins_VVL=StoreRZ(:,1); %to use the grid created on the following coil loop
-            z_ins_VVL=StoreRZ(:,2); %to use the grid created on the following coil loop          
-        end             
+
      
-     %Lets reshape it again to do the contour plots later (both are
-     %vectors)
-     r_ins_VVL_contour=reshape(r_ins_VVL,floor(length(r_ins_VVL)/2),[]); %arbitrary reshape
-     z_ins_VVL_contour=reshape(z_ins_VVL,floor(length(z_ins_VVL)/2),[]); %arbitrary reshape
-                
-        %Plot
-                figure;
-                subplot(1,2,1)
-                plot(StoreRZ(:,1),StoreRZ(:,2),'r.')
-                hold on
-                plot(vessel)
-                axis equal
-                title(sprintf('iter %d',co))   
-                subplot(1,2,2)
-                plot(StoreRZ(:,1),StoreRZ(:,2),'r.')
-                hold on
-                plot(vessel)
-                plot(coilset)
-                axis equal
-                title(sprintf('iter %d',co))    
- 
-    %%%End grid
-    
     %%%Begin integration
     
     L_max=10000;                             %[m] max L value for the integration; when L achieves
@@ -1561,8 +1495,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
      options = odeset('OutputFcn',@ode_progress_bar,'Events',event_colission,'AbsTol',1e-10,'RelTol',1e-6); 
 %                                     %I include a Fiesta funciton to show the progress of the ode
    
-                                    
-                                    
+                                 
    %Both integrators are programmed, so to swich between them will use a
    %switch (xD)
    tic          %to measure time the intergration takes
@@ -1573,10 +1506,12 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                  y0=[0 0 0 0 0];                    %(r0,z0,L0,phi0,U0) starting points
                     %note it has to be r z L for using the same event function
 
-                    for i=1:length(r_ins_VVL)        
-                         points=[r_ins_VVL(i) z_ins_VVL(i) 0 0 0];      %r z L phi U        
+                    for i=1:length(r_inside_VVL)     
+                        for j=1:length(z_inside_VVL)
+                         points=[r_inside_VVL(i) z_inside_VVL(j) 0 0 0];      %r z L phi U        
                             %U(0)=0 (arbitrary)  
-                         y0=[ y0; points];                          
+                         y0=[ y0; points];      
+                        end
                     end 
                 %I have the additional point 0 0 0 form the begining, that i can remove
                 %easily with
@@ -1584,7 +1519,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 
                %2)Independt variable values, t0
                  t_values=1000; %1000            %Max value of the independent variable
-                 n_iter_t=300000000; %3000000 on s1-14                 %Integer, number of values for tSpan
+                 n_iter_t=3000000; %3000000 on s1-14                 %Integer, number of values for tSpan
                  tSpan=linspace(0,t_values,n_iter_t);            %the range of values of independant variable
                     %TOO LITTLE FOR s1-19, MOST LINES DO NOT COLLIDE NOR
                     %ACHIEVE LMAX
@@ -1593,14 +1528,14 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                     FieldsBreak.interpn.Bz,FieldsBreak.interpn.Bphi);                
                 
                 %4) Integration
-                        %% %%%%%%SINGLE FIELD LINE TRACER and plotter
+                        %%%%%%%%SINGLE FIELD LINE TRACER and plotter
 
                         %need to find i for the chosen R,Z value in r0_z0_L0_U0.
                         %I= 85 for a line inside, 49 for a max L outside, 152 for the
                         %outward arm (Z>0). 135 for the outward Z<0 line. 64 for the upper
                         %arm
         
-                        i=73%652 %looked in the y0
+                        i=52%looked in the y0
                         [t_fieldline, y_fieldline]=ode45(odefun,tSpan,y0(i,:),options);    
     
                         %To save the last values of R,Z,L
@@ -1617,11 +1552,10 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                                 xlabel('x (m)');ylabel('y (m)');zlabel('z (m)');  
                             plot3(y_fieldline(end,1).*cos(y_fieldline(end,4)),y_fieldline(end,1).*sin(y_fieldline(end,4)),...
                                 y_fieldline(end,2),'g*','LineWidth',3)
-                            title(sprintf('Field line starting at (R=%2.2f,Z=%2.2f)m, L=%3.2fm ',y0(i,1),y0(i,2),L_single))
+                            title(sprintf('Single field line integration Lp, L=%3.2f m ',L_single))
                             set(gca, 'FontSize', 13, 'LineWidth', 0.75); %<- Set properties TFG
                             %legend('Starting point (Point with less Bpol)','Field line',...
                         %%%END ONE LINE TRACER
-                            %%
                         for i=1:length(y0)
                             fprintf('Iter %d de %d',i,length(y0))
                             [t_fieldline, y_fieldline]=ode45(odefun,tSpan,y0(i,:),options);        %ode15s Carlos
@@ -1633,17 +1567,19 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                             y_end(i,4)=y_fieldline(end,4);           %Phi
                             y_end(i,5)=y_fieldline(end,5);           %U
                         end                 
-                        U_int=reshape(y_end(:,5),size(r_ins_VVL_contour,1),size(r_ins_VVL_contour,2));            
+                        U_int=reshape(y_end(:,5),size(r_ins_VVL,1),size(r_ins_VVL,2));            
         
         case 'Phi' %Lp as integration method
               %1) Starting points y0
                 y0=[0 0 0 0]; %r0,z0,L0,U0
                 %note it has to be r z fro using the same event function
 
-                for i=1:length(r_ins_VVL)        
-                        points=[r_ins_VVL(i) z_ins_VVL(i) 0 0];  %r z L phi U        
+                for i=1:length(r_inside_VVL)
+                    for j=1:length(z_inside_VVL)
+                        points=[r_inside_VVL(i) z_inside_VVL(j) 0 0];  %r z L phi U        
                             %U(0)=0 (arbitrary)  
-                        y0=[ y0; points];                          
+                        y0=[ y0; points];           
+                    end
                 end
                 %I have the additional point 0 0 0 form the begining, that i can remove
                 %easily with
@@ -1651,7 +1587,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
             
                %2)Independt variable values, t0
                  t_values=10000; %10 for debug                           %Cycles(toroidal turns)
-                 n_iter_t=3000000;         %3000                         %Integer, number of values for tSpan
+                 n_iter_t=3000000000000;         %3000                         %Integer, number of values for tSpan
                  tSpan=linspace(0,2*pi*t_values,n_iter_t);    %the range of values of independant variable
                
                %3)Odefun 
@@ -1665,11 +1601,14 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                         %outward arm (Z>0). 135 for the outward Z<0 line. 64 for the upper
                         %arm
         
-                        i=472 %looked in the y0
+                        i=592 %looked in the y0
                                     %652 line collides with lower PF2
                                     %672 for collision upper PF2
                                     %116 for colission with upper Div1
                                     %472 for coliision with lower wall (VV)
+                                    %652 point closer to 592 bu with very
+                                    %low L. Very close to PF2
+                                    %532 close too
                         [t_fieldline, y_fieldline t_event y_event]=ode45(odefun,tSpan,y0(i,:),options);    
     
                         %To save the last values of R,Z,L
@@ -1700,12 +1639,12 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                             y_end(i,3)=y_fieldline(end,3);           %L           
                             y_end(i,4)=y_fieldline(end,4);           %U
                         end 
-                        U_int=reshape(y_end(:,4),size(r_ins_VVL_contour,1),size(r_ins_VVL_contour,2));
+                        U_int=reshape(y_end(:,4),size(r_ins_VVL,1),size(r_ins_VVL,2));
         
     end         
    Time_Run_Integrator=toc     %Time spent by the integrator
    
-   L_int=reshape(y_end(:,3),size(r_ins_VVL_contour,1),size(r_ins_VVL_contour,2));
+   L_int=reshape(y_end(:,3),size(r_ins_VVL,1),size(r_ins_VVL,2));
     
    %Calc of average L on the null region
         index= y0(:,1)<=max(get(sensor_btheta,'r')) & y0(:,1)>=min(get(sensor_btheta,'r')) &...
@@ -1806,11 +1745,7 @@ psi_null_ins_VV=psi_null_interpn(R_in,Z_in);    %contour plot!!!
                 RZ_no_collide(:,1)>VesselRMinInner & RZ_no_collide(:,2)<VesselZMaxInner...
                 & RZ_no_collide(:,2)>VesselZMinInner;
             RZ_no_collide=[RZ_no_collide(Index,1) RZ_no_collide(Index,2)];                
-           
 
-            
-            %%    
-    
      %%%Contour plots
       %1) L
         figure;
